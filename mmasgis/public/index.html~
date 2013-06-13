@@ -1,0 +1,44 @@
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>MMASGIS</title>
+<link rel="stylesheet" href="extjs/resources/css/ext-all.css">
+<script src="extjs/ext-all-debug.js"></script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css" />
+<link href="stylesheets/style_map.css" type="text/css" rel="stylesheet" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.ie.css" />
+<![endif]-->
+
+
+</head>
+<body>
+<div id="map" style="width: 1000px; height: 700px"></div>
+<div id="gmap" style="width: 1000px; height: 700px"></div>
+<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css">
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" src="app.js"></script>
+        <script type="text/javascript">
+	Ext.Loader.setConfig({
+		        enabled: true
+		    });
+            var loadMap = function()
+            {
+                var myOptions = {
+                  center: new google.maps.LatLng(41.9, 12.48),
+                  zoom: 5,
+                  mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+//                var map = new google.maps.Map(document.getElementById("map"),myOptions);
+            };
+            window.onload= loadMap;
+        </script>
+<script type="text/javascript" src="geojson/regioni.geojson"></script>
+<script type="text/javascript"src="geojson/comuni.geojson"></script>
+<script  type="text/javascript"src="geojson/cap.geojson"></script>
+<script src="geojson/province.geojson"></script>
+<script src="javascripts/mapping_shp.js"></script>
+</body>
+</html>
