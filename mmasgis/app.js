@@ -9,6 +9,9 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , login = require('./login');
+var dbURL = 'mongodb://localhost/mmasgis';
+var db = require('mongoose')
+db.connect('localhost','mmasgis');
 
 var app = express();
 
@@ -31,7 +34,11 @@ if ('development' == app.get('env')) {
 app.get('/', function(req,res){
     res.redirect('/index.html');
 });
-app.post('/login',function(req,res){
+
+app.post('/login',function(req,res){ login.login(req,res)},function(req,res,next){
+	login.login(req,res,function(req,res){
+		console.log(req.user)
+	})
 	console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
 })
 app.get('/users', user.list);

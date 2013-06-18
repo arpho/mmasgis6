@@ -106,8 +106,10 @@ function showLogin(store){
 			// at the user telling him / her as much.  
  
 			failure:function(form, action){ 
+				console.log(action)
 				if(action.failureType == 'server'){ 
-					obj = Ext.util.JSON.decode(action.response.responseText); 
+					obj = Ext.JSON.decode(action.response.responseText); 
+					console.log(obj)
 					Ext.Msg.alert('Login Failed!', obj.errors.reason); 
 				}else{
 					Ext.Msg.alert('Warning!', 'Authentication server is unreachable : ' + action.response.responseText); 

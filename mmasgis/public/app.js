@@ -10,6 +10,6 @@ Ext.onReady(function(){
 	console.log(metmi.utente)
 	if (!metmi.utente.isLogged()){
 			showLogin()
-			console.log('utente non loggato')
+			console.log('onReady')
 		}
 })
