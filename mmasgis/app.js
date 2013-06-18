@@ -7,7 +7,8 @@ var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , login = require('./login');
 
 var app = express();
 
@@ -30,6 +31,9 @@ if ('development' == app.get('env')) {
 app.get('/', function(req,res){
     res.redirect('/index.html');
 });
+app.post('/login',function(req,res){
+	console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
+})
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){

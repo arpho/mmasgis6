@@ -33,10 +33,14 @@ function loadData(user){
 	
 }
 function showLogin(store){
+	var store = Ext.create('Ext.data.Store',{
+								model: 'User'
+	});
+	store.load();
 	var win = null
 	var login = new Ext.FormPanel({
 		labelWidth:80,
-	url:'data/login/', 
+	url:'login/', 
 	frame:true, 
 	title:'Please Login', 
 	defaultType:'textfield',

@@ -42,7 +42,7 @@ Ext.define('User',
     },
     proxy : {
         type : 'rest',
-        url : 'data/users/'
+        url : 'users/'
     }
 
 	}
