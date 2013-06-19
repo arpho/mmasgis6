@@ -15,6 +15,7 @@ function loadUser(req, res, next) {
 function login(req,res,next){
 	console.log("user "+req.param('loginUsername', null))
 	console.log("passwd "+req.param('loginPassword', null))
+	console.log("session_id %j", req.session)
 		User.findOne({nome: req.param('loginUsername', null),password: req.param('loginPassword', null)},function(err, user) {
 			//console.log('login check, callback findOne')
 			if (err) {

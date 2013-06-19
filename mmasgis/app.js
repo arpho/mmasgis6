@@ -19,6 +19,8 @@ db.on('error', console.error.bind(console, 'connection error:'));
 var app = express();
 
 // all environments
+app.use(express.cookieParser());
+app.use(express.session({secret: '1234567890QWERTY'}));// secret aggiunge un po' di sicurezza
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -35,7 +37,8 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function(req,res){
-    res.redirect('/index.html');
+	req.session.lastPage = '/awesome'
+	res.redirect('/index.html');
 });
 
 app.post('/login',function(req,res){ login.login(req,res)},function(req,res,next){
