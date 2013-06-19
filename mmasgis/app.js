@@ -8,10 +8,13 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
+  , mongoose = require('mongoose')
   , login = require('./login');
 var dbURL = 'mongodb://localhost/mmasgis';
-var db = require('mongoose')
-db.connect('localhost','mmasgis');
+mongoose.connect('mongodb://localhost/mmasgis');
+var db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'));
+
 
 var app = express();
 
@@ -37,7 +40,7 @@ app.get('/', function(req,res){
 
 app.post('/login',function(req,res){ login.login(req,res)},function(req,res,next){
 	login.login(req,res,function(req,res){
-		console.log(req.user)
+		console.log('utente verificato')
 	})
 	console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
 })
