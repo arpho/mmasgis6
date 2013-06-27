@@ -8,19 +8,14 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , mongoose = require('mongoose')
   , login = require('./login');
 var dbURL = 'mongodb://localhost/mmasgis';
-mongoose.connect('mongodb://localhost/mmasgis');
-var db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'));
-
+var db = require('mongoose')
+db.connect('localhost','mmasgis');
 
 var app = express();
 
 // all environments
-app.use(express.cookieParser());
-app.use(express.session({secret: '1234567890QWERTY'}));// secret aggiunge un po' di sicurezza
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -37,13 +32,14 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function(req,res){
-	req.session.lastPage = '/awesome'
-	res.redirect('/index.html');
+    res.redirect('/index.html');
 });
 
 app.post('/login',function(req,res){ login.login(req,res)},function(req,res,next){
+	
 	login.login(req,res,function(req,res){
-		console.log('utente verificato')
+		console.log('login ended')
+		console.log(req.user)
 	})
 	console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
 })

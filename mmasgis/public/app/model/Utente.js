@@ -40,6 +40,9 @@ Ext.define('User',
     isLogged: function(){
 				return this.data.logged
     },
+    isEnabled: function(){
+				return this.enabled
+	},
     proxy : {
         type : 'rest',
         url : 'users/'

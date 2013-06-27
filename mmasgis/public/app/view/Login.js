@@ -82,22 +82,19 @@ function showLogin(store){
 			// you define as redirect. 
  
 			success:function(){ 
-				console.log(this.result)
-				
-				Ext.Msg.alert('welcome', this.result.user.nome); 
 				Ext.gritter.add(
 														{
 															title: 'Benvenuto', 
-															text: this.result.user.user
+															text: this.result.user.nome
 														});
 				win.close()
 				this.result.user.logged = true // per qualche motivo il server non setta user.logged, lo faccio io
 				console.log('result user')
 				console.log(this.result.user)
-				metmi.user = new User(this.result.user)
-				console.log('metmi.user')
-				console.log(metmi.user)
-				//loadData(metmi.user)
+				BB.user = new User(this.result.user)
+				console.log('BB.user')
+				console.log(BB.user)
+				loadData(BB.user)
 			//	store.add({user:this.result.user.user,admin:this.result.user.admin,enabled:this.result.user.enabled,logged:this.result.user.logged,superuser:this.result.user.superuser,password:this.result.user.password})
 				//store.sync()
 				//console.log('store')
@@ -109,8 +106,7 @@ function showLogin(store){
 			// at the user telling him / her as much.  
  
 			failure:function(form, action){ 
-				
-				console.log(this.result)
+				console.log(action)
 				if(action.failureType == 'server'){ 
 					obj = Ext.JSON.decode(action.response.responseText); 
 					console.log(obj)

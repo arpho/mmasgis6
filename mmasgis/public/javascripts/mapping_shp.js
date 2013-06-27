@@ -7,7 +7,7 @@ L.tileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.p
 		//regioni.onEachFeature = onEachFeature
 		
 console.log(regioni)
-console.log(cap)
+//console.log(cap)
 L.geoJson(regioni, {
 
 			style: function (feature) {

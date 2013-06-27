@@ -9,7 +9,4 @@ var UserSchema = new mongoose.Schema({
         "enabled": Boolean,
         "last_login": { type: Date, default: Date.now }
 })
-UserSchema.methods.isEnabled = function(){
-					return this.enabled
-				}
 module.exports = UserSchema;

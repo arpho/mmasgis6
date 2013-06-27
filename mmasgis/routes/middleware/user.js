@@ -15,30 +15,22 @@ function loadUser(req, res, next) {
 function login(req,res,next){
 	console.log("user "+req.param('loginUsername', null))
 	console.log("passwd "+req.param('loginPassword', null))
-	console.log("session_id %j", req.session)
 		User.findOne({nome: req.param('loginUsername', null),password: req.param('loginPassword', null)},function(err, user) {
-			//console.log('login check, callback findOne')
+			console.log('login check, callback findOne')
 			if (err) {
 				console.log('errore')
 			return next(err);
 			}
 			if (! user) {
-				console.log('!user')
-				var result = {}
-				result.success = false
-				result.errors = {reason:'login fallito! Prova ancora'}
-				result.text = 'Not Found'
-			return res.send(result, 200);
+				console.log('not found user')
+			return res.send({'text':'Not found','success':false,errors:{reason:'wrong user name  and/or password'}}, 200);
 			}
+			console.log('user found')
+			console.log(user)
 			user.password ='' //oscuro la password
 			req.user = user; // troverò user nelle prossime richieste
-			var response = {}
-			response.success = true
-			user.last_login = new Date()
-			console.log(new Date())
-			response.user = user
-			console.log('utente %s verificato',user.nome)
-			res.send(response,200);
+			//next(user);
+			return res.send({'text':'found','success':true,'user':user}, 200)
 		})
 	};
 module.exports = loadUser;
