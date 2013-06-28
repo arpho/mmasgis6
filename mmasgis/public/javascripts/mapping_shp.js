@@ -6,13 +6,21 @@ L.tileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.p
 		}).addTo(map);
 		//regioni.onEachFeature = onEachFeature
 		
-console.log(regioni)
+//console.log(regioni)
 //console.log(cap)
+
+var myStyle = function(feature){
+	switch(feature.properties.zona){
+		case 'nord': return {fillColor: "#ff7800",color: "#000"}; break;
+		case 'centro': return {fillColor: "#ff78ff",color: "#000"}; break;
+		case 'sud': return {fillColor: "#007800",color: "#000"}; break;
+	}
+}
 L.geoJson(regioni, {
 
-			style: function (feature) {
+			style:myStyle,/* function (feature) {
 				return feature.properties && feature.properties.style;
-			},
+			},*/
 
 			onEachFeature: onEachFeature,
 
