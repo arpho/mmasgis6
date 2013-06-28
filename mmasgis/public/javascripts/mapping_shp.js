@@ -1,4 +1,4 @@
-var map = L.map('map').setView([41.9, 12.48], 7);
+var map = L.map('map-body').setView([41.9, 12.48], 7);
 
 L.tileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.png', {
 			maxZoom: 18,
