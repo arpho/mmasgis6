@@ -1,3 +1,36 @@
+Ext.namespace('metmi');
+var selected = []
+Ext.define('utb',
+	{
+		extend: 'Ext.data.Model',
+		fields: [
+			{
+				name :  'id',
+				type : 'string'
+			},
+			{
+				name:'classe'
+			},
+			{
+				name: 'tag'
+			},
+			{ 
+				name:'subtag'
+			},
+			{ 
+				name:'nome'
+			}
+		],
+	/*proxy : {
+		type : 'rest',
+		url : 'data/groups/'
+	}*/
+})
+var utb_store = Ext.create('Ext.data.Store',
+			{
+	storeId: 'metmiUtbStore',
+	model:'utb',
+})
 Ext.define('My.model.Contact', {
     extend: 'Ext.data.Model',
     fields: ['name']
@@ -100,6 +133,21 @@ Ext.application({
                 }
 
         Ext.QuickTips.init();
+        
+        var selected_list = Ext.create('Ext.grid.Panel', { title: 'utb selezionate',
+        store: utb_store,//Ext.data.StoreManager.lookup('metmiUtbStore')
+        data : selected,
+        columns:[
+			{
+				header:'classe',
+				dataIndex:'classe',
+			},
+			{
+				header:'nome',
+				dataIndex:'nome'
+			}
+		]
+	})
         My.app = this; //reference to app instance
         Ext.create('Ext.container.Viewport', {
             layout: {
@@ -115,8 +163,10 @@ Ext.application({
                 id: 'mainHeader'
             }, {
                 region: 'east',
-                width: 40,
-                html: 'This is East'
+                width: 200,
+                //html: 'This is East',
+                collapsible: true,
+                items: selected_list
             }, {
                 region: 'south',
                 //contentEl: 'footer',
@@ -202,6 +252,33 @@ L.tileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.p
 //console.log(regioni)
 //console.log(cap)
 
+function selectFeature(e){
+	var layer = e.target
+	var feature = layer.feature
+}
+
+function highlightFeature_regioni(e) {
+	console.log(e)
+    var layer = e.target;
+    var feature = layer.feature
+    var utb = Ext.ModelManager.create({'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG},'utb')
+    selected.push(utb)
+    console.log(selected)
+
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+    
+
+
+    if (!L.Browser.ie && !L.Browser.opera) {
+        layer.bringToFront();
+    }
+}
+
 var myStyle = function(feature){
 	switch(feature.properties.zona){
 		case 'nord': return {fillColor: "#ff7800",color: "#000"}; break;
@@ -251,15 +328,26 @@ L.geoJson(regioni, {
 
 var popup = L.popup();
 function onMapClick(e) {
+	console.log('click')
 	console.log(e.latlng)
+	console.log(e)
+	console.log(map)
     popup
         .setLatLng(e.latlng)
+        
         .setContent("You clicked the map at " + e.latlng.toString())
         .openOn(map);
 }
 map.on('click', onMapClick);
-
+var geojson;
 function onEachFeature(feature, layer) {
+	layer.on({
+        //mouseover: highlightFeature,
+        click: highlightFeature_regioni,
+        /*mouseout: function(e) {
+    geojson.resetStyle(e.target);
+},*/
+})
 			var popupContent = "<p>I started out as a GeoJSON " +
 					feature.geometry.type + ", but now I'm a Leaflet vector! my id is: "+feature.id+"</p>";
 					//console.log(feature.id)
