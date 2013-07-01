@@ -1,5 +1,6 @@
 Ext.namespace('metmi');
-var selected = []
+var selected = {}
+ selected.utbs = []
 Ext.define('utb',
 	{
 		extend: 'Ext.data.Model',
@@ -30,7 +31,14 @@ var utb_store = Ext.create('Ext.data.Store',
 			{
 	storeId: 'metmiUtbStore',
 	model:'utb',
-})
+	data: selected,
+	proxy: {
+        type: 'memory',
+        reader: {
+            type: 'json',
+            root: 'utbs'
+        }
+}})
 Ext.define('My.model.Contact', {
     extend: 'Ext.data.Model',
     fields: ['name']
@@ -280,8 +288,9 @@ function highlightFeature_regioni(e) {
 	    feature.properties.selected = false
     }
     var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG}
-    selected.push(utb)
-    //console.log(selected)
+    selected.utbs.push(utb)
+    console.log(selected.utbs)
+    selected_list.getStore().reload()
 
     layer.setStyle({
         weight: 5,
