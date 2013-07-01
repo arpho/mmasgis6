@@ -1,6 +1,9 @@
 Ext.namespace('metmi');
 var selected = {}
  selected.utbs = []
+ 
+var layers = {}
+
 Ext.define('utb',
 	{
 		extend: 'Ext.data.Model',
@@ -173,9 +176,25 @@ Ext.application({
 					icon: 'images/delete.png',
 					handler: function(grid, rowIndex, colindex) {
 				//console.log(rowIndex)
-				selected.utbs.splice(rowIndex,1)
-				selected_list.getStore().reload()
-						//alert('click!'+rowIndex);
+				var classe_layer = selected_list.data.utbs[rowIndex].classe
+				var layer = selected_list.data.utbs[rowIndex].layer
+				console.log(selected_list.data.utbs[rowIndex])
+					//console.log()
+					selected.utbs.splice(rowIndex,1)
+					selected_list.getStore().reload()
+							//alert('click!'+rowIndex);
+					layer.setStyle({ // deseleziono la feature e ne ripristino il colore sulla mappa
+							weight: 5,
+							color: '#000',
+							dashArray: '',
+							fillOpacity: 0,
+							weight: 1,
+							opacity: 1,
+					});
+					L.geoJson(regioni, {
+
+			style:selectionStyle
+		})
 					}
 				}]
 			}
@@ -219,55 +238,17 @@ Ext.application({
 				margins: '5',
 				border: true,
 				//items: [map],
-				tbar: [{
-					xtype: 'button',
-					text: 'My Menu ...',
-					tooltip: 'zzz',
-					menu: {
-						items: [{
-							text: 'My Create Button',
-							id: 'CreateButton',
-							tooltip: 'yyyy' //no workie
-						}]
-					} //eo CR menu
-				}, '-', {
-					text: 'Admin',
-					disabled: true
-				}, '-', '->', '-', {
-					id: 'search',
-					name: 'search',
-					emptyText: 'enter search term',
-					xtype: 'trigger',
-					triggerCls: 'x-form-search-trigger',
-					onTriggerClick: function () {
-						if (this.getRawValue().length > 0) {
-							Ext.MessageBox.show({
-								title: 'Search Feature',
-								msg: 'Coming soon ... ',
-								icon: Ext.MessageBox.INFO,
-								animateTarget: 'search',
-								buttons: Ext.MessageBox.OK
-							});
-						} else {
-							Ext.MessageBox.show({
-								title: 'Invalid Input',
-								msg: 'Search term cannot be empty.',
-								icon: Ext.MessageBox.WARNING,
-								animateTarget: 'search',
-								buttons: Ext.MessageBox.OK
-							});
-						}
-					},
-					// eo onTrigger
-					enableKeyEvents: true,
-					listeners: {
-						specialkey: function (field, e) {
-							if (e.ENTER === e.getKey()) {
-								field.onTriggerClick();
-							}
-						}
+				tbar: [
+					{
+						xtype: 'button',
+						icon: 'images/icon1616.png',
+						id: 'pvButton',
+						disabled: true,
+						tooltip: "visualizza i pv presenti nell'area selezionata",
+						onTRiggerClick: function(){
+							alert('pv list')
 					}
-				} //eo search
+					}//eo search
 				] //eo tbar
 			}]
 			// eo Viewport.items
@@ -295,12 +276,17 @@ function highlightFeature_regioni(e) {
 	var layer = e.target;
 	var feature = layer.feature
 	if (!feature.properties.selected){
-		console.log('feature not selected')
+		//console.log('feature not selected')
 		feature.properties.selected = true
-		var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG}
+		var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG,'layer':layer}
 		var n = selected.utbs.length
 		selected.utbs.push(utb)
-		console.log(n)
+		console.log(Ext.get('pvButton'))
+		Ext.get('pvButton').setVisible(true)
+		//Ext.get('pvButton').disable()
+		//console.log(n)
+		//console.log(feature)
+		layers.regione = layer
 		feature.properties.position = n// memorizzo la posizione nella lista delle utb selezionate per poterla rimuovere semplicemente
 		layer.setStyle({
 				weight: 5,
@@ -324,7 +310,7 @@ function highlightFeature_regioni(e) {
 		});
 	}
 	
-	console.log(selected.utbs)
+	//console.log(selected.utbs)
 	selected_list.getStore().reload()
 
 	
@@ -343,6 +329,25 @@ var myStyle = function(feature){
 		case 'sud': return {/*fillColor: "#007800",*/color: "#000"}; break;
 	}
 }
+var selectionStyle= function(feature){
+		if (feature.properties.selected)
+		{
+			return{ // deseleziono la feature e ne ripristino il colore sulla mappa
+					weight: 5,
+					color: '#000',
+					dashArray: '',
+					fillOpacity: 0,
+					weight: 1,
+					opacity: 1,
+			}
+		}
+		return {
+					weight: 5,
+					color: '#666',
+					dashArray: '',
+					fillOpacity: 0.7
+			}
+	}
 L.geoJson(regioni, {
 
 			style:myStyle,/* function (feature) {
@@ -392,7 +397,7 @@ function onMapClick(e) {
 	//popup
 //		.setLatLng(e.latlng)
 		
-		.setContent("You clicked the map at " + e.latlng.toString())
+		//.setContent("You clicked the map at " + e.latlng.toString())
 //		.openOn(map);
 }
 map.on('click', onMapClick);
