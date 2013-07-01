@@ -33,129 +33,130 @@ var utb_store = Ext.create('Ext.data.Store',
 	model:'utb',
 	data: selected,
 	proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json',
-            root: 'utbs'
-        }
+		type: 'memory',
+		reader: {
+			type: 'json',
+			root: 'utbs'
+		}
 }})
 Ext.define('My.model.Contact', {
-    extend: 'Ext.data.Model',
-    fields: ['name']
+	extend: 'Ext.data.Model',
+	fields: ['name']
 });
 
 Ext.define('My.view.Contact', {
-    extend: 'Ext.form.Panel',
-    title: 'Contact',
-    renderTo: Ext.getBody(),
-    items: [{
-        xtype: 'textfield',
-        fieldLabel: 'Name',
-        name: 'name',
-        allowBlank: false
-    }],
-    buttons: [{
-        xtype: 'button',
-        text: 'Save',
-        action: 'save',
-        formBind: true
+	extend: 'Ext.form.Panel',
+	title: 'Contact',
+	renderTo: Ext.getBody(),
+	items: [{
+		xtype: 'textfield',
+		fieldLabel: 'Name',
+		name: 'name',
+		allowBlank: false
+	}],
+	buttons: [{
+		xtype: 'button',
+		text: 'Save',
+		action: 'save',
+		formBind: true
 
-    }]
+	}]
 });
 
 
 Ext.define('My.controller.Contact', {
-    extend: 'Ext.app.Controller',
-    views: ['Contact'],
+	extend: 'Ext.app.Controller',
+	views: ['Contact'],
 
-    init: function () {
-        this.control({
-            'viewport > #mainContent': { //search by ID
-                render: this.onMainReady
-            },
-            'viewport #CreateButton': { //search by ID
-                click: this.create
-            },
-            '[action=save]': { //any save button
-                click: this.saveClick
-            }
-        });
-    },
+	init: function () {
+		this.control({
+			'viewport > #mainContent': { //search by ID
+				render: this.onMainReady
+			},
+			'viewport #CreateButton': { //search by ID
+				click: this.create
+			},
+			'[action=save]': { //any save button
+				click: this.saveClick
+			}
+		});
+	},
 
-    saveClick: function (button) {
-        var panel = button.up('form');
-        var form = panel.getForm();
-        var record = form.getRecord();
-        form.updateRecord(record);
+	saveClick: function (button) {
+		var panel = button.up('form');
+		var form = panel.getForm();
+		var record = form.getRecord();
+		form.updateRecord(record);
 
-        console.log(record.get('name'));
+		console.log(record.get('name'));
 
-    },
+	},
 
-    create: function () {
-        var main = Ext.ComponentQuery.query('#mainContent')[0];
-        var contact = Ext.create('My.model.Contact');
+	create: function () {
+		var main = Ext.ComponentQuery.query('#mainContent')[0];
+		var contact = Ext.create('My.model.Contact');
 
-        var panel = this.getView('Contact').create();
-        var form = panel.getForm();
+		var panel = this.getView('Contact').create();
+		var form = panel.getForm();
 
-        form.loadRecord(contact);
-        main.add(panel);
-    },
+		form.loadRecord(contact);
+		main.add(panel);
+	},
 
-    onMainReady: function () {
-        console.log('do something');
-    }
+	onMainReady: function () {
+		console.log('do something');
+	}
 });
 
 
 Ext.application({
-    name: 'My',
-    controllers: ['Contact'],
-    launch: function () {
-	    
-	    //Ext.onReady(function(){
+	name: 'My',
+	controllers: ['Contact'],
+	launch: function () {
+		
+		//Ext.onReady(function(){
 	//creo l'oggetto utente
 	metmi.utente = new User(metmi.user)
 	//console.log(metmi.utente)
 	if (!metmi.utente.isLogged()){
 			showLogin()
-			console.log('onReady')
+//			console.log('onReady')
 		}
 //})
-	    var map = {
-                    xtype: 'gmappanel',
-                    id: 'mymap',
-                    zoomLevel: 6,
-                    gmapType: 'map',
-                    mapConfOpts: ['enableScrollWheelZoom','enableDoubleClickZoom','enableDragging'],
-                    mapControls: ['GSmallMapControl','GMapTypeControl'],
-                    setCenter: {
-                        lat:41.9,// 39.26940,
-                        lng: 12.48//-76.64323
-                    },
-                    maplisteners: {
-                    	click: function(mevt){
-                    		Ext.Msg.alert('Lat/Lng of Click', mevt.latLng.lat() + ' / ' + mevt.latLng.lng());
-                    		var input = Ext.get('ac').dom,
-				    			sw = new google.maps.LatLng(36.68,12.04),
-				    			ne = new google.maps.LatLng(47,13)
-				    			bounds = new google.maps.LatLngBounds(sw,ne);
-				    		var options = {
-				    			location: mevt.latLng,
-				    			radius: '1000',
+		var map = {
+					xtype: 'gmappanel',
+					id: 'mymap',
+					zoomLevel: 6,
+					gmapType: 'map',
+					mapConfOpts: ['enableScrollWheelZoom','enableDoubleClickZoom','enableDragging'],
+					mapControls: ['GSmallMapControl','GMapTypeControl'],
+					setCenter: {
+						lat:41.9,// 39.26940,
+						lng: 12.48//-76.64323
+					},
+					maplisteners: {
+						click: function(mevt){
+							Ext.Msg.alert('Lat/Lng of Click', mevt.latLng.lat() + ' / ' + mevt.latLng.lng());
+							var input = Ext.get('ac').dom,
+								sw = new google.maps.LatLng(36.68,12.04),
+								ne = new google.maps.LatLng(47,13)
+								bounds = new google.maps.LatLngBounds(sw,ne);
+							var options = {
+								location: mevt.latLng,
+								radius: '1000',
 								types: ['geocode']
 							};
-                    	}
-                    }
-                }
+						}
+					}
+				}
 
-        Ext.QuickTips.init();
-        
-        var selected_list = Ext.create('Ext.grid.Panel', { title: 'utb selezionate',
-        store: utb_store,//Ext.data.StoreManager.lookup('metmiUtbStore')
-        data : selected,
-        columns:[
+		Ext.QuickTips.init();
+		
+		var selected_list = Ext.create('Ext.grid.Panel', { title: 'utb selezionate',
+		store: utb_store,//Ext.data.StoreManager.lookup('metmiUtbStore')
+		data : selected,
+		flex:true,
+		columns:[
 			{
 				header:'classe',
 				dataIndex:'classe',
@@ -163,100 +164,114 @@ Ext.application({
 			{
 				header:'nome',
 				dataIndex:'nome'
+			},
+			{
+				xtype: 'actioncolumn',
+				//width: 20,
+				items: [{
+			header:'Rimuovi',
+					icon: 'images/delete.png',
+					handler: function(grid, rowIndex, colindex) {
+				//console.log(rowIndex)
+				selected.utbs.splice(rowIndex,1)
+				selected_list.getStore().reload()
+						//alert('click!'+rowIndex);
+					}
+				}]
 			}
 		]
 	})
-        My.app = this; //reference to app instance
-        Ext.create('Ext.container.Viewport', {
-            layout: {
-                type: 'border'
-            },
-            defaults: {
-                split: true
-            },
-            items: [{
-                region: 'north',
-                //contentEl: 'header',content read from html in gsp
-                html: "This is my temp header",
-                id: 'mainHeader'
-            }, {
-                region: 'east',
-                width: 200,
-                //html: 'This is East',
-                collapsible: true,
-                items: selected_list
-            }, {
-                region: 'south',
-                //contentEl: 'footer',
-                //content read from html in gsp
-                html: "This is my temp footer content",
-                height: 30,
-                margins: '0 5 5 5',
-                bodyPadding: 2,
-                // internal text padding
-                id: 'mainFooter'
-            }, {
-                id: 'map',
-                //content injected by the controller
-                collapsible: false,
-                region: 'center',
-                layout: 'fit',
-                margins: '5',
-                border: true,
-                //items: [map],
-                tbar: [{
-                    xtype: 'button',
-                    text: 'My Menu ...',
-                    tooltip: 'zzz',
-                    menu: {
-                        items: [{
-                            text: 'My Create Button',
-                            id: 'CreateButton',
-                            tooltip: 'yyyy' //no workie
-                        }]
-                    } //eo CR menu
-                }, '-', {
-                    text: 'Admin',
-                    disabled: true
-                }, '-', '->', '-', {
-                    id: 'search',
-                    name: 'search',
-                    emptyText: 'enter search term',
-                    xtype: 'trigger',
-                    triggerCls: 'x-form-search-trigger',
-                    onTriggerClick: function () {
-                        if (this.getRawValue().length > 0) {
-                            Ext.MessageBox.show({
-                                title: 'Search Feature',
-                                msg: 'Coming soon ... ',
-                                icon: Ext.MessageBox.INFO,
-                                animateTarget: 'search',
-                                buttons: Ext.MessageBox.OK
-                            });
-                        } else {
-                            Ext.MessageBox.show({
-                                title: 'Invalid Input',
-                                msg: 'Search term cannot be empty.',
-                                icon: Ext.MessageBox.WARNING,
-                                animateTarget: 'search',
-                                buttons: Ext.MessageBox.OK
-                            });
-                        }
-                    },
-                    // eo onTrigger
-                    enableKeyEvents: true,
-                    listeners: {
-                        specialkey: function (field, e) {
-                            if (e.ENTER === e.getKey()) {
-                                field.onTriggerClick();
-                            }
-                        }
-                    }
-                } //eo search
-                ] //eo tbar
-            }]
-            // eo Viewport.items
-        })//.add(map);
+		My.app = this; //reference to app instance
+		Ext.create('Ext.container.Viewport', {
+			layout: {
+				type: 'border'
+			},
+			defaults: {
+				split: true
+			},
+			items: [{
+				region: 'north',
+				//contentEl: 'header',content read from html in gsp
+				html: "This is my temp header",
+				id: 'mainHeader'
+			}, {
+				region: 'east',
+				width: 240,
+				//html: 'This is East',
+				collapsible: true,
+				items: selected_list
+			}, {
+				region: 'south',
+				//contentEl: 'footer',
+				//content read from html in gsp
+				html: "This is my temp footer content",
+				height: 30,
+				margins: '0 5 5 5',
+				bodyPadding: 2,
+				// internal text padding
+				id: 'mainFooter'
+			}, {
+				id: 'map',
+				//content injected by the controller
+				collapsible: false,
+				region: 'center',
+				layout: 'fit',
+				margins: '5',
+				border: true,
+				//items: [map],
+				tbar: [{
+					xtype: 'button',
+					text: 'My Menu ...',
+					tooltip: 'zzz',
+					menu: {
+						items: [{
+							text: 'My Create Button',
+							id: 'CreateButton',
+							tooltip: 'yyyy' //no workie
+						}]
+					} //eo CR menu
+				}, '-', {
+					text: 'Admin',
+					disabled: true
+				}, '-', '->', '-', {
+					id: 'search',
+					name: 'search',
+					emptyText: 'enter search term',
+					xtype: 'trigger',
+					triggerCls: 'x-form-search-trigger',
+					onTriggerClick: function () {
+						if (this.getRawValue().length > 0) {
+							Ext.MessageBox.show({
+								title: 'Search Feature',
+								msg: 'Coming soon ... ',
+								icon: Ext.MessageBox.INFO,
+								animateTarget: 'search',
+								buttons: Ext.MessageBox.OK
+							});
+						} else {
+							Ext.MessageBox.show({
+								title: 'Invalid Input',
+								msg: 'Search term cannot be empty.',
+								icon: Ext.MessageBox.WARNING,
+								animateTarget: 'search',
+								buttons: Ext.MessageBox.OK
+							});
+						}
+					},
+					// eo onTrigger
+					enableKeyEvents: true,
+					listeners: {
+						specialkey: function (field, e) {
+							if (e.ENTER === e.getKey()) {
+								field.onTriggerClick();
+							}
+						}
+					}
+				} //eo search
+				] //eo tbar
+			}]
+			// eo Viewport.items
+		})//.add(map);
 // genero la mappa con leaflet
 
 var map = L.map('map-body').setView([41.9, 12.48], 7);
@@ -277,40 +292,55 @@ function selectFeature(e){
 
 function highlightFeature_regioni(e) {
 	console.log(e)
-    var layer = e.target;
-    var feature = layer.feature
-    if (!feature.properties.selected){
-	    console.log('feature not selected')
-	    feature.properties.selected = true
-    }
-    else{
-	    console.log('feature already selected')
-	    feature.properties.selected = false
-    }
-    var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG}
-    selected.utbs.push(utb)
-    console.log(selected.utbs)
-    selected_list.getStore().reload()
+	var layer = e.target;
+	var feature = layer.feature
+	if (!feature.properties.selected){
+		console.log('feature not selected')
+		feature.properties.selected = true
+		var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG}
+		var n = selected.utbs.length
+		selected.utbs.push(utb)
+		console.log(n)
+		feature.properties.position = n// memorizzo la posizione nella lista delle utb selezionate per poterla rimuovere semplicemente
+		layer.setStyle({
+				weight: 5,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7
+		});
+	}
+	else{
+		//console.log('feature already selected')
+		feature.properties.selected = false
+		selected.utbs.splice(feature.properties.position,1)
+		selected_list.getStore().reload()
+		layer.setStyle({ // deseleziono la feature e ne ripristino il colore sulla mappa
+				weight: 5,
+				color: '#000',
+				dashArray: '',
+				fillOpacity: 0,
+				weight: 1,
+				opacity: 1,
+		});
+	}
+	
+	console.log(selected.utbs)
+	selected_list.getStore().reload()
 
-    layer.setStyle({
-        weight: 5,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.7
-    });
-    
+	
+	
 
 
-    if (!L.Browser.ie && !L.Browser.opera) {
-        layer.bringToFront();
-    }
+	if (!L.Browser.ie && !L.Browser.opera) {
+		layer.bringToFront();
+	}
 }
 
 var myStyle = function(feature){
 	switch(feature.properties.zona){
-		case 'nord': return {fillColor: "#ff7800",color: "#000"}; break;
-		case 'centro': return {fillColor: "#ff78ff",color: "#000"}; break;
-		case 'sud': return {fillColor: "#007800",color: "#000"}; break;
+		case 'nord': return {/*fillColor: "#ff7800",*/color: "#000"}; break;
+		case 'centro': return {/*fillColor: "#ff78ff",*/color: "#000"}; break;
+		case 'sud': return {/*fillColor: "#007800",*/color: "#000"}; break;
 	}
 }
 L.geoJson(regioni, {
@@ -359,20 +389,20 @@ function onMapClick(e) {
 	console.log(e.latlng)
 	console.log(e)
 	console.log(map)
-    popup
-        .setLatLng(e.latlng)
-        
-        .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(map);
+	//popup
+//		.setLatLng(e.latlng)
+		
+		.setContent("You clicked the map at " + e.latlng.toString())
+//		.openOn(map);
 }
 map.on('click', onMapClick);
 var geojson;
 function onEachFeature(feature, layer) {
 	layer.on({
-        //mouseover: highlightFeature,
-        click: highlightFeature_regioni,
-        /*mouseout: function(e) {
-    geojson.resetStyle(e.target);
+		//mouseover: highlightFeature,
+		click: highlightFeature_regioni,
+		/*mouseout: function(e) {
+	geojson.resetStyle(e.target);
 },*/
 })
 			var popupContent = "<p>I started out as a GeoJSON " +
@@ -383,7 +413,7 @@ function onEachFeature(feature, layer) {
 				popupContent += feature.properties.popupContent;
 			}
 
-			layer.bindPopup(popupContent);
+			//layer.bindPopup(popupContent); // mostra il fumetto
 		}
 function onEachFeature_province(feature, layer) {
 			var popupContent = "<p>I started out as a GeoJSON " +
@@ -398,5 +428,5 @@ function onEachFeature_province(feature, layer) {
 		}
 
 
-    }
+	}
 });
