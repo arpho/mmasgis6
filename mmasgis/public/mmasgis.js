@@ -270,7 +270,20 @@ function selectFeature(e){
 	var layer = e.target
 	var feature = layer.feature
 }
-
+var getPosition = function(l,id){
+	/*ritorna la posizione nella lista dell'elemento il cui id è 0 a quello richiesto
+	 * @param l:[{position:int}]
+	 * @param id: int
+	 * @return: int */
+	 var n = 0
+	 console.log('lista')
+	 console.log(l[0])
+	 while (l[n].position!=id){
+		 n += 1
+	 }
+	 return n
+ }
+ 
 function highlightFeature_regioni(e) {
 	console.log(e)
 	var layer = e.target;
@@ -278,8 +291,9 @@ function highlightFeature_regioni(e) {
 	if (!feature.properties.selected){
 		//console.log('feature not selected')
 		feature.properties.selected = true
-		var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG,'layer':layer}
+		
 		var n = selected.utbs.length
+		var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG,'layer':layer,'position':n}
 		selected.utbs.push(utb)
 		console.log(Ext.get('pvButton'))
 		Ext.get('pvButton').setVisible(true)
@@ -288,6 +302,7 @@ function highlightFeature_regioni(e) {
 		//console.log(feature)
 		layers.regione = layer
 		feature.properties.position = n// memorizzo la posizione nella lista delle utb selezionate per poterla rimuovere semplicemente
+		console.log(feature)
 		layer.setStyle({
 				weight: 5,
 				color: '#666',
@@ -297,8 +312,9 @@ function highlightFeature_regioni(e) {
 	}
 	else{
 		//console.log('feature already selected')
+		console.log(feature)
 		feature.properties.selected = false
-		selected.utbs.splice(feature.properties.position,1)
+		selected.utbs.splice(getPosition(selected.utbs,feature.properties.position),1)
 		selected_list.getStore().reload()
 		layer.setStyle({ // deseleziono la feature e ne ripristino il colore sulla mappa
 				weight: 5,
