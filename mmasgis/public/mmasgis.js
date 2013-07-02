@@ -5,7 +5,7 @@ var selected = {}
 var locals ={}
 locals.it = it
 var layers = {}
-var texts = {}
+
 Ext.define('utb',
 	{
 		extend: 'Ext.data.Model',
