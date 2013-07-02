@@ -1,9 +1,11 @@
 Ext.namespace('metmi');
+Ext.QuickTips.init();
 var selected = {}
  selected.utbs = []
- 
+var locals ={}
+locals.it = it
 var layers = {}
-
+var texts = {}
 Ext.define('utb',
 	{
 		extend: 'Ext.data.Model',
@@ -42,10 +44,10 @@ var utb_store = Ext.create('Ext.data.Store',
 			root: 'utbs'
 		}
 }})
-Ext.define('My.model.Contact', {
+/*Ext.define('My.model.Contact', {
 	extend: 'Ext.data.Model',
 	fields: ['name']
-});
+});*/
 
 Ext.define('My.view.Contact', {
 	extend: 'Ext.form.Panel',
@@ -122,7 +124,27 @@ Ext.application({
 	metmi.utente = new User(metmi.user)
 	//console.log(metmi.utente)
 	if (!metmi.utente.isLogged()){
-			showLogin()
+			showLogin(function(u){
+				metmi.user = Ext.ModelManager.create(u,'user')
+				texts = locals[metmi.user.getLocals()]
+				console.log(texts)
+				console.log(Ext.get('pvButton'))
+				//.setTooltip(texts.msg1)
+				var tip = Ext.create('Ext.tip.ToolTip', {
+					target: 'pvButton',
+					html: texts.txt1
+				});
+				selected_list.setTitle(texts.txt2)
+				console.log(selected_list)
+				selected_list.columns[0].setText(texts.txt3)
+				selected_list.columns[1].setText(texts.txt4)
+				//console.log(Ext.get('pvButton'))//.qtip= 'ciao0'
+				Ext.gritter.add(
+														{
+															title: texts.txt0, 
+															text: metmi.user.getName()
+														});
+				}) // a login eseguito  memorizza l'utente loggato in metmi.user
 //			console.log('onReady')
 		}
 //})
@@ -244,7 +266,6 @@ Ext.application({
 						icon: 'images/icon1616.png',
 						id: 'pvButton',
 						disabled: true,
-						tooltip: "visualizza i pv presenti nell'area selezionata",
 						onTRiggerClick: function(){
 							alert('pv list')
 					}

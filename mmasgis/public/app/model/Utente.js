@@ -28,6 +28,10 @@ Ext.define('User',
 				type : 'date'
 			},
 			{
+				name : 'nazione',
+				type : 'string'
+			},
+			{
 				name : 'cliente_id'
 			},
 			{

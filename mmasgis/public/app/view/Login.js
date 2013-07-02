@@ -32,7 +32,7 @@ function loadData(user){
 	}
 	
 }
-function showLogin(store){
+function showLogin(next){
 	var store = Ext.create('Ext.data.Store',{
 								model: 'User'
 	});
@@ -82,19 +82,18 @@ function showLogin(store){
 			// you define as redirect. 
  
 			success:function(){ 
-				Ext.gritter.add(
-														{
-															title: 'Benvenuto', 
-															text: this.result.user.nome
-														});
+				
 				win.close()
 				this.result.user.logged = true // per qualche motivo il server non setta user.logged, lo faccio io
 				console.log('result user')
 				console.log(this.result.user)
-				BB.user = new User(this.result.user)
-				console.log('BB.user')
-				console.log(BB.user)
-				loadData(BB.user)
+				//BB.user = new User(this.result.user)
+				//console.log('BB.user')
+				//console.log(BB.user)
+				//loadData(BB.user)
+				next(this.result.user)
+				console.log('utente creato')
+				console.log(metmi.user)
 			//	store.add({user:this.result.user.user,admin:this.result.user.admin,enabled:this.result.user.enabled,logged:this.result.user.logged,superuser:this.result.user.superuser,password:this.result.user.password})
 				//store.sync()
 				//console.log('store')
