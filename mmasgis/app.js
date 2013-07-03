@@ -8,7 +8,8 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , login = require('./login');
+  , login = require('./login')
+  , census = require('./routes/middleware/census');
 var dbURL = 'mongodb://localhost/mmasgis';
 var db = require('mongoose')
 db.connect('localhost','mmasgis');
@@ -34,7 +35,15 @@ if ('development' == app.get('env')) {
 app.get('/', function(req,res){
     res.redirect('/index.html');
 });
-
+app.get('/census',function(req,res){
+	//res.send('ciao census',200)
+	census(req,res,function(c,res){
+		var result = {}
+		result.success = true
+		result.data = c
+		res.send(result,200)
+		})
+})
 app.post('/login',function(req,res){ login.login(req,res)},function(req,res,next){
 	
 	login.login(req,res,function(req,res){

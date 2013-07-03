@@ -127,15 +127,12 @@ Ext.application({
 			showLogin(function(u){
 				metmi.user = Ext.ModelManager.create(u,'user')
 				texts = locals[metmi.user.getLocals()]
-				console.log(texts)
-				console.log(Ext.get('pvButton'))
 				//.setTooltip(texts.msg1)
 				var tip = Ext.create('Ext.tip.ToolTip', {
 					target: 'pvButton',
 					html: texts.txt1
 				});
 				selected_list.setTitle(texts.txt2)
-				console.log(selected_list)
 				selected_list.columns[0].setText(texts.txt3)
 				selected_list.columns[1].setText(texts.txt4)
 				//console.log(Ext.get('pvButton'))//.qtip= 'ciao0'
@@ -265,9 +262,10 @@ Ext.application({
 						xtype: 'button',
 						icon: 'images/icon1616.png',
 						id: 'pvButton',
-						disabled: true,
-						onTRiggerClick: function(){
-							alert('pv list')
+						disabled: false,
+						handler: function(){
+							//alert('pv list')
+							showCensus(metmi.user)
 					}
 					}//eo search
 				] //eo tbar

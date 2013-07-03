@@ -1,4 +1,4 @@
-Ext.namespace('BB');
+Ext.namespace('metmi');
 Ext.define('User',
 	{
 	extend: 'Ext.data.Model',
