@@ -274,9 +274,9 @@ Ext.application({
 		})//.add(map);
 // genero la mappa con leaflet
 
-var map = L.map('map-body').setView([41.9, 12.48], 7);
+var map = L.mapbox.map('map-body', 'arpho.map-nw38cgmq').setView([41.9, 12.48], 7);
 
-L.tileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.png', {
+L.mapbox.tileLayer('arpho.map-nw38cgmq', {
 			maxZoom: 18,
 			attribution: 'Tiles Courtesy of <a href="http://www.mapbox.com/" target="_blank">MapBox</a>. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
 		}).addTo(map);
