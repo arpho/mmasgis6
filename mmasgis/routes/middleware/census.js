@@ -37,7 +37,7 @@ function list(req,res,next){
 						return res.send('Not found', 404);
 						}
 						next(census,res)
-								console.timeEnd('all jobs');
+								
 				})
 			})
 	}

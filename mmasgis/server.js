@@ -44,6 +44,7 @@ app.get('/census',function(req,res){
 		result.success = true
 		result.data = c
 		res.send(result,200)
+		console.timeEnd('all jobs');
 		})
 })
 app.post('/login',function(req,res){ login.login(req,res,function(req){
