@@ -15,6 +15,8 @@ var db = require('mongoose')
 db.connect('localhost','mmasgis');
 
 var app = express();
+app.use(express.cookieParser());
+app.use(express.session({secret: '1234567890QWERTY'}));
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -44,14 +46,17 @@ app.get('/census',function(req,res){
 		res.send(result,200)
 		})
 })
-app.post('/login',function(req,res){ login.login(req,res)},function(req,res,next){
-	
-	login.login(req,res,function(req,res){
+app.post('/login',function(req,res){ login.login(req,res,function(req){
+	console.log('login ended')
+	console.log(req.user)
+	req.session.user = req.user
+	//console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
+	/*login.login(req,res,function(req,res){
 		console.log('login ended')
 		console.log(req.user)
-	})
-	console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
-})
+	})*/
+	
+})})
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){

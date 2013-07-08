@@ -13,10 +13,8 @@ function loadUser(req, res, next) {
 }
 
 function login(req,res,next){
-	console.log("user "+req.param('loginUsername', null))
-	console.log("passwd "+req.param('loginPassword', null))
 		User.findOne({nome: req.param('loginUsername', null),password: req.param('loginPassword', null)},function(err, user) {
-			console.log('login check, callback findOne')
+			//console.log('login check, callback findOne')
 			if (err) {
 				console.log('errore')
 			return next(err);
@@ -25,11 +23,12 @@ function login(req,res,next){
 				console.log('not found user')
 			return res.send({'text':'Not found','success':false,errors:{reason:'wrong user name  and/or password'}}, 200);
 			}
-			console.log('user found')
-			console.log(user)
 			user.password ='' //oscuro la password
+			user.logged = true
+			//user.last_login = new Date()
 			req.user = user; // troverò user nelle prossime richieste
-			//next(user);
+			next(req);
+			//console.log(req.user)
 			return res.send({'text':'found','success':true,'user':user}, 200)
 		})
 	};

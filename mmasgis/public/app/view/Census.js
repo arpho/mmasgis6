@@ -12,11 +12,12 @@ function showCensus(user){
 		columns : [
 			{
 				header: 'censimento',
-				dataIndex : 'censimento'
+				dataIndex : 'censimento',
+				align : "right", 
 				}
 			],
 		dockedItems:[{
-				xtype: 'pagingtoolbar',
+				xtype: 'toolbar',
 				//pageSize: pageSize,
 				store: Ext.data.StoreManager.lookup('censusStore'),
 				dock: 'bottom',
@@ -46,7 +47,7 @@ function showCensus(user){
 {
 			title: texts.txt5+user.nome,
 			height: 170,
-			width:330,
+			width : 130,
 			layout: 'border',
 			items: {
 								region: 'center',

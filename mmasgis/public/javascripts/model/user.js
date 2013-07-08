@@ -23,7 +23,7 @@ Ext.define('user',
 				type : 'string'
 			},
 			{
-				name: 'utb',
+				name: 'censimenti_id',
 				type : 'auto'
 			},
 			{

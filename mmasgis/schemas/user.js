@@ -7,6 +7,7 @@ var UserSchema = new mongoose.Schema({
         "utb":[{classe:String, utb_id:Number}], //sottoinsieme delle utb del cliente
         "logged": Boolean,
         "enabled": Boolean,
+        "censimenti_id": [String],
         "last_login": { type: Date, default: Date.now }
 })
 module.exports = UserSchema;

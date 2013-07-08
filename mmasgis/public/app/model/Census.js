@@ -9,6 +9,10 @@ Ext.define('Census',
 				type : 'string'
 			},
 			{
+				name: 'label',
+				type:'string'
+			},
+			{
 				name : 'date',
 				type : 'date'
 			}
