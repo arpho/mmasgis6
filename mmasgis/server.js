@@ -39,13 +39,14 @@ app.get('/', function(req,res){
 });
 app.get('/census',function(req,res){
 	//res.send('ciao census',200)
+	console.time('all jobs');
 	census(req,res,function(c,res){
 		var result = {}
 		result.success = true
 		result.data = c
 		res.send(result,200)
-		console.timeEnd('all jobs');
 		})
+		console.timeEnd('all jobs');
 })
 app.post('/login',function(req,res){ login.login(req,res,function(req){
 	console.log('login ended')

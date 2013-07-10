@@ -12,7 +12,7 @@ function showCensus(user){
 		columns : [
 			{
 				header: 'censimento',
-				dataIndex : 'censimento',
+				dataIndex : 'label',
 				align : "right", 
 				}
 			],

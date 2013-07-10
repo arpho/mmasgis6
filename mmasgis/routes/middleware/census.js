@@ -10,7 +10,6 @@ function list(req,res,next){
 	console.log('********************************************************************************************')
 	console.log("censimento_id in user "+req.session.user.censimenti_id)*/
 	var census_list =[]
-	console.time('all jobs');
 	async.parallel([function (callback){
 				user.findOne({"_id":req.session.user._id},function(err,user){callback(null,user)})
 				//callback()
