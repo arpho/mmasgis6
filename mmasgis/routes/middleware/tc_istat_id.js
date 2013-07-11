@@ -1,6 +1,6 @@
 var Region = require('../../models/region');
 var Provincia = require('../../models/provincia');
-var User = require('../../models/user');
+var Comune = require('../../models/comune');
 function getProvince(regioni,next)
 /*
  * ritorna la lista dei cod_pro appartenenti alla lista delle regioni passate
@@ -39,5 +39,17 @@ function getProvince(regioni,next)
 	 //next()
 	 //console.log('dopo find')
 }
+
+function getIstat(prov,next){
+	/*interroga la collezione comuni ritornando il tc_comune_id dei comuni il cui codice provincia è presente nella lista passata
+	 * @param [int]*/
+	 Comune.find({codice_provincia:{$in:prov}},function(err,comuni){
+		 if(err){next(err); }
+		var out = []
+		for (var i=0;i<comuni.length;i++){out.push(comuni[i].tc_comune_id)}
+		next(err,out)
+	 })
+ }
 exports.getProvince = getProvince
+exports.getIstat = getIstat
 
