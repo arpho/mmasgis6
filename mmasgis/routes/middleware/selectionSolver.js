@@ -6,17 +6,50 @@ var und = require("underscore");
 function getPv(query,censimento,next)
 {
 	var mongoose = require('mongoose')
-	mongoose.connection.close()
-	mongoose.connect('localhost',censimento);// switch database to the census
+	mongoose.disconnect()
+	mongoose.connect('localhost',censimento);// switch database to the census 
 	pv.find(query,next)
 }
 
+function getPvFromId(selezione,censimento,next)
+{
+	var Pv = []
+	for (var i=0;i<selezione.pv.length;i++){Pv.push(selezione.pv[i].id)}
+	getPv({pv_id:{$in:Pv}},censimento,function(err,out)
+	{
+		next(err,out)
+	})
+}
+
+function getPvFromComune(selezione,censimento,next)
+{
+	/*@param: [{classe:'comune',id:int}]
+@param: String nome censimento*/
+	var cod_istat = []
+	//console.log('selezione:'+selezione[0].id)
+	for (var i=0;i<selezione.comune.length;i++){cod_istat.push(selezione.comune[i].id)}
+	getPv({tc_istat_id:{$in:cod_istat}},censimento,function(err,out)
+	{
+		next(err,out)
+	})
+}
+
+function getPvFromCap(selezione,censimento,next)
+{
+	var cap = []
+	for ( var i=0;i<selezione.cap.length;i++){cap.push(selezione.cap[i].id)}
+	getPv({cap:{$in:cap}},censimento,function(err,out)
+	{
+		next(err,out)
+	})
+	
+}
 function getPvFromProvincia(selezione,censimento,next)
 {
 	var province = []//selezione.provincia
 	//console.log('dimensione selezione'+selezione.provincia.length)
-	for (var i=0;i<selezione.provincia.length;i++){province.push(selezione.provincia[i].id);console.log('@#*'+province[i])}
-	console.log('province inviate'+province + Object.prototype.toString.call(province))
+	for (var i=0;i<selezione.provincia.length;i++){province.push(selezione.provincia[i].id);/*console.log('@#*'+province[i])*/}
+	//console.log('province inviate'+province + Object.prototype.toString.call(province))
 	var istat = []
 	var pv_list =[]
 	async.series([
@@ -25,7 +58,7 @@ function getPvFromProvincia(selezione,censimento,next)
 			tc_istat.getIstat(province,function(err,out) // ottengo la lista dei codici istat
 			{
 				istat = out
-				console.log('prima funzione in getPvfromProvincia '+province)
+				//console.log('prima funzione in getPvfromProvincia '+province)
 				//console.log('istat: '+istat)
 				callback(err,out)
 				//next(err,out)
@@ -33,24 +66,27 @@ function getPvFromProvincia(selezione,censimento,next)
 		},
 		function(callback)
 		{
-			console.log('seconda funzione in getPvfromProvincia')
+			//console.log('seconda funzione in getPvfromProvincia')
 			//console.log('istat: '+istat)
 			getPv({tc_istat_id:{$in:istat}},censimento,function(err,out)
 				{
 					pv_list = out
 					//console.log('out'+out)
-					callback(err,out)
+					callback(null,out)
 					
 				})
 		}
 	],function(err,results)
 	{
-		console.log('optional function di getPvFromProvincia')
+		//console.log('optional function di getPvFromProvincia')
 		next(err,results[1])
 	})
 }
 function getPvFromRegione(regioni,censimento,next)
-{
+{/*
+@param:[{classe:'regione',id:int}]
+* @param String nome censimento
+*/
 	//var next = next
 	var province = []
 	var istat = []
@@ -67,7 +103,7 @@ function getPvFromRegione(regioni,censimento,next)
 			},
 		function(callback)
 		{
-			console.log('seconda funzione serie')
+			//console.log('seconda funzione serie')
 			//console.log(province)
 			tc_istat.getIstat(province,function(err,out) // ottengola lista dei codici istat
 			{
@@ -81,6 +117,7 @@ function getPvFromRegione(regioni,censimento,next)
 			getPv({tc_istat_id:{$in:istat}},censimento,function(err,out)
 				{
 					pv_list = out
+					mongoose.disconnect()
 					callback(err,out)
 					
 				})
@@ -98,3 +135,6 @@ function getPvList(req,res,selection,censimento,next){
 }
 exports.getPvList = getPvList
 exports.getPvFromProvincia = getPvFromProvincia
+exports.getPvFromComune = getPvFromComune
+exports.getPvFromCap = getPvFromCap
+exports.getPvFromId = getPvFromId
