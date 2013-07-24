@@ -47,9 +47,11 @@ function getPvFromCap(selezione,censimento,next)
 function getPvFromProvincia(selezione,censimento,next)
 {
 	var province = []//selezione.provincia
-	//console.log('dimensione selezione'+selezione.provincia.length)
+	console.log('dimensione selezione'+selezione.provincia.length)
 	for (var i=0;i<selezione.provincia.length;i++){province.push(selezione.provincia[i].id);/*console.log('@#*'+province[i])*/}
 	//console.log('province inviate'+province + Object.prototype.toString.call(province))
+	console.log('province inviate')
+	console.log(province)
 	var istat = []
 	var pv_list =[]
 	async.series([
@@ -58,8 +60,8 @@ function getPvFromProvincia(selezione,censimento,next)
 			tc_istat.getIstat(province,function(err,out) // ottengo la lista dei codici istat
 			{
 				istat = out
-				//console.log('prima funzione in getPvfromProvincia '+province)
-				//console.log('istat: '+istat)
+				console.log('prima funzione in getPvfromProvincia '+province)
+				console.log('istat: '+istat)
 				callback(err,out)
 				//next(err,out)
 			})
@@ -138,3 +140,4 @@ exports.getPvFromProvincia = getPvFromProvincia
 exports.getPvFromComune = getPvFromComune
 exports.getPvFromCap = getPvFromCap
 exports.getPvFromId = getPvFromId
+exports.getPv = getPv

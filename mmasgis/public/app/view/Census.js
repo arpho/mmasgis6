@@ -24,12 +24,12 @@ function showCensus(user){
 				items:[
 				{
 					xtype: 'button',
-					id: 'selctCensusButton',
+					id: 'selectCensusButton',
 					icon : 'images/accept.png',
 					handler: function(){
-						console.log('accept')
-						console.log(CensusGrid.getSelectionModel( ).selected.items[0])
+						//console.log(CensusGrid.getSelectionModel( ).selected.items[0])
 						alert(CensusGrid.getSelectionModel( ).selected.items[0].data.censimento)
+						console.log(selected)
 
 
 					}
@@ -40,7 +40,7 @@ function showCensus(user){
 	})
 	
 	CensusGrid.on('itemclick', function(grid, rowIndex, columnIndex, e) {
-		console.log('click')
+		//console.log('click')
 }, this);
 	
 	CensusWindow = Ext.create('Ext.window.Window',

@@ -1,6 +1,6 @@
 Ext.namespace('metmi');
 Ext.QuickTips.init();
-var selected = {}
+
  selected.utbs = []
 var locals ={}
 locals.it = it

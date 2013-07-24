@@ -2,9 +2,10 @@ var Region = require('../../models/region');
 var Provincia = require('../../models/provincia');
 var Comune = require('../../models/comune');
 var async = require('async')
+var clc = require('./classCollector')
 
 var parallelRegione = function(selection, callback){
-		getIstatFromRegione(selection,function(err,istat){ console.log('callback di getIstatdFromRegione');callback(null,istat)})
+		getIstatFromRegione(selection,function(err,istat){callback(null,istat)})
 	}
 
 var parallelProvincia = function(selection,callback){
@@ -12,7 +13,7 @@ var parallelProvincia = function(selection,callback){
 		})
 	}
 var parallelComune = function(selection,callback){
-	console.log('comuni '+selection)
+	//console.log('comuni '+selection)
 		callback(null,selection) /* nel caso dei comuni, selection
 		/* è già la lista dei loro tc_istat_id se ne occupa clasCollector
 	  elaborando la lista delle selezioni ricevuta dal client*/
@@ -27,8 +28,8 @@ var parallelPv = function(selection,callback){
 		// il pv_id è usato per ricavare direttamente la lista pv con getPv */
 	}
 
-function getIstat4Selection(selection,next,callback)
-{
+function getIstat4Selection(selezione,next){
+	var selection = clc.classCollector(selezione)
 	async.parallel([
 		function(callback){parallelRegione(selection.regione,callback)},
 		function(callback){parallelProvincia(selection.provincia,callback)},
@@ -37,9 +38,9 @@ function getIstat4Selection(selection,next,callback)
 		function(callback){parallelPv(selection.pv,callback)}
 	],
 	function(err,results){
-		console.log('end parallel')
+		//console.log('end parallel')
 		//console.log(results)
-		console.log('end result optional function di getIstat4Selection 42')
+		//console.log('end result optional function di getIstat4Selection 42')
 		var total = []
 		for (var i=0;i<results.length;i++){total = total.concat(results[i])}
 		next(null, total)
@@ -54,12 +55,7 @@ function getProvince(regioni,next)
 	/*User.find({nome:'me'},function(err,user){
 		console.log(user)})*/
 	var regioni_id = []
-	for (var i=0;i<regioni.length;i++)
-	{
-		regioni_id.push(Number(regioni[i].id))
-		//console.log(regioni_id)
-		//console.log(regioni_id)
-	}
+	for (var i=0;i<regioni.length;i++){regioni_id.push(Number(regioni[i].id))}
 	//console.log(regioni_id)
 	//var province = null
 	//next('test next prima DI FIND','should be prov')
@@ -85,7 +81,7 @@ function getProvince(regioni,next)
 function getIstatFromRegione(regioni,next)
 {/*
 @param:[{classe:'regione',id:int}]
-* @param String nome censimento
+* @param gString nome censimento
 */
 	//var next = next
 	var province = []
@@ -97,19 +93,14 @@ function getIstatFromRegione(regioni,next)
 			{
 						getProvince(regioni,function(err,out) //ottengo la lista delle province
 						{
-							console.log('callback della prima funzione serie di getIstatFromRegione')
 							province = out
 							callback(err,out)
 						})
 			},
 		function(callback)
 		{
-			console.log('seconda funzione serie di getIstatFromRegione')
-			console.log('ora chiamo getIstat per getIstatFromRegione')
 			getIstat(province,function(err,out) // ottengola lista dei codici istat
 			{
-				console.log('next inseconda funzione serie di getIstatFromRegione')
-				console.log(next)
 				istat = out
 				//callback(err,out)
 				next(err,out)
@@ -119,8 +110,6 @@ function getIstatFromRegione(regioni,next)
 		
 	], function(err,results)
 	{
-		//console.log('optional function')
-		//console.log(pv_list)
 		next(err,istat)
 	})
 }
@@ -131,7 +120,7 @@ function getIstatFromRegione(regioni,next)
   * @param [{id:Number}]
   * #return [Number]
  */
- console.log(next)
+ //console.log(next)
 	 var prov_id = []
 	 for (var i =0;i<prov.length;i++){prov_id.push(prov[i].id)}
 	 getIstat(prov_id,next)
@@ -139,13 +128,9 @@ function getIstatFromRegione(regioni,next)
 function getIstat(prov,next){
 	/*interroga la collezione comuni ritornando il tc_comune_id dei comuni il cui codice provincia è presente nella lista passata
 	 * @param [int]*/
-	 console.log('tc_istat_id.138 in getIstat')
-	 console.log(next)
-	 Comune.find({codice_provincia:{$in:prov}},function(err,comuni){
-		 console.log('next in tc_istat_id.141 in getIstat callback di comune.find')
-	 console.log(next)
-		 if(err){next(err); console.log('errore getIstat')}
-		//console.log('funzione di callback in comune.find '+comuni.length)
+	 //console.log('tc_istat_id.142 in getIstat')
+		Comune.find({codice_provincia:{$in:prov}},function(err,comuni){
+		if(err){next(err); console.log('errore getIstat')}
 		var out = []
 		for (var i=0;i<comuni.length;i++){out.push(Number(comuni[i].tc_comune_id))}
 		next(null,out)

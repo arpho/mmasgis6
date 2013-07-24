@@ -7,7 +7,7 @@ function classCollector(selection){
 	out.pv = []
 	for (var i=0;i<selection.length;i++)
 	{
-		out[selection[i].classe].push(selection[i].id)
+		out[selection[i].utb.classe].push({id:selection[i].utb.id})
 	}
 	return out
 }
