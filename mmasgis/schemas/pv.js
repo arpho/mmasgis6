@@ -29,6 +29,7 @@ var PvSchema = new mongoose.Schema({
 "tc_stato_id": Boolean,
 "tel1": String,
 "tel2": String,
-"tel3": String
+"tel3": String,
+"owner": String
 },{collection:'pv'})
 module.exports = PvSchema;

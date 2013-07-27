@@ -6,9 +6,14 @@ var und = require("underscore");
 function getPv(query,censimento,next)
 {
 	var mongoose = require('mongoose')
-	mongoose.disconnect()
-	mongoose.connect('localhost',censimento);// switch database to the census 
-	pv.find(query,next)
+	//console.log(query.length)
+	//mongoose.disconnect()
+	//mongoose.connect('localhost',censimento);// switch database to the census 
+	pv.find(query,function(err,out){
+		
+		next(err,out)
+						//*console.dir(out)
+					})
 }
 
 function getPvFromId(selezione,censimento,next)
