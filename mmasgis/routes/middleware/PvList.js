@@ -34,19 +34,13 @@ function getPv(req,data,next){
 			 after(err,out)
 			}
 		)}
-	var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.user._id.toString()},
+	var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){after(err,out)})}
 	 async.parallel([//getPv in intersection
 		function(callback){a(callback)}, // eof parallel1
-		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.user._id.toString()},
+		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){callback(err,out)})}
 	],function(err,results){
-		console.log('results ingetPv')
-		console.log(results.length)
-		console.log('results0 ingetPv')
-		console.log(results[0].length)
-		console.log('results1 ingetPv')
-		console.log(results[1].length)
 		var out = includes.pvListMerger(results[0],results[1])
 		//console.log(out)
 		next(err,out)
@@ -75,11 +69,11 @@ function getUtb2(req,next){
 	console.log('getUtb')
 	async.parallel([
 		function(callback){
-			var user = req.user
+			var user = req.session.user
 			clienti_utb.find({cliente_id:user.cliente_id},function(err,utbs){callback(err,utbs)})
 		},//eof prima funzione parallelo clienti_utb fn0_parallel0
 		function(callback){
-							var user = req.user 
+							var user = req.session.user 
 							user_utbs.find({user_id:user._id.toString()},function(err, utbs){callback(err,utbs)})
 						} //eof fn1_parallel0
 	],function(err,results){
@@ -145,10 +139,6 @@ function pvFetcher(req,next){
 	 getUtb2(req,function(req,utb_u,utb_c,selezione){
 		 console.log('dummy func in getUtb')
 		 getIstat(req,utb_u,utb_c,selezione,function(a,b,c){
-			 console.log('next fn di gatIstat')
-			 console.log('b.intersection.length ricevuto')
-			console.log(b.intersection.length)
-			console.log('ora chiamo getPv')
 			 pvRetriever(a,b,next)
 			 })
 	})

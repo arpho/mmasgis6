@@ -48,12 +48,14 @@ function showLogin(next){
 				items:[{ 
 		fieldLabel:'Username', 
 		name:'loginUsername', 
-		allowBlank:false 
+		allowBlank:false,
+		data: 'm'//Ext.util.Cookies.get('user')
 	    },{ 
 		fieldLabel:'Password', 
 		name:'loginPassword', 
 		inputType:'password', 
-		allowBlank:false 
+		allowBlank:false,
+		data: Ext.util.Cookies.get('password') 
 	    }],
 				buttons:[{ 
 		text:'Login',
@@ -82,7 +84,7 @@ function showLogin(next){
 			// you define as redirect. 
  
 			success:function(){ 
-				
+				data: Ext.util.Cookies.set('user',login.getForm().findField('loginPassword').getValue())
 				win.close()
 				this.result.user.logged = true // per qualche motivo il server non setta user.logged, lo faccio io
 				console.log('result user')
@@ -120,7 +122,7 @@ function showLogin(next){
 	    }] 
 	})
 	win = new Ext.Window({
-					layout:'fit',
+					layout:'form',
 					width:300,
 					height:150,
 					closable: false,

@@ -267,7 +267,18 @@ Ext.application({
 							//alert('pv list')
 							showCensus(metmi.user)
 					}
-					}//eo search
+					},//eo search
+					{
+						xtype: 'button',
+						icon: 'images/icon1616.png',
+						//id: 'showpvButton',
+						disabled: false,
+						handler: function(){
+							//alert('pv list')
+							showPv(metmi.user)
+					}
+					}
+					
 				] //eo tbar
 			}]
 			// eo Viewport.items

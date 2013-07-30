@@ -8,6 +8,7 @@ var UserSchema = new mongoose.Schema({
         "logged": Boolean,
         "enabled": Boolean,
         "censimenti_id": [String],
+        "bosses" : [String],
         "last_login": { type: Date, default: Date.now }
 })
 module.exports = UserSchema;

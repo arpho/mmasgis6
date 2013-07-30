@@ -4,7 +4,7 @@ function showCensus(user){
 	 * @param User:  istanza del modello extjs di User che nell'applicazione è memorizzato in metmi.user */
 	var store = Ext.data.StoreManager.lookup('censusStore')
 	var CensusGrid = Ext.create('Ext.grid.Panel',{
-		title: texts.txt5+user.nome,
+		title: texts.txt5+user.data.nome,
 		viewConfig : {
 											style : { overflow: 'auto' }
 										},
@@ -45,9 +45,9 @@ function showCensus(user){
 	
 	CensusWindow = Ext.create('Ext.window.Window',
 {
-			title: texts.txt5+user.nome,
+			title: texts.txt5+user.data.nome,
 			height: 170,
-			width : 130,
+			width : 230,
 			layout: 'border',
 			items: {
 								region: 'center',
