@@ -27,7 +27,7 @@ function login(req,res,next){
 			user.logged = true
 			console.log('language: '+req.headers["accept-language"][0]+req.headers["accept-language"][1]) //console.log(Ext.get('html')[0].getAttribute('lang'))
 			//user.last_login = new Date()
-			req.user = user; // troverò user nelle prossime richieste
+			req.session.user =  req.user = user; // troverò user nelle prossime richieste
 			next(req);
 			//console.log(req.user)
 			return res.send({'text':'found','success':true,'user':user}, 200)

@@ -28,7 +28,16 @@ function showCensus(user){
 					icon : 'images/accept.png',
 					handler: function(){
 						//console.log(CensusGrid.getSelectionModel( ).selected.items[0])
-						alert(CensusGrid.getSelectionModel( ).selected.items[0].data.censimento)
+						//alert(CensusGrid.getSelectionModel( ).selected.items[0].data.censimento)
+						items = CensusGrid.getSelectionModel().getSelection()
+						
+						if (items.length==0){
+							alert(texts.txt28)
+						}
+						else{
+							console.log(items[0].data.censimento)
+							showPv(user,selected,items[0].data.censimento)
+						}
 						console.log(selected)
 
 

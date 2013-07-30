@@ -41,6 +41,9 @@ Ext.define('User',
 				name : 'group'
 			}
     ],
+    getLocals: function(){
+	    return this.nazione
+    },
     isLogged: function(){
 				return this.data.logged
     },

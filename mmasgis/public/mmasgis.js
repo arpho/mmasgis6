@@ -133,8 +133,9 @@ Ext.application({
 					html: texts.txt1
 				});
 				selected_list.setTitle(texts.txt2)
-				selected_list.columns[0].setText(texts.txt3)
-				selected_list.columns[1].setText(texts.txt4)
+				selected_list.columns[0].setText(texts.txt25)
+				selected_list.columns[1].setText(texts.txt26)
+				selected_list.columns[2].setText(texts.txt27)
 				//console.log(Ext.get('pvButton'))//.qtip= 'ciao0'
 				Ext.gritter.add(
 														{
@@ -174,17 +175,35 @@ Ext.application({
 
 		Ext.QuickTips.init();
 		
-		var selected_list = Ext.create('Ext.grid.Panel', { title: 'utb selezionate',
+		var selected_list = Ext.create('Ext.grid.Panel', { title: texts.txt3,
 		store: utb_store,//Ext.data.StoreManager.lookup('metmiUtbStore')
 		data : selected,
 		flex:true,
 		columns:[
 			{
-				header:'classe',
+				header:texts.txt25,
 				dataIndex:'classe',
+				renderer: function(v){
+					var out = ''
+					switch(v){
+						case 'regione':
+							out = texts.txt22;
+							break;
+						case 'provincia':
+							out = texts.txt23;
+							break;
+						case 'comune':
+							out = texts.txt24;
+							break;
+						case 'cap':
+							out = texts.txt9;
+							break;
+					}
+					return out
+				}
 			},
 			{
-				header:'nome',
+				header:texts.txt26,
 				dataIndex:'nome'
 			},
 			{
@@ -234,7 +253,7 @@ Ext.application({
 				id: 'mainHeader'
 			}, {
 				region: 'east',
-				width: 240,
+				width: 270,
 				//html: 'This is East',
 				collapsible: true,
 				items: selected_list
@@ -264,20 +283,17 @@ Ext.application({
 						id: 'pvButton',
 						disabled: false,
 						handler: function(){
-							//alert('pv list')
-							showCensus(metmi.user)
+							//alert('pv list') 
+							console.log('selected')
+							console.log(selected)
+							if (selected.utbs.length ==0){
+								alert(texts.txt21)
+							}
+							else{
+								showCensus(metmi.user)
+							}
 					}
-					},//eo search
-					{
-						xtype: 'button',
-						icon: 'images/icon1616.png',
-						//id: 'showpvButton',
-						disabled: false,
-						handler: function(){
-							//alert('pv list')
-							showPv(metmi.user)
-					}
-					}
+					}//eo search
 					
 				] //eo tbar
 			}]

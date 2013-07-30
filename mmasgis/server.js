@@ -9,7 +9,9 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , login = require('./login')
-  , census = require('./routes/middleware/census');
+  , census = require('./routes/middleware/census')
+  , pvList = require('./routes/middleware/obj_pvList_estesa');
+var obj = new pvList.obj2(null) 
 var dbURL = 'mongodb://localhost/mmasgis';
 var db = require('mongoose')
 db.connect('localhost','mmasgis');
@@ -48,10 +50,30 @@ app.get('/census',function(req,res){
 		})
 		console.timeEnd('all jobs');
 })
+app.post('/pv',function(req,res){
+		console.time('total')
+		//req.session.user = req.user
+		console.log('@selection')
+		console.log(req.body.selection)
+		req.selection = req.body.selection
+		req.censimento = req.body.censimento
+		req.page = req.body.limit
+		req.start = req.body.limit * req.body.start
+		obj.pvFetcher(req,function(err,out){
+		console.log('start next da test OOP')
+		console.log('out')
+		console.log(out[1].data.length)
+		console.timeEnd('total')
+		console.log('end next test OOP')
+	})
+		console.log('end server')
+		res.send(200)
+	})
 app.post('/login',function(req,res){ login.login(req,res,function(req){
+		console.dir(req)
 	console.log('login ended')
-	console.log(req.user)
-	req.session.user = req.user
+	// adeguo i campi  di req per pvRetivier
+	
 	//console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
 	/*login.login(req,res,function(req,res){
 		console.log('login ended')
