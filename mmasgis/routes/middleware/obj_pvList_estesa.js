@@ -39,5 +39,31 @@ obj2.prototype.pvRetriever = function pvRetriever(req,data,next){
 		 })
 }
 
+
+obj2.prototype.pvFetcher = function pvFetcher(req,next){
+	/*ritorna la lista dei Pv
+	 * @method {pcFetcher}
+	 * @param {req}
+	 * @param {Function} funzione di callback function(err,out)*/
+	 //series0
+	 selezione = req.selection
+	 console.log(selezione)
+	 console.log('pvFetcher')
+	 var getIstat = PvLObj.prototype.getIstat;
+	 var pvretriever = this.pvRetriever
+	 this.getUtb2(req,function(req,utb_u,utb_c,selezione){
+		console.log('dummy func in getUtb')
+		//console.time('getIstat')
+		getIstat(req,utb_u,utb_c,selezione,function(a,b,c){
+			console.log('next fn di gatIstat')
+			console.log('b.intersection.length ricevuto')
+			console.log(b.intersection.length)
+			console.log('ora chiamo getPv')
+			//console.timeEnd('getIstat')
+			pvRetriever(a,b,next)
+			 })
+	})
+	 
+}
 obj2.prototype = new pvListObj.PvLObj()
 exports.obj2 = obj2

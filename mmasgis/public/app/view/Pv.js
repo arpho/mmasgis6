@@ -113,8 +113,10 @@ function showPv(user,selection,censimento){
 								items:PvGrid
 							}
 	});
-	store.getProxy().extraParams.selection = selection
+	var seen = []
+	console.log('selection in pv/view')
 	console.log(selection)
+	store.getProxy().extraParams.selection = JSON.stringify(selection)
 	store.getProxy().extraParams.censimento = censimento
 	store.load()
 	PvWindow.show()

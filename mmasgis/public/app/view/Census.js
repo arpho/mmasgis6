@@ -1,3 +1,20 @@
+function selectionNormalizer(selection){
+	/*normalizza la lista delle utb selezionate eliminando  il campo layers che no permette la codifica json
+	 * #method {selectionNormalizer}
+	 * @param {object}:: {utbs:[utb]}
+	 * @return {object}::{utbs:[utb]}
+	 * @note utb::{id:int,classe:<'regione','comune','provincia','cap'>*/
+	var out = []
+	for (var i=0;i<selection.utbs.length;i++){
+		var item = {}
+		var utb = {}
+		utb.id = selection.utbs[i].id
+		utb.classe = selection.utbs[i].classe
+		item.utb = utb
+		out.push(item)
+		}
+	return out
+	}
 function showCensus(user){
 	/*
 	 * mostra la finestra per la scelta del censimento
@@ -35,10 +52,13 @@ function showCensus(user){
 							alert(texts.txt28)
 						}
 						else{
-							console.log(items[0].data.censimento)
-							showPv(user,selected,items[0].data.censimento)
+							console.log('raw selection')
+							console.log(selected)
+							var s = selectionNormalizer(selected)
+							console.log('normalized selection')
+							console.log(s)
+							showPv(user,Ext.JSON.encode(s),items[0].data.censimento)
 						}
-						console.log(selected)
 
 
 					}

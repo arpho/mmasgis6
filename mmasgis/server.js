@@ -2,7 +2,6 @@
 /**
  * Module dependencies.
  **/
-
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
@@ -53,9 +52,21 @@ app.get('/census',function(req,res){
 app.post('/pv',function(req,res){
 		console.time('total')
 		//req.session.user = req.user
-		console.log('@selection')
-		console.log(req.body.selection)
-		req.selection = req.body.selection
+		console.log('@selection in /pv')
+		console.log('req.body')
+		console.log(req.body.selection+'request')
+		console.log("[{\"utb\":{\"id\":11,\"classe\":\"regione\"}}]"+'test')
+		req.selection = JSON.parse(req.body.selection)//JSON.parse("[{\"utb\":{\"id\":11,\"classe\":\"regione\"}}]")
+		var s = req.selection.replace('\\', '')
+		var d ={data:s}
+		console.log('data')
+		console.log(d)
+		req.selection = JSON.parse(d.data)
+		console.log('itemzero')
+		console.log(req.selection[0])
+		console.log('@selection parsed^2 in /pv')
+		console.log(req.selection)
+		
 		req.censimento = req.body.censimento
 		req.page = req.body.limit
 		req.start = req.body.limit * req.body.start
@@ -66,7 +77,6 @@ app.post('/pv',function(req,res){
 		console.timeEnd('total')
 		console.log('end next test OOP')
 	})
-		console.log('end server')
 		res.send(200)
 	})
 app.post('/login',function(req,res){ login.login(req,res,function(req){

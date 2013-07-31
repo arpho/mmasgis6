@@ -283,9 +283,6 @@ Ext.application({
 						id: 'pvButton',
 						disabled: false,
 						handler: function(){
-							//alert('pv list') 
-							console.log('selected')
-							console.log(selected)
 							if (selected.utbs.length ==0){
 								alert(texts.txt21)
 							}
