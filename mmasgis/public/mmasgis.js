@@ -216,7 +216,7 @@ Ext.application({
 				//console.log(rowIndex)
 				var classe_layer = selected_list.data.utbs[rowIndex].classe
 				var layer = selected_list.data.utbs[rowIndex].layer
-				console.log(selected_list.data.utbs[rowIndex])
+				//console.log(selected_list.data.utbs[rowIndex])
 					//console.log()
 					selected.utbs.splice(rowIndex,1)
 					selected_list.getStore().reload()
@@ -319,8 +319,6 @@ var getPosition = function(l,id){
 	 * @param id: int
 	 * @return: int */
 	 var n = 0
-	 console.log('lista')
-	 console.log(l[0])
 	 while (l[n].position!=id){
 		 n += 1
 	 }
@@ -328,7 +326,7 @@ var getPosition = function(l,id){
  }
  
 function highlightFeature_regioni(e) {
-	console.log(e)
+	//console.log(e)
 	var layer = e.target;
 	var feature = layer.feature
 	if (!feature.properties.selected){
@@ -336,7 +334,7 @@ function highlightFeature_regioni(e) {
 		feature.properties.selected = true
 		
 		var n = selected.utbs.length
-		var utb = {'classe':'regione','id': feature.id,'nome':feature.properties.NOME_REG,'layer':layer,'position':n}
+		var utb = {'classe':'regione','id': feature.id+1,'nome':feature.properties.NOME_REG,'layer':layer,'position':n} //per le regioni  c'è un offset di 1
 		selected.utbs.push(utb)
 		console.log(Ext.get('pvButton'))
 		Ext.get('pvButton').setVisible(true)
@@ -482,7 +480,7 @@ function onEachFeature(feature, layer) {
 function onEachFeature_province(feature, layer) {
 			var popupContent = "<p>I started out as a GeoJSON " +
 					feature.geometry.type + ", but now I'm a Leaflet vector! my id is: province "+feature.id+"</p>";
-					console.log(feature.id)
+//					console.log(feature.id)
 
 			if (feature.properties && feature.properties.popupContent) {
 				popupContent += feature.properties.popupContent;

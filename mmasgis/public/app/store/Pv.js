@@ -1,4 +1,7 @@
 Ext.create('Ext.data.Store',{
 	model : 'Pv',
-	storeId : 'PvStore'
+	storeId : 'PvStore',
+        pageSize: 1000,
+        buffered: true,
+        totalProperty: 'total'
 })

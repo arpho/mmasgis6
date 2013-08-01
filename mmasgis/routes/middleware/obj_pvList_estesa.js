@@ -47,8 +47,6 @@ obj2.prototype.pvFetcher = function pvFetcher(req,next){
 	 * @param {Function} funzione di callback function(err,out)*/
 	 //series0
 	 selezione = req.selection
-	 console.log(selezione)
-	 console.log('pvFetcher')
 	 var getIstat = PvLObj.prototype.getIstat;
 	 var pvretriever = this.pvRetriever
 	 this.getUtb2(req,function(req,utb_u,utb_c,selezione){

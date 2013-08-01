@@ -5,11 +5,8 @@ function classCollector(selection){
 	out.comune = []
 	out.cap = []
 	out.pv = []
-	console.log('selection *classcollector*'+selection)
 	for (var i=0;i<selection.length;i++)
 	{
-		console.log('item'+i)
-		console.log(selection[i])
 		out[selection[i].utb.classe].push({id:selection[i].utb.id})
 	}
 	return out

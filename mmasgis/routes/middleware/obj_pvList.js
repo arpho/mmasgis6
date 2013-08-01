@@ -25,8 +25,6 @@ function getPv(req,data,next){
 	 * @param {Function} callback generata da opt_series
 	 * @return {Object} :: [pv]
 	 * */
-	 console.log('getPv')
-	 console.log(data.intersection.length)
 	 var a = function(after){
 		 solver.getPv({tc_istat_id:{$in:data.intersection},owner:{$exists:false}},req.censimento,function(err,out){
 			 
@@ -40,7 +38,7 @@ function getPv(req,data,next){
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){callback(err,out)})}
 	],function(err,results){
-		var out = includes.pvListMerger(results[0],results[1])
+		var out = includes.pvListMerger(results[0],results[1],req.page,req.start)
 		//console.log(out)
 		next(err,out)
 	} //eof optional
@@ -93,8 +91,6 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 	 * @param {utb_selection}:{classe:String<regione,provincia,comune,Pv>*/
 	async.parallel([
 				function(callback){
-					console.log('getIstat#0')
-					console.log(utb_cliente)
 					tc_istat.getIstat4Selection(utb_cliente,function(err,out){
 						if (err){callback(err)}
 						istat_cliente = out
@@ -102,8 +98,6 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 						})//eof getIstat4Selection
 				},//eof 1° funzione parallela
 				function(callback){
-					console.log('getIstat#1')
-					console.log(utb_utente)
 					 tc_istat.getIstat4Selection(utb_utente,function(err,out){
 						 if (err){callback(err)}
 						 istat_utente = out
@@ -111,8 +105,6 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 						 }) //eof getIstat4Selection
 				}, // eof 2° funzione //
 				function(callback){
-					console.log('getIstat#2')
-					console.log(utb_selection)
 					tc_istat.getIstat4Selection(utb_selection,function(err,out){
 					if (err) {
 						callback(err)
@@ -129,9 +121,6 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 		var istat = {}
 		istat.intersection = out
 		istat.selection = results[2]
-		console.log('istat.intersection')
-		console.log(istat.intersection.length)
-		console.log('getistat chiama next')
 		next(req,istat,next) //the external next is getPv, the internal next is the final callback
 		}//eof optional function in parallel
 		)//eof parallel
@@ -143,19 +132,12 @@ function pvFetcher(req,next){
 	 * @param {req}
 	 * @param {Function} funzione di callback function(err,out)*/
 	 //series0
-	 console.log('pvFetcher')
-	 console.log('selezione in ##pvFetcher')
-	 console.log(req.selection)
 	 var  selezione = req.selection 
 	 var getIstat = PvLObj.prototype.getIstat;
 	 var pvretriever = this.pvRetriever
 	 this.getUtb2(req,function(req,utb_u,utb_c,selezione){
 		//console.time('getIstat')
 		getIstat(req,utb_u,utb_c,selezione,function(a,b,c){
-			console.log('next fn di gatIstat')
-			console.log('b.intersection.length ricevuto')
-			console.log(b.intersection.length)
-			console.log('ora chiamo getPv')
 			//console.timeEnd('getIstat')
 			pvRetriever(a,b,next)
 			 })
