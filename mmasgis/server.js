@@ -66,18 +66,20 @@ app.post('/pv',function(req,res){
 		console.log(req.selection[0])
 		console.log('@selection parsed^2 in /pv')
 		console.log(req.selection)
-		
 		req.censimento = req.body.censimento
 		req.page = req.body.limit
 		req.start = req.body.limit * req.body.start
+		var results = {}
 		obj.pvFetcher(req,function(err,out){
-		console.log('start next da test OOP')
-		console.log('out')
 		console.log(out[1].data.length)
+		results.data = out[1].data
+		results.success = true
+		results.total = out[1].count
+		console.log('total ='+results.total)
+		return res.send(results,200)
 		console.timeEnd('total')
-		console.log('end next test OOP')
 	})
-		res.send(200)
+	
 	})
 app.post('/login',function(req,res){ login.login(req,res,function(req){
 		console.dir(req)

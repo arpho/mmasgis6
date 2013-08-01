@@ -58,6 +58,7 @@ function showCensus(user){
 							console.log('normalized selection')
 							console.log(s)
 							showPv(user,Ext.JSON.encode(s),items[0].data.censimento)
+							CensusWindow.close()
 						}
 
 
