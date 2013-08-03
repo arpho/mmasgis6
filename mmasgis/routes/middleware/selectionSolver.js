@@ -1,5 +1,6 @@
 var tc_istat = require('./tc_istat_id')
-var pv = require('../../models/pv')
+//var pv = require('../../models/pv')
+var PvSchema = require('../../schemas/pv');
 var async=require('async')
 var und = require("underscore");
 
@@ -8,7 +9,9 @@ function getPv(query,censimento,next)
 	var mongoose = require('mongoose')
 	//console.log(query.length)
 	//mongoose.disconnect()
-	//mongoose.connect('localhost',censimento);// switch database to the census 
+	//mongoose.connect('localhost',censimento);// switch database to the census
+	var conn = mongoose.createConnection('mongodb://localhost/'+censimento);
+	var pv = conn.model('Pv', PvSchema);
 	pv.find(query,function(err,out){
 		
 		next(err,out)

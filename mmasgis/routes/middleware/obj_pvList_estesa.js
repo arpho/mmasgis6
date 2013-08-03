@@ -16,7 +16,7 @@ var includes = require('./includes')
 
 function obj2 (req){
 	this.req = req}
-	
+/*
 obj2.prototype.pvRetriever = function pvRetriever(req,data,next){
 	/*si occupa di eseguire lo switching del db invocare getPv
 	 * e riportare tutto su mmasgis
@@ -25,7 +25,7 @@ obj2.prototype.pvRetriever = function pvRetriever(req,data,next){
 	 * @param {Object} {intersection:[int],selection[int]}
 	 * @return {Object} [Pv]
 	 * 
-	 * */
+	 * 
 	 var switchDb = obj.prototype.switchDb;
 	 var getPv = obj.prototype.getPv;
 	console.time('pvRetriever')
@@ -44,7 +44,7 @@ obj2.prototype.pvFetcher = function pvFetcher(req,next){
 	/*ritorna la lista dei Pv
 	 * @method {pcFetcher}
 	 * @param {req}
-	 * @param {Function} funzione di callback function(err,out)*/
+	 * @param {Function} funzione di callback function(err,out)
 	 //series0
 	 selezione = req.selection
 	 var getIstat = PvLObj.prototype.getIstat;
@@ -62,6 +62,6 @@ obj2.prototype.pvFetcher = function pvFetcher(req,next){
 			 })
 	})
 	 
-}
+}*/
 obj2.prototype = new pvListObj.PvLObj()
 exports.obj2 = obj2

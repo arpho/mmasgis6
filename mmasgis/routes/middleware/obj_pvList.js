@@ -58,9 +58,9 @@ function pvRetriever(req,data,next){
 	 var getPv = PvLObj.prototype.getPv;
 	//console.time('pvRetriever')
 	 async.series([
-			function(callback){switchDb(req.censimento);callback()},
+			function(callback){/*switchDb(req.censimento);*/callback()},
 			function(callback){getPv(req,data,callback)},
-			function(callback){switchDb('mmasgis');callback()}
+			function(callback){/*switchDb('mmasgis');*/callback()}
 	 ], function(err,results){
 		//console.timeEnd('pvRetriever')
 		next(err,results)
