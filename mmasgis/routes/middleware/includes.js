@@ -33,6 +33,7 @@ function pvListMerger(A,B,page,start){
 		}
 	
 	}
+		results.fullData = C
 		results.data = C
 		results.count = C.length
 		var end = start+page

@@ -108,7 +108,7 @@ function getFullList(req,next){
 
 function getPv(results,req,next){
 	/**@method getPv
-	 * @param [
+	 * @param dummy
 	 * */
 	async.parallel([//getPv in intersection
 							function(callback){
