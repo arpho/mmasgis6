@@ -54,10 +54,17 @@ app.post('/pv',function(req,res){
 		req.selection = JSON.parse(req.body.selection)//JSON.parse("[{\"utb\":{\"id\":11,\"classe\":\"regione\"}}]")
 		var s = req.selection.replace('\\', '')
 		var d ={data:s}
+		var page = req.body.page
+		var limit = req.body.limit
+		var start = req.body.start
 		req.selection = JSON.parse(d.data)
 		req.censimento = req.body.censimento
-		req.page = req.body.limit
-		req.start = req.body.limit * req.body.start
+		console.log('server')
+		req.page = parseInt(req.body.limit)
+		req.start =  parseInt(req.body.start)
+		console.log('start: '+req.start)
+		console.log('bodystart: '+req.body.start)
+		console.log('bodylimit: '+req.body.limit)
 		var results = {}
 		obj.pvFetcher(req,function(err,out){
 		results.data = out[1].data

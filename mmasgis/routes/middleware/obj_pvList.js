@@ -163,10 +163,14 @@ function pvFetcher(req,next){// controlla in cache se c'è il dato ritorna
 		})
 	}
 	else{
-		console.log('cache found')
+		console.log('cache found: '+Key.getKey())
 		var d = cache.get(Key.getKey())
 		var out = {}
-		out.data = d.data.slice(req.start,req.start+req.page)
+		console.log('getPv')
+		console.log('start: '+req.start)
+		console.log('end: '+req.start+req.page)
+		out.data = d.data.slice(req.start,req.start+req.limit)
+		console.log('dati: '+d.count)
 		out.count = d.count
 		var results = [null,out] // uniforme al risultato di pvRetriever
 		next(null,results)
