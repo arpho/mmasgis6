@@ -50,7 +50,7 @@ app.get('/census',function(req,res){
 		console.timeEnd('all jobs');
 })
 app.post('/pv',function(req,res){
-		console.time('total')
+		console.time('total time')
 		req.selection = JSON.parse(req.body.selection)//JSON.parse("[{\"utb\":{\"id\":11,\"classe\":\"regione\"}}]")
 		var s = req.selection.replace('\\', '')
 		var d ={data:s}
@@ -59,12 +59,10 @@ app.post('/pv',function(req,res){
 		var start = req.body.start
 		req.selection = JSON.parse(d.data)
 		req.censimento = req.body.censimento
-		console.log('server')
+		req.censimento_id = req.body.censimento_id
+		console.log(req.censimento_id)
 		req.page = parseInt(req.body.limit)
 		req.start =  parseInt(req.body.start)
-		console.log('start: '+req.start)
-		console.log('bodystart: '+req.body.start)
-		console.log('bodylimit: '+req.body.limit)
 		var results = {}
 		obj.pvFetcher(req,function(err,out){
 		results.data = out[1].data
@@ -72,7 +70,7 @@ app.post('/pv',function(req,res){
 		results.total = out[1].count
 		console.log('total ='+results.total)
 		res.send(results,200)
-		console.timeEnd('total')
+		console.timeEnd('total time')
 	})
 	
 	})

@@ -80,11 +80,11 @@ function getUtb2(req,next){
 	async.parallel([
 		function(callback){
 			var user = req.session.user
-			clienti_utb.find({cliente_id:user.cliente_id},function(err,utbs){callback(err,utbs)})
+			clienti_utb.find({cliente_id:user.cliente_id,censimento:req.censimento_id},function(err,utbs){callback(err,utbs)})
 		},//eof prima funzione parallelo clienti_utb fn0_parallel0
 		function(callback){
 							var user = req.session.user 
-							user_utbs.find({user_id:user._id.toString()},function(err, utbs){callback(err,utbs)})
+							user_utbs.find({user_id:user._id.toString(),censimento:req.censimento_id},function(err, utbs){callback(err,utbs)})
 						} //eof fn1_parallel0
 	],function(err,results){
 		next(req,results[0],results[1],req.selection) // next deve essere getIstat
@@ -163,14 +163,10 @@ function pvFetcher(req,next){// controlla in cache se c'è il dato ritorna
 		})
 	}
 	else{
-		console.log('cache found: '+Key.getKey())
+		console.log('cache found:')
 		var d = cache.get(Key.getKey())
 		var out = {}
-		console.log('getPv')
-		console.log('start: '+req.start)
-		console.log('end: '+req.start+req.page)
 		out.data = d.data.slice(req.start,req.start+req.limit)
-		console.log('dati: '+d.count)
 		out.count = d.count
 		var results = [null,out] // uniforme al risultato di pvRetriever
 		next(null,results)

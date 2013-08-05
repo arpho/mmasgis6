@@ -1,5 +1,5 @@
 var store = null
-function showPv(user,selection,censimento){
+function showPv(user,selection,censimento,censimento_id){
 	/*
 	 * mostra la finestra per la scelta del censimento
 	 * @param User:  istanza del modello extjs di User che nell'applicazione è memorizzato in metmi.user */
@@ -118,6 +118,7 @@ function showPv(user,selection,censimento){
 	console.log(selection)
 	store.getProxy().extraParams.selection = JSON.stringify(selection)
 	store.getProxy().extraParams.censimento = censimento
+	store.getProxy().extraParams.censimento_id = censimento_id
 	store.load()
 	PvWindow.show()
 }
