@@ -290,7 +290,19 @@ Ext.application({
 								showCensus(metmi.user)
 							}
 					}
-					}//eo search
+					},
+					{
+						xtype: 'button',
+						icon: 'images/icon1616.png',
+						id: 'AnagraphicButton',
+						disabled: false,
+						handler: function(){
+							
+							
+							showAnagrafica()
+							
+					}
+					}
 					
 				] //eo tbar
 			}]

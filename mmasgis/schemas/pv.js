@@ -32,4 +32,11 @@ var PvSchema = new mongoose.Schema({
 "tel3": String,
 "owner": String
 },{collection:'pv'})
+PvSchema.virtual('certificazione').get( function (){
+	var out
+	if (this.certificato && this.pv_mt){out = 'certificato'}
+	if ( ! this.certificato && this.pv_mt){out = 'non verificato'}
+	if (! this.certificato && ! this.pv_mt){out = 'inserita'}
+	return out
+	})
 module.exports = PvSchema;
