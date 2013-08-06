@@ -290,7 +290,7 @@ Ext.application({
 								showCensus(metmi.user)
 							}
 					}
-					},
+					},/*
 					{
 						xtype: 'button',
 						icon: 'images/icon1616.png',
@@ -299,10 +299,10 @@ Ext.application({
 						handler: function(){
 							
 							
-							showAnagrafica()
+							showAnagrafica([1,2],0)
 							
 					}
-					}
+					}*/
 					
 				] //eo tbar
 			}]

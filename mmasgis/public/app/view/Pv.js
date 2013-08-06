@@ -10,6 +10,15 @@ function showPv(user,selection,censimento,censimento_id){
 											style : { overflow: 'auto' }
 										},
 		store: store,
+		listeners : {
+	
+			     itemdblclick: function(dv, record, item, index, e) {
+							console.log('dblclick:'+index)
+							showAnagrafica(PvGrid.store.data.first.value,index,PvGrid)
+							//console.log(PvGrid.store.data.first.value)
+							//console.log(dv)
+						}
+		},
 		columns : [
 				{
 					name :  'nome1',
