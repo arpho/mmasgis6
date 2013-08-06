@@ -1,14 +1,22 @@
 var store = null
+var totalCount = 0
 function showPv(user,selection,censimento,censimento_id){
 	/*
 	 * mostra la finestra per la scelta del censimento
 	 * @param User:  istanza del modello extjs di User che nell'applicazione è memorizzato in metmi.user */
 	store = Ext.data.StoreManager.lookup('PvStore')
+	
+	var myTopToolbar = new Ext.Toolbar({
+		items : [ 
+				{xtype: 'tbtext', text: totalCount}
+			]
+	})
 	var PvGrid = Ext.create('Ext.grid.Panel',{
 		//title: texts.txt5+user.data.nome,
 		viewConfig : {
 											style : { overflow: 'auto' }
 										},
+		//tbar: myTopToolbar,
 		store: store,
 		listeners : {
 	
@@ -102,7 +110,8 @@ function showPv(user,selection,censimento,censimento_id){
 						alert(CensusGrid.getSelectionModel( ).selected.items[0].data.censimento)
 						console.log(selected)
 					}
-				}
+				},
+					{xtype: 'tbtext', text: totalCount}
 		]
 		}
 		]
@@ -123,12 +132,23 @@ function showPv(user,selection,censimento,censimento_id){
 							}
 	});
 	var seen = []
-	console.log('selection in pv/view')
-	console.log(selection)
 	store.getProxy().extraParams.selection = JSON.stringify(selection)
 	store.getProxy().extraParams.censimento = censimento
 	store.getProxy().extraParams.censimento_id = censimento_id
-	store.load()
+	store.load({
+		callback : function(records, options, success) {
+									console.log('callback')
+									console.log('records')
+									console.log(store.totalCount)
+									totalCount = store.totalCount
+									console.log()
+									PvGrid.dockedItems.items[1].items.items[1].setText(texts.txt49 +store.totalCount)
+								}
+		}
+		)
+		console.log(PvGrid)
+	
+	
 	PvWindow.show()
 }
 
