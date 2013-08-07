@@ -27,15 +27,21 @@ function switchDb(censimento){
 	 * @return {Object} :: [pv]
 	 * */
 function getPv(req,data,next,K){
-	
+	  //creo una funzioneda usare in async.parallel per maggiore leggibilità
 	 var a = function(after){
+		 //cerco i pv originali, non modificati dall'utente
+		 console.log('req.censimento in obj_pvList.getPv: '+req.censimento)
 		 solver.getPv({tc_istat_id:{$in:data.intersection},owner:{$exists:false}},req.censimento,function(err,out){
-			 
+			 console.log('pv originali')
+			 console.log(out.length)
 			 after(err,out)
 			}
 		)}
+		//cerco i pv modificati dagli utenti
 	var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
-		req.censimento,function(err,out){after(err,out)})}
+		req.censimento,function(err,out){
+			 console.log('pv modificati')
+			 console.log(out.length);after(err,out)})}
 	 async.parallel([//getPv in intersection
 		function(callback){a(callback)}, // eof parallel1
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
@@ -80,13 +86,18 @@ function getUtb2(req,next){
 	async.parallel([
 		function(callback){
 			var user = req.session.user
-			clienti_utb.find({cliente_id:user.cliente_id,censimento:req.censimento_id},function(err,utbs){callback(err,utbs)})
+			console.log({cliente_id:user.cliente_id,censimento_id:req.censimento_id})
+			clienti_utb.find({cliente_id:user.cliente_id,censimento_id:req.censimento_id},function(err,utbs){callback(err,utbs)})
 		},//eof prima funzione parallelo clienti_utb fn0_parallel0
 		function(callback){
 							var user = req.session.user 
-							user_utbs.find({user_id:user._id.toString(),censimento:req.censimento_id},function(err, utbs){callback(err,utbs)})
+							user_utbs.find({user_id:user._id.toString(),censimento_id:req.censimento_id},function(err, utbs){callback(err,utbs)})
 						} //eof fn1_parallel0
 	],function(err,results){
+		console.log('clienti_utb:')
+		console.log(results[0].length)
+		console.log('users_utb:')
+		console.log(results[1].length)
 		next(req,results[0],results[1],req.selection) // next deve essere getIstat
 			}) // eof opt_parallel0
 	
@@ -103,6 +114,8 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 				function(callback){
 					tc_istat.getIstat4Selection(utb_cliente,function(err,out){
 						if (err){callback(err)}
+						console.log('istat cliente:')
+						console.log(out.length)
 						istat_cliente = out
 						callback(null,out)
 						})//eof getIstat4Selection
@@ -110,6 +123,8 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 				function(callback){
 					 tc_istat.getIstat4Selection(utb_utente,function(err,out){
 						 if (err){callback(err)}
+						console.log('istat utente:')
+						console.log(out.length)
 						 istat_utente = out
 						 callback(err,out)
 						 }) //eof getIstat4Selection
@@ -120,6 +135,8 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 						callback(err)
 						console.log('utb_selection error')
 					}
+						console.log('istat selezione:')
+						console.log(out.length)
 					istat_selezione = out
 					callback(err,out)
 					})//eof getIstat4selection
@@ -130,19 +147,22 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 		var out = und.intersection(results[0],results[1],results[2]) //calcolo l'intersezione dei codici istat
 		var istat = {}
 		istat.intersection = out
+						console.log('istat intersect:')
+						console.log(out.length)
 		istat.selection = results[2]
-		next(req,istat,next) //the external next is getPv, the internal next is the final callback
+		next(req,istat,next) //chiama pvRetriever
 		}//eof optional function in parallel
 		)//eof parallel
 }
-/**ritorna la lista dei Pv
+/**
+ * ritorna la lista dei Pv, controlla in cache se c'è il dato ritorna 
+	 il valore salvato  altrimenti lancia getUtb con una next modificata per pvREtriever
 	 * @method {pcFetcher}
 	 * @param {req}
 	 * @param {Function} funzione di callback function(err,out)*/
-function pvFetcher(req,next){// controlla in cache se c'è il dato ritorna 
-	// il valore salvato  altrimenti lancia getUtb con una next modificata per pvREtriever
+function pvFetcher(req,next){// 
 	
-	 //series0
+	 //preparo la chiave  per la cache
 	 var par = {}
 	 par.user = req.session.user 
 	par.filter ={parametri:[{class_id:1,id:1}]}

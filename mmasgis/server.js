@@ -85,7 +85,7 @@ app.post('/login',function(req,res){ login.login(req,res,function(req){
 	})*/
 	
 })})
-app.get('/users', user.list);
+//app.get('/users', user.list);
 //app.get('/anagrafica',function(req,res){})
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

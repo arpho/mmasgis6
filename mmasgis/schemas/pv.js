@@ -30,7 +30,8 @@ var PvSchema = new mongoose.Schema({
 "tel1": String,
 "tel2": String,
 "tel3": String,
-"owner": String
+"owner": String,
+"potenziale" : [{ type: mongoose.Schema.Types.Number, ref: 'rel_pv_pot' }]
 },{collection:'pv'})
 PvSchema.virtual('certificazione').get( function (){
 	var out

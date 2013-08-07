@@ -7,17 +7,24 @@ mongoose.connect('localhost','saloni');
 var ObjectId = mongoose.Types.ObjectId
 //var Pv = require('../models/pv')
 var PvSchema = require('../../schemas/pv');
+var rpvpot = require('../../schemas/rel_pv_pot');
 
 function Anagrafica(req){
 	this.census = req.body.censimento
 	this._id = ObjectId(req.body.id)
 	var conn = mongoose.createConnection('mongodb://localhost/'+this.census);
 	this.pv = conn.model('Pv', PvSchema);
+	this.rel_pv_pot = conn.model('rel_pv_pot',rpvpot)
 	}
+	
 	Anagrafica.prototype.getPv = function(next){
-		this.pv.findOne({_id:this._id},function(err,out){
-		next(err,out)
-		})
-		}
+							var PV = this.pv
+							this.pv.findOne({_id:this._id},function(err,pv){
+								var opts = [{ path: 'pv', match: { tc_clpot_id: 10 }, select: 'valore' }]
+								PV.populate(pv, opts, function (err, pv) {
+    next(err,pv);
+  })
+								})
+						}
 
 exports.Anagrafica = Anagrafica

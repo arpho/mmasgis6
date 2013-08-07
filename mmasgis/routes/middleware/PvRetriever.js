@@ -110,6 +110,8 @@ function getPv(results,req,next){
 	/**@method getPv
 	 * @param dummy
 	 * */
+	 console.log('data in getPv')
+	 console.log(results)
 	async.parallel([//getPv in intersection
 							function(callback){
 								solver.getPv({tc_istat_id:{$in:results[0].intersection},owner:{$exists:false}},
@@ -192,7 +194,6 @@ function getSelection(req,next){
 			},//eof prima e unica funzione serie ho i codici istat  dell'intersezione e della selezione
 			]
 			,function(err,results){ //in results ho l'output di getIstat:{intersection:[int],selection:[int]}
-				console.log('optional di series woa');
 				next(err,results);
 				//cerco i pv in intersection e quelli appartenenti al cliente contenuti nella selezione iniziale
 				// lo faccio in parallelo, la funzione opzionale unificherà i due risultati e invocherà next per getSelection
@@ -232,10 +233,12 @@ function getPvFromSelection(req,next){
 	async.series([
 	// cerco gli utb  da cui estrarrò i codici istat nella funzione opzionle
 		function(callback){
+			//recupero gli utb del cliente e dell'utente
 			async.parallel([
 				function(callback){
 									var user = req.user
-									clienti_utb.find({cliente_id:user.cliente_id},function(err,utbs){callback(err,utbs)})
+									clienti_utb.find({cliente_id:user.cliente_id},
+									function(err,utbs){console.log('clienti utb');console.log(utbs.length);callback(err,utbs)})
 								},//eof prima funzione parallelo clienti_utb
 				function(callback){
 							var user = req.user 
@@ -260,7 +263,7 @@ function getPvFromSelection(req,next){
 		],
 		function(err,results){
 			var out = results //'qlc di results'
-			console.log(out)
+			console.log(out[1].data.length)
 			console.log('optional di series holè')
 			// results è una lista di 3 elementi [null,pv,null]
 			//console.log(results[1][0])
