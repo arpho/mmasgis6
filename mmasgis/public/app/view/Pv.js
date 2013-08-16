@@ -21,7 +21,6 @@ function showPv(user,selection,censimento,censimento_id){
 		listeners : {
 	
 			     itemdblclick: function(dv, record, item, index, e) {
-							console.log('dblclick:'+index)
 							showAnagrafica(PvGrid.store.data.first.value,index,PvGrid)
 							//console.log(PvGrid.store.data.first.value)
 							//console.log(dv)
@@ -142,11 +141,7 @@ function showPv(user,selection,censimento,censimento_id){
 	store.getProxy().extraParams.censimento_id = censimento_id
 	store.load({
 		callback : function(records, options, success) {
-									console.log('callback')
-									console.log('records')
-									console.log(store.totalCount)
 									totalCount = store.totalCount
-									console.log()
 									PvGrid.dockedItems.items[1].items.items[1].setText(texts.txt49 +store.totalCount)
 								}
 		}

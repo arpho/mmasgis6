@@ -348,14 +348,14 @@ function highlightFeature_regioni(e) {
 		var n = selected.utbs.length
 		var utb = {'classe':'regione','id': feature.id+1,'nome':feature.properties.NOME_REG,'layer':layer,'position':n} //per le regioni  c'è un offset di 1
 		selected.utbs.push(utb)
-		console.log(Ext.get('pvButton'))
+		console.log(selected)
 		Ext.get('pvButton').setVisible(true)
 		//Ext.get('pvButton').disable()
 		//console.log(n)
 		//console.log(feature)
 		layers.regione = layer
 		feature.properties.position = n// memorizzo la posizione nella lista delle utb selezionate per poterla rimuovere semplicemente
-		console.log(feature)
+		//console.log(feature)
 		layer.setStyle({
 				weight: 5,
 				color: '#666',

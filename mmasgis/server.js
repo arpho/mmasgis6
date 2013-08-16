@@ -38,6 +38,21 @@ if ('development' == app.get('env')) {
 app.get('/', function(req,res){
     res.redirect('/index.html');
 });
+app.post('/attributs',function(req,res){
+	data = {}
+	data.success = true
+	data.attributs = {}
+	data.attributs.params = {}
+	data.attributs.params.data = []
+	data.attributs.params.data.push({class:'stub',value:'param dal server'})
+	data.attributs.brands = {}
+	data.attributs.brands.data = []
+	data.attributs.brands.data.push({class:'stub',value:'brand dal server'})
+	data.attributs.potentials = {}
+	data.attributs.potentials.data = []
+	data.attributs.potentials.data.push({class:'stub',value:'pot dal server'})
+	res.send(data,200)
+	})
 app.get('/census',function(req,res){
 	//res.send('ciao census',200)
 	console.time('all jobs');

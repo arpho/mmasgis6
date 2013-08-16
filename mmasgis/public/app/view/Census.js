@@ -52,14 +52,8 @@ function showCensus(user){
 							alert(texts.txt28)
 						}
 						else{
-							console.log('raw selection')
-							console.log(selected)
 							var s = selectionNormalizer(selected)
-							console.log('normalized selection')
-							console.log(s)
-							console.log('data')
 							//console.log(items[0].data)
-							console.log(items[0].data)
 							showPv(user,Ext.JSON.encode(s),items[0].data.censimento,items[0].data._id)
 							CensusWindow.close()
 						}

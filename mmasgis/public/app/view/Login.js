@@ -1,7 +1,5 @@
 function loadData(user){
 	/*imposta la visibilità degli elementi della gui*/
-	console.log('loadData')
-	console.debug(user)
 	//Ext.get('utenti-button').setVisible(user.isAdmin())
 	//Ext.get('group_button').setVisible(user.isAdmin())
 	
@@ -9,18 +7,12 @@ function loadData(user){
 		
 		
 		if (user.isEnabled()){
-			console.log('carico gli store')
 			var contact_store = Ext.data.StoreManager.lookup('bbContactsStore')
 			contact_store.getProxy().extraParams.session_id = user.user.session_id
 			if (!BB.user.user.superuser){
 				contact_store.getProxy().extraParams.group_id = user.user.group_id
 			}
-			console.log('logged user')
-			console.log(user)
-			console.log('gruppo')
-			console.log(BB.user.user.group_id)
 			contact_store.load();
-			console.debug(Ext.data.StoreManager.lookup('bbContactsStore'))
 			var company_store = Ext.data.StoreManager.lookup('bbCompaniesStore')
 			company_store.getProxy().extraParams.session_id = user.user.session_id
 			if (!BB.user.user.superuser){
@@ -105,15 +97,11 @@ function showLogin(next){
 				data: Ext.util.Cookies.set('user',login.getForm().findField('password').getValue())
 				win.close()
 				this.result.user.logged = true // per qualche motivo il server non setta user.logged, lo faccio io
-				console.log('result user')
-				console.log(this.result.user)
 				//BB.user = new User(this.result.user)
 				//console.log('BB.user')
 				//console.log(BB.user)
 				//loadData(BB.user)
 				next(this.result.user)
-				console.log('utente trovato')
-				console.log(metmi.user)
 			//	store.add({user:this.result.user.user,admin:this.result.user.admin,enabled:this.result.user.enabled,logged:this.result.user.logged,superuser:this.result.user.superuser,password:this.result.user.password})
 				//store.sync()
 				//console.log('store')
@@ -125,10 +113,8 @@ function showLogin(next){
 			// at the user telling him / her as much.  
  
 			failure:function(form, action){ 
-				console.log(action)
 				if(action.failureType == 'server'){ 
 					obj = Ext.JSON.decode(action.response.responseText); 
-					console.log(obj)
 					Ext.Msg.alert('Login Failed!', obj.errors.reason); 
 				}else{
 					Ext.Msg.alert('Warning!', 'Authentication server is unreachable : ' + action.response.responseText); 
