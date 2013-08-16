@@ -45,16 +45,34 @@ function showLogin(next){
 	title:'Please Login', 
 	defaultType:'textfield',
 	monitorValid:true,
-				items:[{ 
-		fieldLabel:'Username', 
-		name:'loginUsername', 
+				items:[{
+		xtype:'textfield',
+		fieldLabel:'username',
+		el: 'username',
+		id: 'username',
+		name:'username', 
 		allowBlank:false,
-		data: 'm'//Ext.util.Cookies.get('user')
+		listener: {
+				afterrender:function(cmp){
+					    cmp.inputEl.set({
+						autocomplete:'on'
+				});
+        }
+			}
 	    },{ 
-		fieldLabel:'Password', 
-		name:'loginPassword', 
+		fieldLabel:'password',
+		el: 'password',
+		id: 'password',
+		name:'password', 
 		inputType:'password', 
 		allowBlank:false,
+		listener: {
+				afterrender:function(cmp){
+					    cmp.inputEl.set({
+						autocomplete:'on'
+				});
+        }
+			},
 		data: Ext.util.Cookies.get('password') 
 	    }],
 				buttons:[{ 
@@ -62,15 +80,15 @@ function showLogin(next){
 		formBind: true,	 
 		// Function that fires when user clicks the button 
 		handler:function(){ 
-									var pwd=login.getForm().findField('loginPassword').getValue()
-									var user=login.getForm().findField('loginUsername').getValue()
+									var pwd=login.getForm().findField('password').getValue()
+									var user=login.getForm().findField('username').getValue()
 									//console.debug()
-									login.getForm().setValues({'loginPassword':hex_sha1(pwd)})
+									login.getForm().setValues({'password':hex_sha1(pwd)})
 		    login.getForm().submit({ 
 			method:'POST', 
 			waitTitle:'Connecting', 
 			waitMsg:'Sending data...',
-			extraParams:{'loginPassword':hex_sha1(pwd),'loginUsername':user},
+			extraParams:{'password':hex_sha1(pwd),'username':user},
  
 			// Functions that fire (success or failure) when the server responds. 
 			// The one that executes is determined by the 
@@ -84,7 +102,7 @@ function showLogin(next){
 			// you define as redirect. 
  
 			success:function(){ 
-				data: Ext.util.Cookies.set('user',login.getForm().findField('loginPassword').getValue())
+				data: Ext.util.Cookies.set('user',login.getForm().findField('password').getValue())
 				win.close()
 				this.result.user.logged = true // per qualche motivo il server non setta user.logged, lo faccio io
 				console.log('result user')
@@ -122,6 +140,8 @@ function showLogin(next){
 	    }] 
 	})
 	win = new Ext.Window({
+					el: 'login',
+					title: 'Welcome',
 					layout:'form',
 					width:300,
 					height:150,

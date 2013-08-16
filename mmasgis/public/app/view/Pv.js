@@ -28,6 +28,11 @@ function showPv(user,selection,censimento,censimento_id){
 						}
 		},
 		columns : [
+				{ 
+					name: 'potenziale',
+					header : texts.txt21b,
+					dataIndex : 'potenziale'
+				},
 				{
 					name :  'nome1',
 					header : texts.txt8,

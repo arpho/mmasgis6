@@ -19,7 +19,8 @@ function loadUser(req, res, next) {
 function login(req,res,next){
 	var language = req.headers["accept-language"][0]+req.headers["accept-language"][1]
 	texts = locals[language]
-		User.findOne({nome: req.param('loginUsername', null),password: req.param('loginPassword', null),enabled:true},function(err, user) {
+	console.log(req.param('username', null)+' '+req.param('password', null))
+		User.findOne({nome: req.param('username', null),password: req.param('password', null),enabled:true},function(err, user) {
 			//console.log('login check, callback findOne')
 			if (err) {
 				console.log('errore')
