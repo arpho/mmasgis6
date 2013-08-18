@@ -290,7 +290,19 @@ Ext.application({
 								showCensus(metmi.user)
 							}
 					}
-					},/*
+					},					{
+						xtype: 'button',
+						icon: 'images/icon1616.png',
+						id: 'stubButton',
+						disabled: false,
+						handler: function(){
+								alert('test')
+								var s = [{utb:{classe:'regione',id:9}}]
+								var censimento = 'saloni'
+								var censimento_id = '520124179c8a82a68e7c7d6d'
+								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
+					}
+					},/*/*
 					{
 						xtype: 'button',
 						icon: 'images/icon1616.png',
