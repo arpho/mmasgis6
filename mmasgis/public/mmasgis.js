@@ -246,28 +246,13 @@ Ext.application({
 			defaults: {
 				split: true
 			},
-			items: [{
-				region: 'north',
-				//contentEl: 'header',content read from html in gsp
-				html: "This is my temp header",
-				id: 'mainHeader'
-			}, {
+			items: [, {
 				region: 'east',
 				width: 270,
 				//html: 'This is East',
 				collapsible: true,
 				items: selected_list
-			}, {
-				region: 'south',
-				//contentEl: 'footer',
-				//content read from html in gsp
-				html: "This is my temp footer content",
-				height: 30,
-				margins: '0 5 5 5',
-				bodyPadding: 2,
-				// internal text padding
-				id: 'mainFooter'
-			}, {
+			},  {
 				id: 'map',
 				//content injected by the controller
 				collapsible: false,
