@@ -1,6 +1,8 @@
 Ext.namespace('metmi');
 var texts = {}
 var selected = {}
+var metmi = {}
+metmi.censimento = null
 metmi.user = {
 		'user': 'system',
 		'logged': true,

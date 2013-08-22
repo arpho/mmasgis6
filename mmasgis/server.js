@@ -9,7 +9,12 @@ var express = require('express')
   , path = require('path')
   , login = require('./login')
   , census = require('./routes/middleware/census')
+  , mongoose = require('mongoose')
+  , aw = require('./routes/middleware/Attribute').AttributesWrapper
+  , ObjectId = mongoose.Types.ObjectId
   , pvList = require('./routes/middleware/obj_pvList_estesa');
+  
+//var ;
 var obj = new pvList.obj2(null) 
 var dbURL = 'mongodb://localhost/mmasgis';
 var db = require('mongoose')
@@ -40,6 +45,9 @@ app.get('/', function(req,res){
 });
 app.post('/attributs',function(req,res){
 	data = {}
+	Id = ObjectId(req.body.pv__id)
+	req.censimento = req.body.censimento
+	//console.log(req.censimento)
 	data.success = true
 	data.attributs = {}
 	data.attributs.params = {}
@@ -51,7 +59,9 @@ app.post('/attributs',function(req,res){
 	data.attributs.potentials = {}
 	data.attributs.potentials.data = []
 	data.attributs.potentials.data.push({class:'stub',value:'pot dal server'})
-	res.send(data,200)
+	var AW = new aw(req,'localhost')
+	AW.getLists(Id,AW,function(e,o){res.send(o,200)})
+	//res.send(data,200)
 	})
 app.get('/census',function(req,res){
 	//res.send('ciao census',200)

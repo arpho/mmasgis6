@@ -54,6 +54,7 @@ function showCensus(user){
 						else{
 							var s = selectionNormalizer(selected)
 							//console.log(items[0].data)
+							metmi.censimento = {census:items[0].data.censimento,id:items[0].data._id}
 							showPv(user,Ext.JSON.encode(s),items[0].data.censimento,items[0].data._id)
 							CensusWindow.close()
 						}

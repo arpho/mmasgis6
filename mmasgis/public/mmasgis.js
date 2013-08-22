@@ -285,6 +285,7 @@ Ext.application({
 								var s = [{utb:{classe:'regione',id:9}}]
 								var censimento = 'saloni'
 								var censimento_id = '520124179c8a82a68e7c7d6d'
+								metmi.censimento = {census:'saloni',id:censimento_id}
 								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
 					}
 					},/*/*

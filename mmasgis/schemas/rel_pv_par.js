@@ -6,8 +6,8 @@ var rel_pv_parSchema = new mongoose.Schema({
 	"mod_utente": String,
 	"mod_data": { type: Date, default: Date.now },
 	//"valore": Number,//24.63,
-	//"my_par_id":{ type: mongoose.Schema.Types.ObjectId, ref: 'tc_par' },// 102,
-	//"my_clpar_id":{ type: mongoose.Schema.Types.ObjectId, ref: 'tc_clPar' },// 10
+	"class_id":{ type: mongoose.Schema.Types.ObjectId, ref: 'tc_par' },// 102,
+	"parameter_id":{ type: mongoose.Schema.Types.ObjectId, ref: 'tc_clpar' },// 10
 	"tc_clpar_id" : Number,
 	"tc_par_id" : Number
 },{collection:'rel_pv_par'})
