@@ -8,6 +8,6 @@ var tc_parSchema = new mongoose.Schema({
 	"mod_data": { type: Date, default: Date.now },
 	"testo": String,
 	"ordine": Number,
-	"tc_stato_id":  Boolean
+	"tc_stato_id":  Number
 },{collection:'tc_par'})
 module.exports = tc_parSchema

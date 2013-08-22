@@ -1,19 +1,37 @@
 var mongoose = require('mongoose')
 var rel_pv_par = require('../../schemas/rel_pv_par');
+var rel_pv_mar = require('../../schemas/rel_pv_mar');
 var rel_pv_pot = require('../../schemas/rel_pv_pot');
 var cache = require('memory-cache');
 var tc_par = require('../../schemas/tc_par');
+var tc_mar = require('../../schemas/tc_mar');
 var tc_pot = require('../../schemas/tc_pot');
 var tc_clpar = require('../../schemas/tc_clpar');
+var tc_clmar = require('../../schemas/tc_clmar');
 var tc_clpot = require('../../schemas/tc_clpot');
 var async = require('async')
+
+/** implementa Brand, si interfaccia al database per ricavare la lista degli attributi di un pv.
+ * @param req: richiesta express
+ * @param conn: connessione mongoose
+@class Brand */
+function Brand( req,conn){
+		this.family = 'mar'
+		this.census = req.censimento
+		this.conn = conn
+		this.Rel = this.conn.model('rel_pv_mar', rel_pv_mar); // modello delle relazioni
+		this.Tc = this.conn.model('tc_mar', tc_mar) // modello degli aatributi
+		this.Tc_cl = this.conn.model('tc_clmar', tc_clmar) // modello delle classi degli attributi
+	}
+
+
 /** implementa Parameter, siinterfaccia al database per ricavare la lista degli attributi di un pv.
  * @param req: richiesta express
  * @param conn: connessione mongoose
 @class Parameter */
 function Parameter( req,conn){
 		this.family = 'par'
-		//this.census = req.censimento
+		this.census = req.censimento
 		this.conn = conn
 		this.Rel = this.conn.model('rel_pv_par', rel_pv_par); // modello delle relazioni
 		this.Tc = this.conn.model('tc_par', tc_par) // modello degli aatributi
@@ -25,10 +43,16 @@ function Parameter( req,conn){
 	 * @param function: funzione di callback
 	 * @method getClass*/
 	function getClasses(next){
-		console.log('classes: '+this.family)
+		//console.log('classes: '+this.family)
 		console.time('getClasses')
-		this.Tc_cl.find({},function(err,out){ console.timeEnd('getClasses')
-			next(err,out)}).sort({ordine:1})
+		if(cache.get('classes'+this.census+this.family)==null){
+			//console.log('classi non in cache')
+			this.Tc_cl.find({},function(err,out){ console.timeEnd('getClasses')
+					cache.put('classes'+this.census+this.family,out,5*60*1000)
+					next(err,out)
+			}).sort({ordine:1})
+		}
+		else{next(null,cache.get('classes'+this.census+this.family))}
 	}
 	/**
 	 * ritorna la lista degli item in tc_par 
@@ -36,10 +60,12 @@ function Parameter( req,conn){
 	 * @param function: funzione di callback
 	 * */
 	function getParameters(next){
-		console.log('parameters '+this.family)
-		console.time('getParameters')
-		this.Tc.find({},function(err,out){ console.timeEnd('getParameters');
-			next(err,out)}).sort({ordine:1})
+		if (cache.get('parameters'+this.census+this.family)==null){
+			this.Tc.find({},function(err,out){
+				cache.put('parameters'+this.census+this.family,out,5*60*1000)
+				next(err,out)}).sort({ordine:1})
+		}
+		else{ next(null,cache.get('parameters'+this.census+this.family))}
 	}
 	/**
 	 * ritorna la lista degli item in tc_pot 
@@ -55,7 +81,7 @@ function Parameter( req,conn){
 	 * @method getRelations
 	 * @param referenced_pv: ObjectId del pv*/
 	function getRelations(Id,next){
-		this.Rel.find({referenced_pv:Id},function(e,o){next(e,o)})}
+		this.Rel.find({referenced_pv:Id},function(e,o){next(e,o)}).sort({ordine:1})}
 	/**
 	 * cerca un item  nella lista per campo
 	 * @method find
@@ -75,7 +101,33 @@ function Parameter( req,conn){
 		return out
 	}
 	
-	
+	/**
+	 * ritorna la lista delle marche del pv con il testo di classe e tipologia marca
+	 * @method getBrandsList
+	 * @param referenced_pv: ObjectId del pv
+	 * @param funzione di callback
+	 * */
+	 function getBrandsList(Id,obj,next){
+			async.parallel([
+				function(callback){obj.getClasses(callback)},
+				function(callback){obj.getAttributes(callback)},
+				function(callback){obj.getRelations(Id,callback)}
+			],function(err,results){
+				classes = results[0]
+				services = results[1]
+				relations = results[2]
+				var out = []
+				for (var i=0;i<relations.length;i++){
+					cl = find(classes,'tc_clmar_id',relations[i]['tc_clmar_id'])
+					classTest = cl.testo
+					ser = find(services,'tc_mar_id',relations[i]['tc_mar_id'])
+					serTest = ser.testo
+					item = {class:classTest,class_id:cl.tc_clmar_id,value:serTest,value_id:ser.tc_mar_id}
+					out.push(item)
+				}
+					next(err,out)
+				})
+		 }
 	/**
 	 * ritorna la lista degli attributi del pv insieme con il testo di classe e parametro
 	 * @method getAttributeslist
@@ -143,7 +195,7 @@ function Potential(req,conn){
 
 	//this.inerithedFrom()
 	this.family = 'pot'
-	//this.census = req.censimento
+	this.census = req.censimento
 	this.conn = conn
 	this.Rel = this.conn.model('rel_pv_pot', rel_pv_pot); // modello delle relazioni
 	this.Tc = this.conn.model('tc_pot', tc_pot) // modello degli aatributi
@@ -157,6 +209,7 @@ function AttributesWrapper(req,host){
 	var conn = mongoose.createConnection(host,req.censimento,27017)
 	this.Parameter = new Parameter(req,conn)
 	this.Potential = new Potential(req,conn)
+	this.Brand = new Brand(req,conn)
 }
 
 /**ottiene le liste di attributi da inviare ad anagrafica
@@ -165,7 +218,8 @@ function AttributesWrapper(req,host){
 	 //console.log(obj.Parameter)
 		 async.parallel([
 				function(callback){obj.Parameter.getAttributesList(Id,obj.Parameter,callback)},
-				function(callback){obj.Potential.getPotentialsList(Id,obj.Potential,callback)}
+				function(callback){obj.Potential.getPotentialsList(Id,obj.Potential,callback)},
+				function(callback){obj.Brand.getBrandsList(Id,obj.Brand,callback)}
 				],function(err,results){
 					data = {}
 					data.success = true
@@ -175,7 +229,7 @@ function AttributesWrapper(req,host){
 					data.attributs.potentials = {}
 					data.attributs.potentials.data = results[1]
 					data.attributs.brands = {}
-					data.attributs.brands.data = [{class:'stub',value:'stub dal back-end'}]
+					data.attributs.brands.data = results[2]
 					next(err,data)})
 		}
 AttributesWrapper.prototype.getLists = getLists
@@ -183,6 +237,10 @@ Potential.prototype.getClasses = getClasses
 Potential.prototype.getAttributes = getPotentials
 Potential.prototype.getRelations = getRelations
 Potential.prototype.getPotentialsList = getPotentialsList
+Brand.prototype.getClasses = getClasses
+Brand.prototype.getAttributes = getParameters
+Brand.prototype.getBrandsList = getBrandsList
+Brand.prototype.getRelations = getRelations
 Parameter.prototype.getClasses = getClasses
 Parameter.prototype.getRelations = getRelations
 Parameter.prototype.getParameters = getParameters
@@ -190,4 +248,5 @@ Parameter.prototype.getAttributesList = getParametersList
 exports.find = find
 exports.Parameter = Parameter
 exports.Potential = Potential
+exports.Brand = Brand
 exports.AttributesWrapper = AttributesWrapper
