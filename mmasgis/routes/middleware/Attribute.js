@@ -9,6 +9,7 @@ var tc_pot = require('../../schemas/tc_pot');
 var tc_clpar = require('../../schemas/tc_clpar');
 var tc_clmar = require('../../schemas/tc_clmar');
 var tc_clpot = require('../../schemas/tc_clpot');
+var coll =  require('./Utility').Collector;
 var async = require('async')
 
 /** implementa Brand, si interfaccia al database per ricavare la lista degli attributi di un pv.
@@ -116,13 +117,38 @@ function Parameter( req,conn){
 				classes = results[0]
 				services = results[1]
 				relations = results[2]
+				var collector =	new coll()
+				// rimuovo i marchi ripetuti in relations
+				var collected_relations 
+				for( i in relations){
+					collector.pushElement(relations[i],'tc_clmar_id','tc_mar_id')
+				}
+				collected_relations = collector.getList() // :: {tc_clmar_id:[tc_mar_id]}
+				//console.log()
 				var out = []
-				for (var i=0;i<relations.length;i++){
+				/*for (var i=0;i<relations.length;i++){
 					cl = find(classes,'tc_clmar_id',relations[i]['tc_clmar_id'])
 					classTest = cl.testo
 					ser = find(services,'tc_mar_id',relations[i]['tc_mar_id'])
 					serTest = ser.testo
 					item = {class:classTest,class_id:cl.tc_clmar_id,value:serTest,value_id:ser.tc_mar_id}
+					out.push(item)
+				}*/
+				for (k in collected_relations){
+					var item = {}
+					cl = k
+					clText = find(classes,'tc_clmar_id',k).testo
+					values_id = collected_relations[k] // 
+					valuesText = []
+					// ricavo i valori testo relativi ai tc_mar_id
+					for (i in values_id){
+						ser = find(services,'tc_mar_id',values_id[i])
+						valuesText.push(ser.testo)
+					}
+					item.class = clText
+					item.class_id = cl
+					item.values = valuesText
+					item.values_id = values_id
 					out.push(item)
 				}
 					next(err,out)
