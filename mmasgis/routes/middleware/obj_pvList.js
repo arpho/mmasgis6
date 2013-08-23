@@ -47,6 +47,8 @@ function getPv(req,data,next,K){
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){callback(err,out)})}
 	],function(err,results){
+		console.log('start: '+req.start)
+		console.log('page: '+req.page)
 		var out = includes.pvListMerger(results[0],results[1],req.page,req.start)
 		var item = {}
 		item.data = out.fullData
@@ -186,6 +188,8 @@ function pvFetcher(req,next){//
 		console.log('cache found:')
 		var d = cache.get(Key.getKey())
 		var out = {}
+		console.log('start: '+req.start)
+		console.log('end: '+(req.start+req.limit))
 		out.data = d.data.slice(req.start,req.start+req.limit)
 		out.count = d.count
 		var results = [null,out] // uniforme al risultato di pvRetriever

@@ -148,6 +148,7 @@ function Parameter( req,conn){
 					item.class = clText
 					item.class_id = cl
 					item.values = valuesText
+					item.value = valuesText
 					item.values_id = values_id
 					out.push(item)
 				}

@@ -82,6 +82,7 @@ app.post('/pv',function(req,res){
 		var page = req.body.page
 		var limit = req.body.limit
 		var start = req.body.start
+		req.limit = parseInt(limit)
 		req.selection = JSON.parse(d.data)
 		req.censimento = req.body.censimento
 		req.censimento_id = req.body.censimento_id
