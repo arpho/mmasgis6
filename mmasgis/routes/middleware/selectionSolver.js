@@ -15,12 +15,12 @@ function getPv(query,censimento,next)
 	console.log('censimento: '+censimento)
 	var conn = mongoose.createConnection('mongodb://localhost/'+censimento);
 	var pv = conn.model('Pv', PvSchema);
-	pv.find(query,function(err,out){
+	pv.find(query,null,{sort: {nome1: 1}},function(err,out){
 		console.log('risultato ss.getPv: '+out.length)
 		
 		next(err,out)
 						//*console.dir(out)
-					})
+					})//.sort('nome1')
 }
 
 function getPvFromId(selezione,censimento,next)

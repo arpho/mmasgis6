@@ -27,7 +27,7 @@ function switchDb(censimento){
 	 * @return {Object} :: [pv]
 	 * */
 function getPv(req,data,next,K){
-	  //creo una funzioneda usare in async.parallel per maggiore leggibilità
+	  //creo una funzioneda usare in async.parallel per maggiore leggibilità, after sarà la funzione di callback passata da async.parallel
 	 var a = function(after){
 		 //cerco i pv originali, non modificati dall'utente
 		 console.log('req.censimento in obj_pvList.getPv: '+req.censimento)
@@ -38,10 +38,10 @@ function getPv(req,data,next,K){
 			}
 		)}
 		//cerco i pv modificati dagli utenti
-	var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
+	/*var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){
 			 console.log('pv modificati')
-			 console.log(out.length);after(err,out)})}
+			 console.log(out.length);after(err,out)})}*/
 	 async.parallel([//getPv in intersection
 		function(callback){a(callback)}, // eof parallel1
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
