@@ -21,7 +21,10 @@ function showPv(user,selection,censimento,censimento_id){
 		listeners : {
 	
 			     itemdblclick: function(dv, record, item, index, e) {
-							showAnagrafica(PvGrid.store.data.first.value,index,PvGrid)
+				console.log(PvGrid)
+				console.log(record)
+				console.log('anagrafica')
+							showAnagrafica(PvGrid.store.data.last.value,index,PvGrid,record)
 							//console.log(PvGrid.store.data.first.value)
 							//console.log(dv)
 						}
@@ -108,7 +111,8 @@ function showPv(user,selection,censimento,censimento_id){
 				{
 					xtype: 'button',
 					//id: 'PvButton',
-					icon : 'images/accept.png',
+					icon : 'images/group.png',
+					enabled : false,
 					handler: function(){
 						//console.log(CensusGrid.getSelectionModel( ).selected.items[0])
 						alert(CensusGrid.getSelectionModel( ).selected.items[0].data.censimento)
@@ -146,6 +150,7 @@ function showPv(user,selection,censimento,censimento_id){
 								}
 		}
 		)
+		
 		console.log(PvGrid)
 	
 	

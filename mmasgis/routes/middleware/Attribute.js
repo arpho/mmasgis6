@@ -11,6 +11,7 @@ var tc_clmar = require('../../schemas/tc_clmar');
 var tc_clpot = require('../../schemas/tc_clpot');
 var coll =  require('./Utility').Collector;
 var async = require('async')
+var PvSchema = require('../../schemas/pv');
 
 /** implementa Brand, si interfaccia al database per ricavare la lista degli attributi di un pv.
  * @param req: richiesta express
@@ -45,13 +46,12 @@ function Parameter( req,conn){
 	 * @method getClass*/
 	function getClasses(next){
 		//console.log('classes: '+this.family)
-		console.time('getClasses')
 		if(cache.get('classes'+this.census+this.family)==null){
 			//console.log('classi non in cache')
-			this.Tc_cl.find({},function(err,out){ console.timeEnd('getClasses')
+			this.Tc_cl.find({},null,{sort: {ordine: 1}},function(err,out){
 					cache.put('classes'+this.census+this.family,out,5*60*1000)
 					next(err,out)
-			}).sort({ordine:1})
+			})//.sort({ordine:1})
 		}
 		else{next(null,cache.get('classes'+this.census+this.family))}
 	}
@@ -62,9 +62,9 @@ function Parameter( req,conn){
 	 * */
 	function getParameters(next){
 		if (cache.get('parameters'+this.census+this.family)==null){
-			this.Tc.find({},function(err,out){
+			this.Tc.find({},null,{sort: {ordine: 1}},function(err,out){
 				cache.put('parameters'+this.census+this.family,out,5*60*1000)
-				next(err,out)}).sort({ordine:1})
+				next(err,out)})//.sort({ordine:1})
 		}
 		else{ next(null,cache.get('parameters'+this.census+this.family))}
 	}
@@ -75,8 +75,8 @@ function Parameter( req,conn){
 	 * */
 	function getPotentials(next){
 		console.time('getPotentials')
-		this.Tc.find({},function(err,out){ console.timeEnd('getPotentials');
-			next(err,out)}).sort({ordine:1})
+		this.Tc.find({},null,{sort: {ordine: 1}},function(err,out){ console.timeEnd('getPotentials');
+			next(err,out)})//.sort({ordine:1})
 	}
 	/** ritorna le relazioni con il pv
 	 * @method getRelations
@@ -234,6 +234,7 @@ function Potential(req,conn){
  * @param string host di mongodb */
 function AttributesWrapper(req,host){
 	var conn = mongoose.createConnection(host,req.censimento,27017)
+	this.conn = conn
 	this.Parameter = new Parameter(req,conn)
 	this.Potential = new Potential(req,conn)
 	this.Brand = new Brand(req,conn)
@@ -243,10 +244,13 @@ function AttributesWrapper(req,host){
  * @param _id ObjectId di pv*/
  function getLists(Id,obj,next){
 	 //console.log(obj.Parameter)
+	 var conn = this.conn
+	 var pv = conn.model('Pv',PvSchema)
 		 async.parallel([
 				function(callback){obj.Parameter.getAttributesList(Id,obj.Parameter,callback)},
 				function(callback){obj.Potential.getPotentialsList(Id,obj.Potential,callback)},
-				function(callback){obj.Brand.getBrandsList(Id,obj.Brand,callback)}
+				function(callback){obj.Brand.getBrandsList(Id,obj.Brand,callback)},
+				function(callback){ pv.findOne({_id:Id},function(e, pv){callback(e,pv)})}
 				],function(err,results){
 					data = {}
 					data.success = true
@@ -257,6 +261,7 @@ function AttributesWrapper(req,host){
 					data.attributs.potentials.data = results[1]
 					data.attributs.brands = {}
 					data.attributs.brands.data = results[2]
+					data.pv = results[3]
 					next(err,data)})
 		}
 AttributesWrapper.prototype.getLists = getLists

@@ -43,6 +43,8 @@ if ('development' == app.get('env')) {
 app.get('/', function(req,res){
     res.redirect('/index.html');
 });
+app.get('/geo',function(req,res){
+	res.redirect('/gmap.html')});
 app.post('/attributs',function(req,res){
 	data = {}
 	Id = ObjectId(req.body.pv__id)
