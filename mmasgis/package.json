@@ -1,6 +1,6 @@
 {
   "name": "application-name",
-  "version": "5.9.6",
+  "version": "5.10.1",
   "private": true,
   "scripts": {
     "start": "node app.js"

@@ -250,7 +250,7 @@ function AttributesWrapper(req,host){
 				function(callback){obj.Parameter.getAttributesList(Id,obj.Parameter,callback)},
 				function(callback){obj.Potential.getPotentialsList(Id,obj.Potential,callback)},
 				function(callback){obj.Brand.getBrandsList(Id,obj.Brand,callback)},
-				function(callback){ pv.findOne({_id:Id},function(e, pv){callback(e,pv)})}
+				function(callback){ pv.findOne({_id:Id},function(e, pv){callback(e,pv)})}// caricare il pv noninfluisce sui tempi di risposta perchè è più veloce delle altre operazioni
 				],function(err,results){
 					data = {}
 					data.success = true

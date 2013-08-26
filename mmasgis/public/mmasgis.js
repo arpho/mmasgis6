@@ -253,13 +253,14 @@ Ext.application({
 				collapsible: true,
 				items: selected_list
 			},  {
-				id: 'map',
+				id: 'gmap',
+				height: 771,
 				//content injected by the controller
 				collapsible: false,
 				region: 'center',
 				layout: 'fit',
 				margins: '5',
-				border: true,
+				border: false,
 				//items: [map],
 				tbar: [
 					{
@@ -288,20 +289,10 @@ Ext.application({
 								metmi.censimento = {census:'saloni',id:censimento_id}
 								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
 					}
-					},/*/*
-					{
-						xtype: 'button',
-						icon: 'images/icon1616.png',
-						id: 'AnagraphicButton',
-						disabled: false,
-						handler: function(){
-							
-							
-							showAnagrafica([1,2],0)
-							
-					}
-					}*/
-					
+					},{xtype: 'button',
+					icon : 'images/filter.png',
+					handler : function(){showFilter()}
+					},
 				] //eo tbar
 			}]
 			// eo Viewport.items
