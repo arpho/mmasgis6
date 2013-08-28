@@ -41,10 +41,20 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function(req,res){
-    res.redirect('/index.html');
+    res.redirect('/gmap.html');
 });
-app.get('/geo',function(req,res){
-	res.redirect('/gmap.html')});
+/*app.get('/geo',function(req,res){
+	res.redirect('/gmap.html')});*/
+	
+app.post('/classes4Filter',function(req,res){
+	console.log('class4Filter')
+	console.log('censimento dal client: '+req.body.censimento)
+	req.censimento = req.body.censimento
+	var AW = new aw(req,'localhost')
+	AW.getClasses4Filter(req,AW,function(e,o){
+		console.log('risposta 4filter')
+		res.send(o,200)})
+	})
 app.post('/attributs',function(req,res){
 	data = {}
 	Id = ObjectId(req.body.pv__id)
@@ -113,7 +123,7 @@ app.post('/login',function(req,res){ login.login(req,res,function(req){
 	})*/
 	
 })})
-//app.get('/users', user.list);
+app.get('/users', function(req,res){res.send({success:true,text:'no user list'},200)});
 //app.get('/anagrafica',function(req,res){})
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

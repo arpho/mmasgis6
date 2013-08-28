@@ -28,7 +28,7 @@ function showLogin(next){
 	var store = Ext.create('Ext.data.Store',{
 								model: 'User'
 	});
-	store.load();
+	//store.load();
 	var win = null
 	var login = new Ext.FormPanel({
 		labelWidth:80,

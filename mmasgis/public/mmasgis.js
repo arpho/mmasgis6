@@ -44,11 +44,6 @@ var utb_store = Ext.create('Ext.data.Store',
 			root: 'utbs'
 		}
 }})
-/*Ext.define('My.model.Contact', {
-	extend: 'Ext.data.Model',
-	fields: ['name']
-});*/
-
 Ext.define('My.view.Contact', {
 	extend: 'Ext.form.Panel',
 	title: 'Contact',
@@ -140,7 +135,10 @@ Ext.application({
 				Ext.gritter.add(
 														{
 															title: texts.txt0, 
-															text: metmi.user.getName()
+															text: metmi.user.getName(),
+															region:'left',
+															time: 1000,
+															x: 0
 														});
 				}) // a login eseguito  memorizza l'utente loggato in metmi.user
 //			console.log('onReady')
@@ -150,6 +148,7 @@ Ext.application({
 					xtype: 'gmappanel',
 					id: 'mymap',
 					zoomLevel: 6,
+					sphericalMercator:true,
 					gmapType: 'map',
 					mapConfOpts: ['enableScrollWheelZoom','enableDoubleClickZoom','enableDragging'],
 					mapControls: ['GSmallMapControl','GMapTypeControl'],
@@ -236,33 +235,8 @@ Ext.application({
 					}
 				}]
 			}
-		]
-	})
-		My.app = this; //reference to app instance
-		Ext.create('Ext.container.Viewport', {
-			layout: {
-				type: 'border'
-			},
-			defaults: {
-				split: true
-			},
-			items: [, {
-				region: 'east',
-				width: 270,
-				//html: 'This is East',
-				collapsible: true,
-				items: selected_list
-			},  {
-				id: 'gmap',
-				height: 771,
-				//content injected by the controller
-				collapsible: false,
-				region: 'center',
-				layout: 'fit',
-				margins: '5',
-				border: false,
-				//items: [map],
-				tbar: [
+		],
+		tbar: [
 					{
 						xtype: 'button',
 						icon: 'images/icon1616.png',
@@ -289,22 +263,48 @@ Ext.application({
 								metmi.censimento = {census:'saloni',id:censimento_id}
 								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
 					}
-					},{xtype: 'button',
-					icon : 'images/filter.png',
-					handler : function(){showFilter()}
-					},
+					},{
+						xtype: 'button',
+						icon : 'images/filter.png',
+						handler : function(){//console.log(metmi)
+						var census = 'saloni'
+						
+							showFilter(metmi.censimento.census)
+						},
+					}
 				] //eo tbar
+	})
+		My.app = this; //reference to app instance
+		Ext.create('Ext.container.Viewport', {
+			layout: {
+				type: 'border'
+			},
+			defaults: {
+				split: true
+			},
+			items: [, {
+				region: 'east',
+				width: 270,
+				//html: 'This is East',
+				collapsible: true,
+				items: selected_list
+			},  {
+				id: 'gmap',
+				height: 771,
+				//content injected by the controller
+				collapsible: false,
+				region: 'center',
+				layout: 'fit',
+				//margins: '5',
+				border: false,
+				//items: [map],
+				
 			}]
 			// eo Viewport.items
 		})//.add(map);
 // genero la mappa con leaflet
 
-var map = L.mapbox.map('map-body', 'arpho.map-nw38cgmq').setView([41.9, 12.48], 7);
 
-L.mapbox.tileLayer('arpho.map-nw38cgmq', {
-			maxZoom: 18,
-			attribution: 'Tiles Courtesy of <a href="http://www.mapbox.com/" target="_blank">MapBox</a>. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
-		}).addTo(map);
 		//regioni.onEachFeature = onEachFeature
 		
 //console.log(regioni)
@@ -406,11 +406,11 @@ var selectionStyle= function(feature){
 					fillOpacity: 0.7
 			}
 	}
-L.geoJson(regioni, {
+/*L.geoJson(regioni, {
 
 			style:myStyle,/* function (feature) {
 				return feature.properties && feature.properties.style;
-			},*/
+			},
 
 			onEachFeature: onEachFeature,
 
@@ -424,7 +424,7 @@ L.geoJson(regioni, {
 					fillOpacity:1
 				});
 			}
-		}).addTo(map);
+		}).addTo(map);*/
 		
 /*L.geoJson(province, {
 
@@ -445,7 +445,7 @@ L.geoJson(regioni, {
 				});
 			}
 		}).addTo(map);*/
-
+/*
 var popup = L.popup();
 function onMapClick(e) {
 	console.log('click')
@@ -458,7 +458,7 @@ function onMapClick(e) {
 		//.setContent("You clicked the map at " + e.latlng.toString())
 //		.openOn(map);
 }
-map.on('click', onMapClick);
+map.on('click', onMapClick);*/
 var geojson;
 function onEachFeature(feature, layer) {
 	layer.on({

@@ -47,13 +47,14 @@ function Parameter( req,conn){
 	function getClasses(next){
 		//console.log('classes: '+this.family)
 		if(cache.get('classes'+this.census+this.family)==null){
-			//console.log('classi non in cache')
+			console.log('classes'+this.census+this.family+' non in cache')
 			this.Tc_cl.find({},null,{sort: {ordine: 1}},function(err,out){
 					cache.put('classes'+this.census+this.family,out,5*60*1000)
 					next(err,out)
 			})//.sort({ordine:1})
 		}
-		else{next(null,cache.get('classes'+this.census+this.family))}
+		else{ console.log('trovato: '+'classes'+this.census+this.family)
+			next(null,cache.get('classes'+this.census+this.family))}
 	}
 	/**
 	 * ritorna la lista degli item in tc_par 
@@ -233,6 +234,7 @@ function Potential(req,conn){
  * @param req richiesta di express
  * @param string host di mongodb */
 function AttributesWrapper(req,host){
+	console.log('AW connetting to: '+host+'/'+req.censimento)
 	var conn = mongoose.createConnection(host,req.censimento,27017)
 	this.conn = conn
 	this.Parameter = new Parameter(req,conn)
@@ -264,7 +266,37 @@ function AttributesWrapper(req,host){
 					data.pv = results[3]
 					next(err,data)})
 		}
+		
+/**ottiene la lista delle classi di parametri, potenziali e marchi di un censimento
+ * @method getClasses4Filter
+ * @param express request
+ * @param Function callback
+ * @param istanza di AttributesWrapper
+ * @return {success:boolean,parameters: extjs4.model.metmi.attributs,potentials:extjs4.model.metmi.attributs,brands:extjs4.model.metmi.attributs*/
+function getClasses4Filter(req,obj,next){
+		async.parallel([
+			function(callback){obj.Parameter.getClasses(callback)},
+			function(callback){obj.Potential.getClasses(callback)},
+			function(callback){obj.Brand.getClasses(callback)}
+		],function(err,results){
+			var out = {}
+			out.success = false
+			if(!err){
+				//console.log(results[1])
+				out.success = true
+				out.brands = {}
+				out.potentials = {}
+				out.parameters = {}
+				out.brands.data = results[2]
+				out.potentials.data = results[1]
+				out.parameters.data = results[0]
+				next(null,out)
+				}
+			else{
+			next(err,out)}})
+}
 AttributesWrapper.prototype.getLists = getLists
+AttributesWrapper.prototype.getClasses4Filter = getClasses4Filter
 Potential.prototype.getClasses = getClasses
 Potential.prototype.getAttributes = getPotentials
 Potential.prototype.getRelations = getRelations
