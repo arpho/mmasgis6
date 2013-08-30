@@ -46,9 +46,14 @@ app.get('/', function(req,res){
 /*app.get('/geo',function(req,res){
 	res.redirect('/gmap.html')});*/
 	
+app.post('/attributs',function(req,res){
+	req.censimento = req.body.censimento
+	var AW = new aw(req,'localhost')
+	var family = req.body.family
+	var cl_id = req.body.cl_id
+	AW.AWgetAttributs(AW,cl_id,family,function(e,o){res.send(o,200)})
+})
 app.post('/classes4Filter',function(req,res){
-	console.log('class4Filter')
-	console.log('censimento dal client: '+req.body.censimento)
 	req.censimento = req.body.censimento
 	var AW = new aw(req,'localhost')
 	AW.getClasses4Filter(req,AW,function(e,o){

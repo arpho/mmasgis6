@@ -9,6 +9,7 @@ var tc_pot = require('../../schemas/tc_pot');
 var tc_clpar = require('../../schemas/tc_clpar');
 var tc_clmar = require('../../schemas/tc_clmar');
 var tc_clpot = require('../../schemas/tc_clpot');
+var tc_rel_clmar_mar = require('../../schemas/tc_rel_clmar_mar');
 var coll =  require('./Utility').Collector;
 var async = require('async')
 var PvSchema = require('../../schemas/pv');
@@ -24,8 +25,26 @@ function Brand( req,conn){
 		this.Rel = this.conn.model('rel_pv_mar', rel_pv_mar); // modello delle relazioni
 		this.Tc = this.conn.model('tc_mar', tc_mar) // modello degli aatributi
 		this.Tc_cl = this.conn.model('tc_clmar', tc_clmar) // modello delle classi degli attributi
+		this.Tc_rel_clmar_mar = this.conn.model('tc_rel_clmar_mar',tc_rel_clmar_mar)
 	}
-
+/** ottiene la lista dei brand che trattano la classe marca
+ * @method getBrands
+ * @param istanza di Brand
+ * @param int: tc_clmar_id
+ * @param Function callback
+ * */
+function getBrands(obj,Id,next){
+	obj.Tc_rel_clmar_mar.find({tc_clmar_id:Id},function(e,o){
+		//devo estrarre tc_mar_id dai risultati e poi fare un'altra query per ottenere il nome dei marchi
+		var brand_id = []
+		for ( var i=0;i<o.length;i++){
+			var id = o[i].tc_mar_id
+			brand_id.push(id)
+		}
+		//ottengo la lista degli attributi per i brand
+		obj.Tc.find({tc_mar_id:{$in:brand_id}},function(e,o){next(e,o)})
+		})
+}
 
 /** implementa Parameter, siinterfaccia al database per ricavare la lista degli attributi di un pv.
  * @param req: richiesta express
@@ -39,6 +58,19 @@ function Parameter( req,conn){
 		this.Tc = this.conn.model('tc_par', tc_par) // modello degli aatributi
 		this.Tc_cl = this.conn.model('tc_clpar', tc_clpar) // modello delle classi degli attributi
 	}
+	
+	/**
+	 * ritorna i parametri relativi ad una classe di attributi
+	 * @method getAttributs
+	 * @param Id tc_cl_id
+	 * @param istanza dell'oggetto a cui siamo interessati: Parameter, Potential,Brand
+	 * @return [mongoose.model.attribut*/
+	 function getAttributs(obj,Id,next){
+		 field = 'tc_cl'+obj.family+'_id'
+		 var query = {}
+		 query[field] = Id
+		 obj.Tc.find(query,function(e,o){next(e,o)})
+	 }
 	/**
 	 * ritorna la lista degli item in tc_cl+family
 	 * @param Id: int
@@ -295,20 +327,43 @@ function getClasses4Filter(req,obj,next){
 			else{
 			next(err,out)}})
 }
+
+
+/**recupera gli attributi relativi ad una classe
+ * @method AWgetAttributs
+ * @param istanza di AttributesWrapper
+ * @param tc_cl_id id della classe
+ * @param family: <'par','pot','mar'>
+ * @param Function callback
+ * @return mongoose.model.attribut
+ * */
+ function AWgetAttributs(obj,Id,family,next){
+	 tc = {}
+	 tc.par = function(Id,next){obj.Parameter.getAttributs(obj.Parameter,Id,next)}
+	 tc.pot = function(Id,next){obj.Potential.getAttributs(obj.Potential,Id,next)}
+	 tc.mar = function(Id,next){obj.Brand.getBrands(obj.Brand,Id,next)  }
+	 
+	 tc[family](Id,next)
+ }
 AttributesWrapper.prototype.getLists = getLists
 AttributesWrapper.prototype.getClasses4Filter = getClasses4Filter
+AttributesWrapper.prototype.AWgetAttributs = AWgetAttributs
 Potential.prototype.getClasses = getClasses
 Potential.prototype.getAttributes = getPotentials
 Potential.prototype.getRelations = getRelations
 Potential.prototype.getPotentialsList = getPotentialsList
+Potential.prototype.getAttributs = getAttributs
 Brand.prototype.getClasses = getClasses
 Brand.prototype.getAttributes = getParameters
 Brand.prototype.getBrandsList = getBrandsList
 Brand.prototype.getRelations = getRelations
+Brand.prototype.getAttributs = getAttributs
+Brand.prototype.getBrands = getBrands
 Parameter.prototype.getClasses = getClasses
 Parameter.prototype.getRelations = getRelations
 Parameter.prototype.getParameters = getParameters
 Parameter.prototype.getAttributesList = getParametersList
+Parameter.prototype.getAttributs = getAttributs
 exports.find = find
 exports.Parameter = Parameter
 exports.Potential = Potential

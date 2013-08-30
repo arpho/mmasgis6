@@ -209,7 +209,7 @@ Ext.application({
 				xtype: 'actioncolumn',
 				//width: 20,
 				items: [{
-			header:'Rimuovi',
+					header:texts.txt58,
 					icon: 'images/delete.png',
 					handler: function(grid, rowIndex, colindex) {
 				//console.log(rowIndex)

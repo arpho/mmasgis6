@@ -21,9 +21,6 @@ function showPv(user,selection,censimento,censimento_id){
 		listeners : {
 	
 			     itemdblclick: function(dv, record, item, index, e) {
-				console.log(PvGrid)
-				console.log(record)
-				console.log('anagrafica')
 							showAnagrafica(PvGrid.store.data.last.value,index,PvGrid,record)
 							//console.log(PvGrid.store.data.first.value)
 							//console.log(dv)

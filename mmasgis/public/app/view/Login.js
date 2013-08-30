@@ -97,6 +97,7 @@ function showLogin(next){
 				data: Ext.util.Cookies.set('user',login.getForm().findField('password').getValue())
 				win.close()
 				this.result.user.logged = true // per qualche motivo il server non setta user.logged, lo faccio io
+				metmi.utente.logged = true
 				//BB.user = new User(this.result.user)
 				//console.log('BB.user')
 				//console.log(BB.user)
