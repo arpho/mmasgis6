@@ -118,6 +118,20 @@ function showPv(user,selection,censimento,censimento_id){
 				},
 					{xtype: 'tbtext', text: totalCount}
 		]
+		},{
+			xtype : 'toolbar',
+			dock : 'top',
+			items : [
+				{
+						xtype: 'button',
+						icon : 'images/filter.png',
+						handler : function(){//console.log(metmi)
+						var census = 'saloni'
+						
+							showFilter(metmi.censimento.census)
+						},
+					}
+			]
 		}
 		]
 	})

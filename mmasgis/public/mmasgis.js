@@ -263,15 +263,7 @@ Ext.application({
 								metmi.censimento = {census:'saloni',id:censimento_id}
 								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
 					}
-					},{
-						xtype: 'button',
-						icon : 'images/filter.png',
-						handler : function(){//console.log(metmi)
-						var census = 'saloni'
-						
-							showFilter(metmi.censimento.census)
-						},
-					}
+					},
 				] //eo tbar
 	})
 		My.app = this; //reference to app instance
