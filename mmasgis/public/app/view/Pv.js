@@ -126,7 +126,6 @@ function showPv(user,selection,censimento,censimento_id){
 						xtype: 'button',
 						icon : 'images/filter.png',
 						handler : function(){//console.log(metmi)
-						var census = 'saloni'
 						
 							showFilter(metmi.censimento.census)
 						},
