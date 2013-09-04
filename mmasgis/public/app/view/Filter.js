@@ -20,7 +20,6 @@ function normalizeAttribut(data,family){
 			 *  i tc_cl_id in AND*/
 			function getDigest(values){
 				var digest = {}
-				console.log(values)
 				for (var i=0;i<values.data.length;i++){
 					if (values.data[i].tc_cl_id in digest){
 						digest[values.data[i].tc_cl_id].push(values.data[i].attribut_id)
@@ -59,42 +58,44 @@ function showFilter(censimento){
 						storePotentials.load()
 						storeBrands = makeStore(brands,'data')
 						storeBrands.load()
-						
-						tab = Ext.create('Ext.tab.Panel', {
-							width: 600,
-							height: 200,
-							activeTab: 0,
-							items: [{
-								title : texts.txt64,
-									items: Ext.create("mmasgisRaid.app.view.filterPanel",{
+						var parametriPanel = Ext.create("mmasgisRaid.app.view.filterPanel",{
 										censimento: metmi.censimento.census,
 										title: 'Parametri',
 										family: 'par',
 										width: 600,
 										height : 260,
 										store : storeParameters
-									}).getPanel(),
-								},{
-									title: texts.txt65a,
-									items: Ext.create("mmasgisRaid.app.view.filterPanel",{
-									censimento: metmi.censimento.census,
-									title: 'Potenziali',
-									family: 'pot',
-									width: 600,
-									height : 250,
-									store : storePotentials
-								}).getPanel()
-									
-								},{
-									title: texts.txt65,
-									items: Ext.create("mmasgisRaid.app.view.filterPanel",{
+									})
+						var marchiPanel = Ext.create("mmasgisRaid.app.view.filterPanel",{
 										censimento: metmi.censimento.census,
 										title: 'Marche',
 										family: 'mar',
 										width: 600,
 										height : 250,
 										store : storeBrands
-									}).getPanel()
+									})
+						var potenzialiPanel = Ext.create("mmasgisRaid.app.view.filterPanel",{
+									censimento: metmi.censimento.census,
+									title: 'Potenziali',
+									family: 'pot',
+									width: 600,
+									height : 250,
+									store : storePotentials
+								})
+						tab = Ext.create('Ext.tab.Panel', {
+							width: 600,
+							height: 200,
+							activeTab: 0,
+							items: [{
+								title : texts.txt64,
+									items: parametriPanel.getPanel(),
+								},{
+									title: texts.txt65a,
+									items: potenzialiPanel.getPanel()
+									
+								},{
+									title: texts.txt65,
+									items: marchiPanel.getPanel()
 								}
 							
 							]
@@ -105,26 +106,40 @@ var myTopToolbar = new Ext.Toolbar({items : [
 						icon : 'images/lightning_go.png',
 						tooltip : texts.txt69,
 						handler : function(){
-							console.log('do filter')
-							console.log(Ext.create("mmasgisRaid.app.view.filterPanel",{
-										censimento: metmi.censimento.census,
-										title: 'Marche',
-										family: 'mar',
-										width: 600,
-										height : 250,
-										store : storeBrands
-									}).getPanel())
 							var selectedParameters = tab.items.items[0].items.items[0].items.items[2].store.data.items
-							console.log(selectedParameters)
 							//normalizzo la lista dei parametri per getDigest
 							var valuesParameters = {}
 							valuesParameters.data = []
 							for (var i=0;i< selectedParameters.length;i++){
-								valuesParameters.data.push(selectedParameters[i].data)}
-								console.log(valuesParameters)
-							console.log(getDigest(valuesParameters))// selectedGrid parametri
+								valuesParameters.data.push(selectedParameters[i].data)
+							}
+							//console.log()
+							var filterParameters = getDigest(parametriPanel.getSelected())
+							var filterPotentials = getDigest(potenzialiPanel.getSelected())
+							var filterBrands = getDigest(marchiPanel.getSelected())
+							var filters = {}
+							filters.brand = filterBrands
+							filters.parameter = filterParameters
+							filters.potential = filterPotentials
 						},
+					},{
+						xtype:'button',
+						icon : 'images/reset.png',
+						tooltip : texts.txt70,
+						handler : function(){
+							//filterWindow.close()
+							//console.log(parametriPanel.getList())
+							parametriPanel.resetPanel()
+							parametriPanel.refreshGrids(null,parametriPanel)
+							potenzialiPanel.resetPanel()
+							potenzialiPanel.refreshGrids(null,potenzialiPanel)
+							marchiPanel.resetPanel()
+							marchiPanel.refreshGrids(null,marchiPanel)
+							//console.log(parametriPanel.getList())
+							//filterWindow.show()
+						}
 					}
+					
 			]})
 filterWindow = Ext.create('Ext.window.Window',
 	{

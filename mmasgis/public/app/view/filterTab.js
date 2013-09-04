@@ -20,12 +20,47 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 			for (var i=0;i<this.attributsList.length;i++){
 				this.attributsList[i].selected = false
 			}
-				this.available = []
+				this.available = {}
 				this.selected = []
+				this.availableStore 
+				this.selectedStore
 		},
 		getAttributs: function(){
 			return this.attributsList
 		},
+		/**ritorna gli attributi selezionati
+		 * @method getSelected
+		 * @return [attribut]*/
+	getSelected : function(){
+			var out = {}
+			out.data = []
+			for (var i=0;i<this.available.data.length;i++){
+				if (this.available.data[i].selected){out.data.push(this.available.data[i])}
+			}
+		return out
+		},// eof getSelected
+	refreshGrids : function(tc_cl,obj){
+				// distribuisco gli attributi nelle due liste dei selezionati e non 
+					/*for (var i = 0;i<available.data.length;i++){
+						if (available.data[i].selected){
+							selected.data.push(available.data[i])
+						}
+						else{
+							notSelected.data.push(available.data[i])
+						}*/
+					//aggiorno gli store
+					obj.availableStore.reload()
+					obj.availableStore.filterBy(function(rec){return ((!rec.data.selected)&&(rec.data.tc_cl_id==tc_cl))})
+					obj.selectedStore.reload()
+					obj.selectedStore.filterBy(function(r){return (r.data.selected)})
+				},
+		
+	resetPanel : function(){
+		for(var i=0;i<this.available.data.length;i++){
+			this.available.data[i].selected = false
+		}
+		},
+	getList: function(){return this.available},
 	
 	getPanel: function(){
 			var selected = {} 
@@ -50,26 +85,24 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 			var visualizedClass /* memorizza il campo tc_cl_id
 			 degli attributi visualizzati da availableStore,
 			 *  viene modificato selezionando gli item della prima lista*/
-			var available = {} // è la lista che contiene tutti
+			var available = this.available//this.available // è la lista che contiene tutti
 			// gli attributi ottenuti dal server a cui aggiungo
 			// il campo selected, contiene tutti gli attributi che vengono caricati dal server 
 			/* ad ogni attributo è aggiunto il campo selected
 			 *  che permette di discernere cosa è visualizzato
 			 *  nella lista degli attributi selezionati e cosa in quella degli attributi selezionabili*/
 			 available.data = []
-			var availableStore = makeStore( available,'data')
-			var selectedStore = makeStore(available,'data')
+			 
+			 //mmasgisRaid.app.view.filterPanel.available.data = []
+			this.availableStore = makeStore( available,'data')
+			this.selectedStore = makeStore(available,'data')
 			var attributsPanel
-			/**
-			 * deseleziona un attributo
-			 * @method unselectAttribut
-			 * @param tc_cl_id int
-			 * */
+			var obj  = this // lo uso per passare il riferimento alla classe dentro le funzioni
 			 var unselectAttribut = function(Id,family){
 				 field = 'tc_'+family+'_id'
-				 for (var i=0;i<available.data.length;i++){
-					 if (available.data[i]['attribut_id']==Id){
-						 available.data[i].selected = false
+				 for (var i=0;i<obj.available.data.length;i++){
+					 if (obj.available.data[i]['attribut_id']==Id){
+						 obj.available.data[i].selected = false
 					}
 				}
 				 }
@@ -78,6 +111,7 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 			 * @param tc_cl_id: int id della classe di parametri da visualizzare in availableStore
 			 * @method refreshGrids
 			 * */
+			 //console.log(this.refreshGrids)
 			var refreshGrids = function(tc_cl){
 				selected.data = [] // resetto la lista degli attributi selezionati
 				notSelected.data = []
@@ -91,11 +125,14 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 						}*/
 					
 					//aggiorno gli store
-					availableStore.reload()
-					availableStore.filterBy(function(rec){return ((!rec.data.selected)&&(rec.data.tc_cl_id==tc_cl))})
-					selectedStore.reload()
-					selectedStore.filterBy(function(r){return (r.data.selected)})
+					console.log('refreshGrids')
+					this.availableStore.reload()
+					this.availableStore.filterBy(function(rec){return ((!rec.data.selected)&&(rec.data.tc_cl_id==tc_cl))})
+					this.selectedStore.reload()
+					this.selectedStore.filterBy(function(r){return (r.data.selected)})
 				}
+				var cloj = this.refreshGrids
+				refreshGrids = function(tc_cl){ cloj(tc_cl,obj)}
 			var classesGrid = makeGrid(this.store,texts.txt57)/*Ext.create('Ext.grid.Panel',{
 		//title: texts.txt5+user.data.nome,
 			viewConfig : {
@@ -139,7 +176,7 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 							icon:  'images/accept.png',
 							handler: function(grid, rowIndex, colindex){//console.log(grid.getStore().data.items[rowIndex])
 								var item = grid.getStore().data.items[rowIndex].data
-								if(!isClassLoaded(available.data,item.tc_cl_id)){
+								if(!isClassLoaded(available.data,item.tc_cl_id)){ // implemento un meccanismo di cache per le classi già caricate
 									Ext.Ajax.request({
 										url : 'attributs/',
 										method : 'POST',
@@ -156,10 +193,10 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 														var clField = 'tc_cl'+item.class+'_id'
 														var field = 'tc_'+item.class+'_id'
 														obj[i].classText = item.testo
-														obj[i].tc_cl_id = obj[i][clField]
+														obj[i].tc_cl_id = item.tc_cl_id//obj[i][clField]
 														obj[i].attribut_id = obj[i][field]
 														obj[i].class = item.class
-														visualizedClass = obj[i][clField]
+														visualizedClass = item.tc_cl_id//obj[i][clField]
 													}
 													available.data = available.data.concat(obj)
 													//availableStore.reload()
@@ -168,6 +205,7 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 									}) //eof ajax
 								}
 								else{
+									console.log('cache ok')
 									visualizedClass = item.tc_cl_id
 								refreshGrids(visualizedClass)
 									}
@@ -199,8 +237,8 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 								var storeItem = grid.getStore().data.items[rowIndex]
 								//seleziono lo item
 								for (var i=0;i<available.data.length;i++){
-									if ((available.data[i].attribut_id ==storeItem.data.attribut_id) &&(available.data[i].tc_cl_id ==storeItem.data.tc_cl_id)){
-										available.data[i].selected = true
+									if ((obj.available.data[i].attribut_id ==storeItem.data.attribut_id) &&(obj.available.data[i].tc_cl_id ==storeItem.data.tc_cl_id)){
+										obj.available.data[i].selected = true
 									}
 								}
 								//available.data[rowIndex].selected = true
@@ -211,7 +249,7 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 				}
 				
 				],
-					store: availableStore,
+					store: this.availableStore,
 					flex : 1 
 		},{
 			xtype : 'grid',
@@ -243,7 +281,7 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 							]
 					}
 				],
-			store : selectedStore,
+			store : this.selectedStore,
 			flex: 1
 		}
 		
