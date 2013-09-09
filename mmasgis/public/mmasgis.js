@@ -137,7 +137,7 @@ Ext.application({
 															title: texts.txt0, 
 															text: metmi.user.getName(),
 															region:'left',
-															time: 1000,
+															time: 800,
 															x: 0
 														});
 				}) // a login eseguito  memorizza l'utente loggato in metmi.user

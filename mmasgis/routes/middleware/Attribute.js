@@ -266,7 +266,6 @@ function Potential(req,conn){
  * @param req richiesta di express
  * @param string host di mongodb */
 function AttributesWrapper(req,host){
-	console.log('AW connetting to: '+host+'/'+req.censimento)
 	var conn = mongoose.createConnection(host,req.censimento,27017)
 	this.conn = conn
 	this.Parameter = new Parameter(req,conn)
@@ -304,7 +303,7 @@ function AttributesWrapper(req,host){
  * @param express request
  * @param Function callback
  * @param istanza di AttributesWrapper
- * @return {success:boolean,parameters: extjs4.model.metmi.attributs,potentials:extjs4.model.metmi.attributs,brands:extjs4.model.metmi.attributs*/
+ * @return {success:boolean,parameters: extjs4.model.metmi.attributs,potentials:extjs4.model.metmi.attributs,brands:extjs4.model.metmi.attributs}*/
 function getClasses4Filter(req,obj,next){
 		async.parallel([
 			function(callback){obj.Parameter.getClasses(callback)},

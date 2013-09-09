@@ -1,3 +1,6 @@
+var opacity = 1;
+Ext.BLANK_IMAGE_URL = './extjs/resources/themes/images/default/tree/s.gif';
+var url = "http://"+metmi.wms_ip+":8000/geoserver/wms"
 Ext.onReady(function() {
 	    //var gsat = new OpenLayers.Layer.Google("SATELLITE", {type: google.maps.MapTypeId.SATELLITE, sphericalMercator:true, 'maxExtent': _bounds}),
 		//var gmap = new OpenLayers.Layer.Google("Google Streets", {visibility: false});
@@ -37,8 +40,15 @@ Ext.onReady(function() {
 			srs:'EPSG:900913', // old: 'EPSG:2077'
 			//zoomOffset: 4,
 		    },
-		    {isBaseLayer: false,}
+		    {opacity: opacity,isBaseLayer: false,}
 		);
+		control = new OpenLayers.Control.GetFeature({
+                protocol: OpenLayers.Protocol.WFS.fromWMSLayer(regioni),
+                box: true,
+                hover: true,
+                multipleKey: "shiftKey",
+                toggleKey: "ctrlKey"
+            });
 	var comuni	 = new OpenLayers.Layer.WMS(
 	    "comuni",
 	    "http://localhost:8080/geoserver/wms",
@@ -49,7 +59,7 @@ Ext.onReady(function() {
 		srs:'EPSG:900913', // old: 'EPSG:2077'
 		//zoomOffset: 3
 	    },
-	    {isBaseLayer: false,}
+	    {opacity: opacity,isBaseLayer: false,}
 	);
 	var province_wms = new OpenLayers.Layer.WMS(
 	    "province",
@@ -61,7 +71,7 @@ Ext.onReady(function() {
 		srs:'EPSG:900913', // old: 'EPSG:2077'
 		//zoomOffset: 3,
 	    },
-	    {isBaseLayer: false,}
+	    {opacity: opacity,isBaseLayer: false,}
 	);
 	var cap_wms = new OpenLayers.Layer.WMS(
 	    "cap",
@@ -73,7 +83,7 @@ Ext.onReady(function() {
 		srs:'EPSG:900913', // old: 'EPSG:2077'
 		//zoomOffset: 3
 	    },
-	    {isBaseLayer: false}
+	    {opacity: opacity,isBaseLayer: false}
 	);
 	function handleMapClickReg(evt)
 {
@@ -102,25 +112,27 @@ console.log('Province')
                 //multipleKey: "shiftKey",
                 toggleKey: "ctrlKey"
             });
-            selectionControl.events.register("featureunselected", this, function(e) {
+            control.events.register("featureunselected", this, function(e) {
 	            removeFeaturesFromGrid(e.feature.fid);
                 select.removeFeatures([e.feature]);
                 //console.debug(e.feature);
                 
             });
-            map.addControl(selectionControl);//CONTROLLO PER PAN E DRAG SULLA MAPPA
+            //map.addControl(selectionControl);//CONTROLLO PER PAN E DRAG SULLA MAPPA
+            map.addControl(control);
+            control.activate()
 			dragpan = new OpenLayers.Control.DragPan();
 			map.addControl(dragpan);
-			selectionControl.deactivate()
-			dragpan.activate(); 
+			//selectionControl.deactivate()
+			//dragpan.deactivate(); 
             //selectionControl.activate(); // attiva selectionControl
             //REGISTRO EVENTI PER SELEZIONARE CON CLICK IN E DESELEZIONARE CON CLICK OUT
-            selectionControl.events.register("featureselected", this, function(e) {
-				select.addFeatures([e.feature]);
+            control.events.register("featureselected", this, function(e) {
 				console.log('selected')
+				select.addFeatures([e.feature]);
 				//addFeaturesToGrid(e.feature);			
             });
-		map.addControl(selectionControl);
+		//map.addControl(selectionControl);
 		//selectionControl.activate();
 		dragpan = new OpenLayers.Control.DragPan();
 		map.addControl(dragpan);
