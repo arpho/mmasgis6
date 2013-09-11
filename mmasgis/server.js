@@ -43,6 +43,7 @@ if ('development' == app.get('env')) {
 app.get('/', function(req,res){
     res.redirect('/gmap.html');
 });
+//app.get('/parameter
 /*app.get('/geo',function(req,res){
 	res.redirect('/gmap.html')});*/
 	
@@ -50,9 +51,17 @@ app.post('/attributs',function(req,res){
 	req.censimento = req.body.censimento
 	var AW = new aw(req,'localhost')
 	var family = req.body.family
-	var cl_id = req.body.cl_id
-	AW.AWgetAttributs(AW,cl_id,family,function(e,o){res.send(o,200)})
-})
+	var Id = ObjectId(req.body.pv__id)
+	console.log(req.body)
+	
+	AW.getLists(Id,AW,function(e,o){res.send(o,200)})
+	//AW.AWgetAllAttributs(AW,cl_id,function(e,o){res.send(o,200)})
+})/*
+app.get('/geoserver/wms',function(req,res){
+	console.log('geoserver/wms');
+	//console.log(req.query);
+	res.redirect('/localhost:8080/'+req.query,200)})*/
+//app.get('/wms',function(req,res){console.log('wms')})
 app.post('/classes4Filter',function(req,res){
 	req.censimento = req.body.censimento
 	var AW = new aw(req,'localhost')
@@ -60,11 +69,13 @@ app.post('/classes4Filter',function(req,res){
 		console.log('risposta 4filter')
 		res.send(o,200)})
 	})
-app.post('/attributs',function(req,res){
+app.post('/filterAttributs',function(req,res){
 	data = {}
-	Id = ObjectId(req.body.pv__id)
+	var family = req.body.family
+//	var Id = ObjectId(req.body.cl_id)
 	req.censimento = req.body.censimento
-	//console.log(req.censimento)
+	Id = ObjectId(req.body.pv__id)
+	console.log('linea 74')
 	data.success = true
 	data.attributs = {}
 	data.attributs.params = {}
@@ -77,7 +88,9 @@ app.post('/attributs',function(req,res){
 	data.attributs.potentials.data = []
 	data.attributs.potentials.data.push({class:'stub',value:'pot dal server'})
 	var AW = new aw(req,'localhost')
-	AW.getLists(Id,AW,function(e,o){res.send(o,200)})
+	var family = req.body.family
+	var cl_id = req.body.cl_id
+	AW.AWgetAttributs(AW,cl_id,family,function(e,o){res.send(o,200)})
 	//res.send(data,200)
 	})
 app.get('/census',function(req,res){

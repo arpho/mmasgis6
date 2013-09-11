@@ -67,6 +67,10 @@ function Parameter( req,conn){
 	 * @return [mongoose.model.attribut*/
 	 function getAttributs(obj,Id,next){
 		 field = 'tc_cl'+obj.family+'_id'
+		 console.log('@@Parameter.Tc.find')
+		 console.log(typeof(obj.Tc.find))
+		 console.log('next')
+		 console.log(next)
 		 var query = {}
 		 query[field] = Id
 		 obj.Tc.find(query,function(e,o){next(e,o)})
@@ -338,15 +342,43 @@ function getClasses4Filter(req,obj,next){
  * */
  function AWgetAttributs(obj,Id,family,next){
 	 tc = {}
+	 console.log('getattributs4 '+family)
+	 console.log('self')
+	 console.log(obj.Parameter)
 	 tc.par = function(Id,next){obj.Parameter.getAttributs(obj.Parameter,Id,next)}
 	 tc.pot = function(Id,next){obj.Potential.getAttributs(obj.Potential,Id,next)}
 	 tc.mar = function(Id,next){obj.Brand.getBrands(obj.Brand,Id,next)  }
 	 
 	 tc[family](Id,next)
  }
+ function AWgetAllAttributs(self,Id,next){
+	 console.log('Id')
+	 console.log(Id)
+	 var getParameters = function(id,cb){self.AWgetAttributs(self,id,'par',cb)}
+	 var getPotentials = function(id,cb){self.AWgetAttributs(self,id,'pot',cb)}
+	 var getbrands = function(id,cb){self.AWgetAttributs(self,id,'mar',cb)}
+	 async.parallel([
+				 function(callback){console.log('//par');getParameters(Id,callback)},
+				 function(callback){console.log('//po');getPotentials(Id,callback)},
+				 function(callback){console.log('//mar');getbrands(Id,callback)}
+			 ],function(err,results){
+				 var out = {}
+				 console.log(results)
+				 out.success = true
+				 out.attributs = {}
+				 out.attributs.params = {}
+				 out.attributs.params.data = results[0]
+				 out.attributs.potentials = {}
+				 out.attributs.potentials.data = results[1]
+				 out.attributs.brands = {}
+				 out.attributs.brands.data = results[2]
+				 next(null,out)
+			 })
+	 }
+AttributesWrapper.prototype.AWgetAttributs = AWgetAttributs
+AttributesWrapper.prototype.AWgetAllAttributs = AWgetAllAttributs
 AttributesWrapper.prototype.getLists = getLists
 AttributesWrapper.prototype.getClasses4Filter = getClasses4Filter
-AttributesWrapper.prototype.AWgetAttributs = AWgetAttributs
 Potential.prototype.getClasses = getClasses
 Potential.prototype.getAttributes = getPotentials
 Potential.prototype.getRelations = getRelations

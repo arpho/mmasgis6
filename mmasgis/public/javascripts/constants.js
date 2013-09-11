@@ -3,7 +3,7 @@ var texts = {}
 var selected = {}
 var metmi = {}
 metmi.censimento = null
-metmi.wms_ip = '192.168.1.4'
+metmi.wms_ip = '192.168.1.2'
 metmi.user = {
 		'user': 'system',
 		'logged': true,

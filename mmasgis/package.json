@@ -1,6 +1,6 @@
 {
   "name": "application-name",
-  "version": "5.11.7",
+  "version": "5.11.9",
   "private": true,
   "scripts": {
     "start": "node app.js"
@@ -12,7 +12,8 @@
 		"connect": "0.2.4",
 		"forever" :"*",
 		"underscore" : "1.5.1",
-		"node-cache" : "*"
+		"node-cache" : "*",
+		"mongo-client" : "*"
 	},
 	"devDependencies": {
 		"tap": "*"

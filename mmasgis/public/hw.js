@@ -1,6 +1,6 @@
 var opacity = 1;
 Ext.BLANK_IMAGE_URL = './extjs/resources/themes/images/default/tree/s.gif';
-var url = "http://"+metmi.wms_ip+":8000/geoserver/wms"
+var url = "http://"+metmi.wms_ip+":8080/geoserver/wms"
 Ext.onReady(function() {
 	    //var gsat = new OpenLayers.Layer.Google("SATELLITE", {type: google.maps.MapTypeId.SATELLITE, sphericalMercator:true, 'maxExtent': _bounds}),
 		//var gmap = new OpenLayers.Layer.Google("Google Streets", {visibility: false});

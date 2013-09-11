@@ -178,7 +178,7 @@ Ext.define("mmasgisRaid.app.view.filterPanel",{
 								var item = grid.getStore().data.items[rowIndex].data
 								if(!isClassLoaded(available.data,item.tc_cl_id)){ // implemento un meccanismo di cache per le classi già caricate
 									Ext.Ajax.request({
-										url : 'attributs/',
+										url : 'filterAttributs/',
 										method : 'POST',
 										params :{
 												censimento : metmi.censimento.census,
