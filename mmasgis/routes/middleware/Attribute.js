@@ -351,9 +351,13 @@ function getClasses4Filter(req,obj,next){
 	 
 	 tc[family](Id,next)
  }
+ /** ottiene tutti gli attributi di un pv
+  * @method AWgetAllAttributs
+  * @param AttributesWrapper instance
+  * @param ObjectId del pv
+  * @param callback Function
+  * @return {success: true,attributs:{params:{data:[]},potentials:{data:[]},brands:{data:[]}}} */
  function AWgetAllAttributs(self,Id,next){
-	 console.log('Id')
-	 console.log(Id)
 	 var getParameters = function(id,cb){self.AWgetAttributs(self,id,'par',cb)}
 	 var getPotentials = function(id,cb){self.AWgetAttributs(self,id,'pot',cb)}
 	 var getbrands = function(id,cb){self.AWgetAttributs(self,id,'mar',cb)}

@@ -15,11 +15,29 @@ var mongoose = require('mongoose'),
  * @class FilterParameter
  * @param express.request
  * @param mongoose.connection*/
-function FilterParameter(req,conn){
+function FilterParameter(req,db){
 	this.family = 'par'
 	this.census = req.censimento
-	this.conn = conn
-	this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
+	this.db = db
+	//this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
+	var Collection = null;
+	this.rel_pv_par = Collection;
+	var self = this
+	db.collection('rel_pv_par', function(err, collection) {self.rel_pv_par = collection;});
+}
+/**esegue le query sui potenziali
+ * @class FilterParameter
+ * @param express.request
+ * @param mongoose.connection*/
+function FilterPotential(req,db){
+	this.family = 'pot'
+	this.census = req.censimento
+	this.db = db
+	//this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
+	var Collection = null;
+	this.rel_pv_par = Collection;
+	var self = this
+	db.collection('rel_pv_pot', function(err, collection) {self.rel_pv_par = collection;});
 }
 /**crea le funzioni che eseguono la query in async.parallel
  * @method makeQueryFunction
@@ -49,7 +67,9 @@ function executesQueries(queries,next){
  * @param query prodotta da buildQuery::{$or[query]}
  * @Function callback*/
 function executesQuery(self,query,next){
-	self.Rel.find(query,function(e,o){next(e,o)})
+	console.log('executesQuery');
+	console.time('executesQuery')
+	self.rel_pv_par.find(query).toArray(function(e,o){if (e){return console.dir(e)}console.timeEnd('executesQuery');next(e,o)})
 }
 /**
  * inserisce un oggetto in un associative array, contando il numero di occorrenze usando come chiave il referenced_pv
@@ -58,21 +78,26 @@ function executesQuery(self,query,next){
  * @return null
  * */
 function pushPv(ar,item){
-	//console.log(item)
-	if (item._doc.referenced_pv in ar){ar[item._doc.referenced_pv]+=1;}
-	else{ar[item._doc.referenced_pv] = 1} //inizializzo il contatore
+	if (item.referenced_pv in ar){ 
+		ar[item.referenced_pv]+=1;}
+	else{
+		ar[item.referenced_pv] = 1} //inizializzo il contatore
+
 }
 	/**data la lista ottenuta dalla query, crea una lista contenente ogni pv presente con il suo numero di occorrenze
 	 * @method pvList
 	 * @param [mongoose.model.rel_pv]
 	 * @return {referenced_pv_id:int} */
 function listPv(l){
-	out = {} 
+	pv = {}
+	console.log(l.length)
 	for (var i=0;i<l.length;i++){
-		pushPv(out,l[i])
+		//console.log('counting'+i)
+		pushPv(pv,l[i])
 	}
-	return out
-	}
+	console.log('listato '+i+' elementi')
+	return pv
+}
 	
 /**esegue la query di buildQuery e ne  elabora il risultato ritornando la
  *  lista dei pv che rispettano tutte le clausole del filtro
@@ -86,10 +111,16 @@ function listPv(l){
 	var rawList 
 	self.executesQuery(self,query,function(e,o){
 		rawList = o
+		console.log('@#rawList')
+		console.time('counting')
 		countedList = self.listPv(rawList)// conto le occorrenze dei pv
+		console.timeEnd('counting')
 		//ottengo il numero di condizioni che devono essere soddisfatte
-		n = query['$or'].length
-		var out = self.filterList(countedList,n)
+		var n
+		if (query['$or']){n = query['$or'].length}
+		var out = {}//
+		out.data = countedList
+		out.n = n
 		next(null,out)
 		
 	})
@@ -111,26 +142,38 @@ function filterList(l,count){
 	}
 	return out
 }
+/**
+ * ritorna la condizione del filtro per i parametri
+ * @method getCondition4Parameter
+ * @param cl::int tc_clpar_id
+ * @param att::[int] insieme di tc_par_id da rispettare
+ * @return {tc_clpar_id:cl,tc_par_id:{$in:att}
+ * */
+function getCondition4Parameter(cl,att){
+	return {tc_clpar_id:cl,tc_par_id:{$in:att}}
+}
 /**crea la query che verrà eseguita da executesQuery
  * @method buildQuery
  * @param FilterParam: istanza di Filter <FilterParam,FilterPotential,Filterbrans>
- * @param query: {cl_id:int,att_id:[int]} setting del filtro
+ * @param setting: {cl_id:int,att_id:[int]} setting del filtro
  * @return Function::{$or[query]}*/
 function buildQuery(self,setting){
-	var query = {$or:[]}
-	cl = 'tc_cl'+self.family+'_id'
-	att ='tc_'+self.family+'_id'
-	keys = Object.keys(setting)
-	for( var k=0;k<keys.length;k++){
-		ch = keys[k]
-		var q = {}
-		q[cl] = ch
-		q[att] = {$in:setting[ch]}
-		query['$or'].push(q)
+	var query = {$or:[]};
+	var cl = 'tc_cl'+self.family+'_id';
+	var att ='tc_'+self.family+'_id';
+	var keys = Object.keys(setting);
+	var j = 0
+	var ch
+	do{
+		ch = parseInt(keys[j]);
+		query.$or.push(self.getCondition(ch,setting[ch]));
+		j += 1
 	}
-	return query
-}
-
+	while (j<keys.length);
+	return query;
+};
+FilterParameter.prototype.getCondition = getCondition4Parameter
+FilterParameter.prototype.filterList = filterList
 FilterParameter.prototype.makeQueryFunction = makeQueryFunction
 FilterParameter.prototype.executesQueries = executesQueries
 FilterParameter.prototype.buildQuery = buildQuery
@@ -140,4 +183,17 @@ FilterParameter.prototype.listPv = listPv
 FilterParameter.prototype.filterList = filterList
 FilterParameter.prototype.executesFilter = executesFilter
 exports.FilterParameter = FilterParameter
+
+
+
+FilterPotential.prototype.filterList = filterList
+FilterPotential.prototype.makeQueryFunction = makeQueryFunction
+FilterPotential.prototype.executesQueries = executesQueries
+FilterPotential.prototype.buildQuery = buildQuery
+FilterPotential.prototype.executesQuery = executesQuery
+FilterPotential.prototype.pushPv = pushPv
+FilterPotential.prototype.listPv = listPv
+FilterPotential.prototype.filterList = filterList
+FilterPotential.prototype.executesFilter = executesFilter
+exports.FilterPotential = FilterPotential
 

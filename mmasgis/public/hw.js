@@ -1,6 +1,6 @@
 var opacity = 1;
 Ext.BLANK_IMAGE_URL = './extjs/resources/themes/images/default/tree/s.gif';
-var url = "http://"+metmi.wms_ip+":8080/geoserver/wms"
+var url = "http://"+metmi.wms_ip+":7070/geoserver/wms"
 Ext.onReady(function() {
 	    //var gsat = new OpenLayers.Layer.Google("SATELLITE", {type: google.maps.MapTypeId.SATELLITE, sphericalMercator:true, 'maxExtent': _bounds}),
 		//var gmap = new OpenLayers.Layer.Google("Google Streets", {visibility: false});
@@ -32,7 +32,7 @@ Ext.onReady(function() {
             });
 		    var regioni		 = new OpenLayers.Layer.WMS(
 		    "regioni",
-		    "http://localhost:8080/geoserver/wms",
+		    url,
 		    {
 			layers: "metmi-italy:reg2011_g" ,
 			transparent: "true",
@@ -51,7 +51,7 @@ Ext.onReady(function() {
             });
 	var comuni	 = new OpenLayers.Layer.WMS(
 	    "comuni",
-	    "http://localhost:8080/geoserver/wms",
+	    url,
 	    {
 		layers: "com2011_g" ,
 		transparent: "true",
@@ -63,7 +63,7 @@ Ext.onReady(function() {
 	);
 	var province_wms = new OpenLayers.Layer.WMS(
 	    "province",
-	    "http://localhost:8080/geoserver/wms",
+	    url,
 	    {
 		layers: "metmi-italy:prov2011_g" ,
 		transparent: "true",
@@ -75,7 +75,7 @@ Ext.onReady(function() {
 	);
 	var cap_wms = new OpenLayers.Layer.WMS(
 	    "cap",
-	    "http://localhost:8080/geoserver/wms",
+	    url,
 	    {
 		layers: "metmi-italy:CapCR2006" ,
 		transparent: "true",
