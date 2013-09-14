@@ -25,6 +25,20 @@ function FilterParameter(req,db){
 	var self = this
 	db.collection('rel_pv_par', function(err, collection) {self.rel_pv_par = collection;});
 }
+	/**esegue le query sui marchi
+ * @class FilterBrand
+ * @param express.request
+ * @param mongoose.connection*/
+function FilterBrand(req,db){
+	this.family = 'mar'
+	this.census = req.censimento
+	this.db = db
+	//this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
+	var Collection = null;
+	this.rel_pv_mar = Collection;
+	var self = this
+	db.collection('rel_pv_mar', function(err, collection) {self.rel_pv_mar = collection;});
+}
 /**esegue le query sui potenziali
  * @class FilterParameter
  * @param express.request
@@ -67,10 +81,19 @@ function executesQueries(queries,next){
  * @param query prodotta da buildQuery::{$or[query]}
  * @Function callback*/
 function executesQuery(self,query,next){
-	console.log('executesQuery');
-	console.time('executesQuery')
-	self.rel_pv_par.find(query).toArray(function(e,o){if (e){return console.dir(e)}console.timeEnd('executesQuery');next(e,o)})
+	self.rel_pv_mar.find(query).toArray(function(e,o){if (e){return console.dir(e)};next(e,o)})
 }
+
+/**
+ * esegue la query di buildQuery per i marchi
+ * @method executesBrandsQuery
+ * @param FilterParam
+ * @param query prodotta da buildQuery::{$or[query]}
+ * @Function callback*/
+function executesBrandsQuery(self,query,next){
+	self.rel_pv_par.find(query).toArray(function(e,o){if (e){return console.dir(e)};next(e,o)})
+}
+
 /**
  * inserisce un oggetto in un associative array, contando il numero di occorrenze usando come chiave il referenced_pv
  * @method pusPv
@@ -90,12 +113,10 @@ function pushPv(ar,item){
 	 * @return {referenced_pv_id:int} */
 function listPv(l){
 	pv = {}
-	console.log(l.length)
 	for (var i=0;i<l.length;i++){
 		//console.log('counting'+i)
 		pushPv(pv,l[i])
 	}
-	console.log('listato '+i+' elementi')
 	return pv
 }
 	
@@ -111,10 +132,7 @@ function listPv(l){
 	var rawList 
 	self.executesQuery(self,query,function(e,o){
 		rawList = o
-		console.log('@#rawList')
-		console.time('counting')
 		countedList = self.listPv(rawList)// conto le occorrenze dei pv
-		console.timeEnd('counting')
 		//ottengo il numero di condizioni che devono essere soddisfatte
 		var n
 		if (query['$or']){n = query['$or'].length}
@@ -151,6 +169,24 @@ function filterList(l,count){
  * */
 function getCondition4Parameter(cl,att){
 	return {tc_clpar_id:cl,tc_par_id:{$in:att}}
+}/**
+ * ritorna la condizione del filtro per i potenziali
+ * @method getCondition4Potential
+ * @potam cl::int tc_clpot_id
+ * @potam att::[int] insieme di tc_pot_id da rispettare
+ * @return {tc_clpot_id:cl,tc_pot_id:{$in:att}
+ * */
+function getCondition4Potential(cl,att){
+	return {tc_clpot_id:cl,tc_pot_id:{$in:att}}
+}/**
+ * ritorna la condizione del filtro per i marchi
+ * @method getCondition4Brand
+ * @maram cl::int tc_clmar_id
+ * @maram att::[int] insieme di tc_mar_id da rispettare
+ * @return {tc_clmar_id:cl,tc_mar_id:{$in:att}
+ * */
+function getCondition4Brand(cl,att){
+	return {tc_clmar_id:cl,tc_mar_id:{$in:att}}
 }
 /**crea la query che verrà eseguita da executesQuery
  * @method buildQuery
@@ -184,8 +220,19 @@ FilterParameter.prototype.filterList = filterList
 FilterParameter.prototype.executesFilter = executesFilter
 exports.FilterParameter = FilterParameter
 
+FilterBrand.prototype.getCondition = getCondition4Brand
+FilterBrand.prototype.filterList = filterList
+FilterBrand.prototype.makeQueryFunction = makeQueryFunction
+FilterBrand.prototype.executesQueries = executesBrandsQuery
+FilterBrand.prototype.buildQuery = buildQuery
+FilterBrand.prototype.executesQuery = executesQuery
+FilterBrand.prototype.pushPv = pushPv
+FilterBrand.prototype.listPv = listPv
+FilterBrand.prototype.filterList = filterList
+FilterBrand.prototype.executesFilter = executesFilter
+exports.FilterBrand = FilterBrand
 
-
+FilterPotential.prototype.getCondition = getCondition4Potential
 FilterPotential.prototype.filterList = filterList
 FilterPotential.prototype.makeQueryFunction = makeQueryFunction
 FilterPotential.prototype.executesQueries = executesQueries
