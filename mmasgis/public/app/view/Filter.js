@@ -117,10 +117,13 @@ var myTopToolbar = new Ext.Toolbar({items : [
 							var filterParameters = getDigest(parametriPanel.getSelected())
 							var filterPotentials = getDigest(potenzialiPanel.getSelected())
 							var filterBrands = getDigest(marchiPanel.getSelected())
-							var filters = {}
-							filters.brand = filterBrands
-							filters.parameter = filterParameters
-							filters.potential = filterPotentials
+							var filters = []
+							if (Object.keys(filterBrands).length>0){filters.push({family:'mar',data:filterBrands})}
+							if (Object.keys(filterParameters).length>0){filters.push({family:'par',data:filterParameters})}
+							if (Object.keys(filterPotentials).length>0){filters.push({family:'pot',data:filterPotentials})}
+							//filters.parameter = filterParameters
+							//filters.potential = filterPotentials
+							console.log(filters)
 						},
 					},{
 						xtype:'button',

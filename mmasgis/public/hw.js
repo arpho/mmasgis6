@@ -20,7 +20,7 @@ Ext.onReady(function() {
 					     20037508.34, 20037508.34)
 		    };
 		    var panZoom = new OpenLayers.Control.PanZoom();
-		var map = new OpenLayers.Map('map', {
+		 map = new OpenLayers.Map('map', {
 				div: "gmap",
 				projection: "EPSG:900913",
 				displayProjection: "EPSG:4326",
@@ -30,7 +30,7 @@ Ext.onReady(function() {
 		    new OpenLayers.Control.Navigation()
 		]
             });
-		    var regioni		 = new OpenLayers.Layer.WMS(
+		     regioni		 = new OpenLayers.Layer.WMS(
 		    "regioni",
 		    url,
 		    {
@@ -49,7 +49,7 @@ Ext.onReady(function() {
                 multipleKey: "shiftKey",
                 toggleKey: "ctrlKey"
             });
-	var comuni	 = new OpenLayers.Layer.WMS(
+	 comuni	 = new OpenLayers.Layer.WMS(
 	    "comuni",
 	    url,
 	    {
@@ -61,7 +61,7 @@ Ext.onReady(function() {
 	    },
 	    {opacity: opacity,isBaseLayer: false,}
 	);
-	var province_wms = new OpenLayers.Layer.WMS(
+	 province = new OpenLayers.Layer.WMS(
 	    "province",
 	    url,
 	    {
@@ -73,7 +73,7 @@ Ext.onReady(function() {
 	    },
 	    {opacity: opacity,isBaseLayer: false,}
 	);
-	var cap_wms = new OpenLayers.Layer.WMS(
+	 cap = new OpenLayers.Layer.WMS(
 	    "cap",
 	    url,
 	    {
@@ -103,7 +103,7 @@ console.log('Province')
 		select = new OpenLayers.Layer.Vector("Selezioni", {styleMap: 
 		new OpenLayers.Style(OpenLayers.Feature.Vector.style["select"])
             });
-		map.addLayers([ghyb,regioni,province_wms,comuni	,cap_wms,select])
+		map.addLayers([ghyb,regioni,province,comuni	,cap,select])
 		//regioni		.events.register('click', map, handleMapClickReg);
 		selectionControl = new OpenLayers.Control.GetFeature({
                 protocol: OpenLayers.Protocol.WFS.fromWMSLayer(regioni),
@@ -137,7 +137,7 @@ console.log('Province')
 		dragpan = new OpenLayers.Control.DragPan();
 		map.addControl(dragpan);
 		selectionControl.deactivate()
-		province_wms.events.register('click', map, handleMapClickPro);
+		province.events.register('click', map, handleMapClickPro);
 		map.setCenter(new OpenLayers.LonLat(12.48,41.9).transform(
 		new OpenLayers.Projection("EPSG:4326"),
 		map.getProjectionObject()

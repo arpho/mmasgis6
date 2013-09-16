@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
  tc_clmar = require('../../schemas/tc_clmar'),
  tc_clpot = require('../../schemas/tc_clpot'),
  tc_rel_clmar_mar = require('../../schemas/tc_rel_clmar_mar'),
- und = require("underscore");
+intersect = require('./array_intersect.min').array_intersect;;
  async = require('async');
 /**esegue le query sui parametri
  * @class FilterParameter
@@ -22,9 +22,67 @@ function FilterParameter(req,db){
 	//this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
 	var Collection = null;
 	this.rel_pv_par = Collection;
+	this.rel = null
 	var self = this
-	db.collection('rel_pv_par', function(err, collection) {self.rel_pv_par = collection;});
+	db.collection('rel_pv_par', function(err, collection) {self.rel_pv_par = collection;
+	self.rel = collection});
 }
+
+/**
+ * wrapper di FilterParameter, FilterPotential,FilterBrand
+ * @class FullFilter
+ * @param express.request
+ * @param mongodb-node-native.connection
+ *  */
+ function FullFilter(req,db){
+	 this.parameter = new FilterParameter(req,db)
+	 this.potential = new FilterPotential(req,db)
+	 this.brand = new FilterBrand(req,db)
+}
+/** lancia i filtri in parallelo su tutti gli attributi richiesti
+ * @method runFilter
+ * @param istanza di FullFilter
+ * @param express.request il formato dei dati del filtro è [{family:<'par','mar','pot'>,data:{int:[int]}}]*/
+function runFilter(self,req,next){
+	var filterFunction = {}
+	var settings = req.filter
+	filterFunction.par = self.parameter
+	filterFunction.mar = self.brand
+	filterFunction.pot = self.potential
+	/**
+	 * genera la funzione che va eseguita in parallelo
+	 * @method generateFilter
+	 * @param {family:string, data:{..}
+	 * return Function
+	 * */
+	function generateFilter(item){
+		var family = item.family;
+		var filterAttribut = filterFunction[family];
+		var data = item.data
+		var query = filterAttribut.buildQuery(filterAttribut,data)
+		var out = function(cb){filterAttribut.executesFilteredList(filterAttribut,query,cb)}
+		return out
+	}
+	var functions = []
+	for (var i=0;i<settings.length;i++){
+		functions.push(generateFilter(settings[i]))
+	}
+	async.parallel(functions,function(err,results){
+		//console.log('results.length in poarallel: '+results.length)
+		var out;
+		if (results.length>1){
+			out = intersect(results[0],results[1]) //inizializzo 
+			for (var i=2;i<results.length;i++){
+				out = intersect(out,results[i])
+			}
+		}
+		else{
+			out = results[0]
+		}
+		next(err,out)})
+	
+}
+
 	/**esegue le query sui marchi
  * @class FilterBrand
  * @param express.request
@@ -36,8 +94,10 @@ function FilterBrand(req,db){
 	//this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
 	var Collection = null;
 	this.rel_pv_mar = Collection;
+	this.rel = null
 	var self = this
-	db.collection('rel_pv_mar', function(err, collection) {self.rel_pv_mar = collection;});
+	db.collection('rel_pv_mar', function(err, collection) {self.rel_pv_mar = collection;
+	self.rel = collection});
 }
 /**esegue le query sui potenziali
  * @class FilterParameter
@@ -50,8 +110,10 @@ function FilterPotential(req,db){
 	//this.Rel = this.conn.model('rel_pv_par', rel_pv_par);
 	var Collection = null;
 	this.rel_pv_par = Collection;
+	this.rel = null
 	var self = this
-	db.collection('rel_pv_pot', function(err, collection) {self.rel_pv_par = collection;});
+	db.collection('rel_pv_pot', function(err, collection) {self.rel_pv_par = collection;
+	self.rel = collection});
 }
 /**crea le funzioni che eseguono la query in async.parallel
  * @method makeQueryFunction
@@ -81,7 +143,7 @@ function executesQueries(queries,next){
  * @param query prodotta da buildQuery::{$or[query]}
  * @Function callback*/
 function executesQuery(self,query,next){
-	self.rel_pv_mar.find(query).toArray(function(e,o){if (e){return console.dir(e)};next(e,o)})
+	self.rel.find(query).toArray(function(e,o){if (e){return console.dir(e)};next(e,o)})
 }
 
 /**
@@ -91,7 +153,7 @@ function executesQuery(self,query,next){
  * @param query prodotta da buildQuery::{$or[query]}
  * @Function callback*/
 function executesBrandsQuery(self,query,next){
-	self.rel_pv_par.find(query).toArray(function(e,o){if (e){return console.dir(e)};next(e,o)})
+	self.rel_pv_mar.find(query).toArray(function(e,o){if (e){return console.dir(e)};next(e,o)})
 }
 
 /**
@@ -126,7 +188,7 @@ function listPv(l){
  * @param FilterParam
  * @param query ottenuta da buildQuery
  * @param Function callback
- * @note opera come wrapper di executeQuery, listPv e filterList*/
+ * @note opera come wrapper di executeQuery, listPv bisogna applicare filterList al risultato*/
  function executesFilter(self,query,next){
 	//eseguo la query
 	var rawList 
@@ -140,6 +202,29 @@ function listPv(l){
 		out.data = countedList
 		out.n = n
 		next(null,out)
+		
+	})
+}/**esegue la query di buildQuery e ne  elabora il risultato ritornando la
+ *  lista dei pv che rispettano tutte le clausole del filtro
+ * @method executeFilteredList
+ * @param FilterParam
+ * @param query ottenuta da buildQuery
+ * @param Function callback
+ * @note opera come wrapper di executeQuery, listPv e filterList*/
+ function executesFilteredList(self,query,next){
+	//eseguo la query
+	var rawList 
+	self.executesQuery(self,query,function(e,o){
+		rawList = o
+		countedList = self.listPv(rawList)// conto le occorrenze dei pv
+		//ottengo il numero di condizioni che devono essere soddisfatte
+		var n
+		if (query['$or']){n = query['$or'].length}
+		var out = {}//
+		out.data = countedList
+		out.n = n
+		var result = self.filterList(out.data,n)
+		next(null,result)
 		
 	})
 }
@@ -218,6 +303,7 @@ FilterParameter.prototype.pushPv = pushPv
 FilterParameter.prototype.listPv = listPv
 FilterParameter.prototype.filterList = filterList
 FilterParameter.prototype.executesFilter = executesFilter
+FilterParameter.prototype.executesFilteredList = executesFilteredList
 exports.FilterParameter = FilterParameter
 
 FilterBrand.prototype.getCondition = getCondition4Brand
@@ -230,6 +316,7 @@ FilterBrand.prototype.pushPv = pushPv
 FilterBrand.prototype.listPv = listPv
 FilterBrand.prototype.filterList = filterList
 FilterBrand.prototype.executesFilter = executesFilter
+FilterBrand.prototype.executesFilteredList = executesFilteredList
 exports.FilterBrand = FilterBrand
 
 FilterPotential.prototype.getCondition = getCondition4Potential
@@ -242,5 +329,7 @@ FilterPotential.prototype.pushPv = pushPv
 FilterPotential.prototype.listPv = listPv
 FilterPotential.prototype.filterList = filterList
 FilterPotential.prototype.executesFilter = executesFilter
+FilterPotential.prototype.executesFilteredList = executesFilteredList
 exports.FilterPotential = FilterPotential
-
+exports.FullFilter = FullFilter
+FullFilter.prototype.runFilter = runFilter

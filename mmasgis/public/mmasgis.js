@@ -108,8 +108,9 @@ Ext.define('My.controller.Contact', {
 	}
 });
 
-
 Ext.application({
+	
+	
 	name: 'My',
 	controllers: ['Contact'],
 	launch: function () {
@@ -127,10 +128,7 @@ Ext.application({
 					target: 'pvButton',
 					html: texts.txt1
 				});
-				selected_list.setTitle(texts.txt2)
-				selected_list.columns[0].setText(texts.txt25)
-				selected_list.columns[1].setText(texts.txt26)
-				selected_list.columns[2].setText(texts.txt27)
+				refreshTexts()
 				//console.log(Ext.get('pvButton'))//.qtip= 'ciao0'
 				Ext.gritter.add(
 														{
@@ -144,6 +142,7 @@ Ext.application({
 //			console.log('onReady')
 		}
 //})
+/*
 		var map = {
 					xtype: 'gmappanel',
 					id: 'mymap',
@@ -170,7 +169,7 @@ Ext.application({
 							};
 						}
 					}
-				}
+				}*/
 
 		Ext.QuickTips.init();
 		
@@ -263,7 +262,31 @@ Ext.application({
 								metmi.censimento = {census:'saloni',id:censimento_id}
 								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
 					}
-					},
+					},{
+						xtype: 'button',
+						id: 'radioRegioni',
+						handler: showRegioni,
+						tooltip:texts.txt71,
+						text: texts.txt72
+					},{
+						xtype: 'button',
+						id: 'radioCap',
+						handler: showCap,
+						tooltip:texts.txt73,
+						text: texts.txt74
+					},{
+						xtype: 'button',
+						id: 'radioProvince',
+						handler: showProvince,
+						tooltip:texts.txt75,
+						text: texts.txt76
+					},{
+						xtype: 'button',
+						id: 'radioComuni',
+						handler: showComuni,
+						tooltip:texts.txt77,
+						text: texts.txt78
+					}
 				] //eo tbar
 	})
 		My.app = this; //reference to app instance
@@ -452,6 +475,67 @@ function onMapClick(e) {
 }
 map.on('click', onMapClick);*/
 var geojson;
+ function showRegioni(){
+	 console.log(texts)
+							Ext.getCmp('radioRegioni').toggle(true);
+							Ext.getCmp('radioComuni').toggle(false);
+							Ext.getCmp('radioCap').toggle(false);
+							Ext.getCmp('radioProvince').toggle(false);
+					regioni.setVisibility(true)
+					comuni.setVisibility(false)
+					province.setVisibility(false)
+					cap.setVisibility(false)
+					//map.setBaseLayer(regioni)
+					//map.addLayer(regioni);
+							}
+ function showCap (){
+							Ext.getCmp('radioRegioni').toggle(false);
+							Ext.getCmp('radioComuni').toggle(false);
+							Ext.getCmp('radioCap').toggle(true);
+							Ext.getCmp('radioProvince').toggle(false);
+					regioni.setVisibility(false)
+					comuni.setVisibility(false)
+					province.setVisibility(false)
+					cap.setVisibility(true)
+					//map.setBaseLayer(cap)
+					//map.addLayer(cap);
+							};
+function refreshTexts(){
+	selected_list.setTitle(texts.txt2)
+	selected_list.columns[0].setText(texts.txt25)
+	selected_list.columns[1].setText(texts.txt26)
+	selected_list.columns[2].setText(texts.txt27)
+	Ext.getCmp('radioRegioni').setText(texts.txt72)
+	Ext.getCmp('radioRegioni').setTooltip(texts.txt71)
+	Ext.getCmp('radioProvince').setText(texts.txt76)
+	Ext.getCmp('radioProvince').setTooltip(texts.txt75)
+	Ext.getCmp('radioComuni').setText(texts.txt78)
+	Ext.getCmp('radioComuni').setTooltip(texts.txt77)
+	Ext.getCmp('radioCap').setText(texts.txt74)
+	Ext.getCmp('radioCap').setTooltip(texts.txt73)
+}
+ function showComuni(){
+							Ext.getCmp('radioRegioni').toggle(false);
+							Ext.getCmp('radioComuni').toggle(true);
+							Ext.getCmp('radioCap').toggle(false);
+							Ext.getCmp('radioProvince').toggle(false);
+					regioni.setVisibility(false)
+					comuni.setVisibility(true)
+					province.setVisibility(false)
+					cap.setVisibility(false)
+					//map.setBaseLayer(comuni)
+							}
+function showProvince(){
+							Ext.getCmp('radioRegioni').toggle(false);
+							Ext.getCmp('radioComuni').toggle(false);
+							Ext.getCmp('radioCap').toggle(false);
+							Ext.getCmp('radioProvince').toggle(true);
+					regioni.setVisibility(false)
+					comuni.setVisibility(false)
+					province.setVisibility(true)
+					cap.setVisibility(false)
+					//map.setBaseLayer(province)
+							}
 function onEachFeature(feature, layer) {
 	layer.on({
 		//mouseover: highlightFeature,
@@ -485,3 +569,5 @@ function onEachFeature_province(feature, layer) {
 
 	}
 });
+
+
