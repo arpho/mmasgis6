@@ -11,8 +11,8 @@ var istat_cliente = null
 var istat_utente = null
 var istat_selezione = null
 var istat = null
-var tc_istat = require('./tc_istat_id');
-var und = require("underscore");
+var tc_istat = require('./tc_istat_id'),
+intersect = require('./array_intersect.min').array_intersect;
 var includes = require('./includes')
 function switchDb(censimento){
 	/*cambia il database a cui si connette mongoose*/
@@ -146,7 +146,7 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 					}//eof 3° funzione //
 	],function(err,results){
 		if (err){next(err,null)}
-		var out = und.intersection(results[0],results[1],results[2]) //calcolo l'intersezione dei codici istat
+		var out = intersect(results[0],results[1],results[2]) //calcolo l'intersezione dei codici istat
 		var istat = {}
 		istat.intersection = out
 						console.log('istat intersect:')
