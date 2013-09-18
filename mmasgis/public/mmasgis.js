@@ -118,9 +118,9 @@ Ext.application({
 		//Ext.onReady(function(){
 	//creo l'oggetto utente
 	metmi.utente = new User(metmi.user)
-	//console.log(metmi.utente)
 	if (!metmi.utente.isLogged()){
 			showLogin(function(u){
+				console.log(metmi.utente)
 				metmi.user = Ext.ModelManager.create(u,'user')
 				texts = locals[metmi.user.getLocals()]
 				//.setTooltip(texts.msg1)
@@ -246,6 +246,7 @@ Ext.application({
 								alert(texts.txt21)
 							}
 							else{
+								console.log(metmi)
 								showCensus(metmi.user)
 							}
 					}
@@ -260,7 +261,7 @@ Ext.application({
 								var censimento = 'saloni'
 								var censimento_id = '520124179c8a82a68e7c7d6d'
 								metmi.censimento = {census:'saloni',id:censimento_id}
-								showPv(user,Ext.JSON.encode(s),censimento,censimento_id)
+								showPv(metmi.user,Ext.JSON.encode(s),censimento,censimento_id)
 					}
 					},{
 						xtype: 'button',

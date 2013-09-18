@@ -10,6 +10,7 @@ Ext.define('User',
 			{
 				name : 'user',
 				type : 'string'
+			},{ name:'nome'
 			},
 			{
 				name : 'logged',
@@ -50,6 +51,9 @@ Ext.define('User',
     isEnabled: function(){
 				return this.enabled
 	},
+	getName: function(){
+				return this.nome
+			},
     proxy : {
         type : 'rest',
         url : 'users/'

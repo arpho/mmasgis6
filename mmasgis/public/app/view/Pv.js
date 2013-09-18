@@ -44,7 +44,8 @@ function showPv(user,selection,censimento,censimento_id){
 				{
 					name :  "certificato",
 					header : texts.txt10,
-					dataIndex : 'certificato'
+					dataIndex : 'certificato',
+					hidden : true
 				},
 				{
 					name : "cf_pi",
@@ -74,16 +75,19 @@ function showPv(user,selection,censimento,censimento_id){
 					name : "data_aggiornamento",
 					header : texts.txt16,
 					dataIndex : "data_aggiornamento",
+					hidden: true
 				},
 				{
 					name : "email",
 					header : 'email',
-					dataIndex : 'email'
+					dataIndex : 'email',
+					hidden: true
 				},
 				{
 					name : "fax",
 					header : 'fax',
-					dataIndex : 'fax'
+					dataIndex : 'fax',
+					hidden: true
 				},{
 					name : "indirizzo",
 					header : texts.txt18,
@@ -91,12 +95,14 @@ function showPv(user,selection,censimento,censimento_id){
 				},{
 					name : "ins_data",
 					header : texts.txt19,
-					dataIndex : "ins_data"//{ type: Date, default: Date.now },
+					dataIndex : "ins_data",//{ type: Date, default: Date.now },
+					hidden: true
 				},
 				{
 					name : "ins_utente",
 					header : texts.txt20,
-					dataIndex : 'ins_utente'
+					dataIndex : 'ins_utente',
+					hidden: true
 				},
 			],
 		dockedItems:[{
@@ -141,7 +147,7 @@ function showPv(user,selection,censimento,censimento_id){
 	PvWindow = Ext.create('Ext.window.Window',{
 			title: texts.txt17,
 			height: 270,
-			width : 1430,
+			width : 900,
 			layout: 'border',
 			items: {
 								region: 'center',

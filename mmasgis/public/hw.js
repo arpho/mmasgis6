@@ -42,13 +42,7 @@ Ext.onReady(function() {
 		    },
 		    {opacity: opacity,isBaseLayer: false,}
 		);
-		control = new OpenLayers.Control.GetFeature({
-                protocol: OpenLayers.Protocol.WFS.fromWMSLayer(regioni),
-                box: true,
-                hover: true,
-                multipleKey: "shiftKey",
-                toggleKey: "ctrlKey"
-            });
+		
 	 comuni	 = new OpenLayers.Layer.WMS(
 	    "comuni",
 	    url,
@@ -85,6 +79,13 @@ Ext.onReady(function() {
 	    },
 	    {opacity: opacity,isBaseLayer: false}
 	);
+	control = new OpenLayers.Control.GetFeature({
+                protocol: OpenLayers.Protocol.WFS.fromWMSLayer(regioni),
+                box: true,
+                hover: true,
+                multipleKey: "shiftKey",
+                toggleKey: "ctrlKey"
+            });
 	function handleMapClickReg(evt)
 {
 var lonlat = map.getLonLatFromViewPortPx(evt.xy);
@@ -113,24 +114,55 @@ console.log('Province')
                 toggleKey: "ctrlKey"
             });
             control.events.register("featureunselected", this, function(e) {
-	            removeFeaturesFromGrid(e.feature.fid);
+	            //removeFeaturesFromGrid(e.feature.fid);
+	            console.log(e)
                 select.removeFeatures([e.feature]);
                 //console.debug(e.feature);
                 
             });
             //map.addControl(selectionControl);//CONTROLLO PER PAN E DRAG SULLA MAPPA
             map.addControl(control);
+            var button = new OpenLayers.Control.Button({
+    displayClass: "MyButton",visible:true, trigger: function(){console.log('bottone')}
+});
+comuni.setVisibility(false)
+cap.setVisibility(false)
+province.setVisibility(false)
+regioni.setVisibility(false)
+var layer = new OpenLayers.Layer.Vector();
+var panelControls = [
+ new OpenLayers.Control.Navigation(),
+ new OpenLayers.Control.DrawFeature(layer,
+     OpenLayers.Handler.Path,
+     {'displayClass': 'olControlDrawFeaturePath'})
+];
+var toolbar = new OpenLayers.Control.Panel({
+   displayClass: 'olControlEditingToolbar',
+   defaultControl: panelControls[0]
+});
+toolbar.addControls(panelControls);
+map.addControl(toolbar);
+            
+            
+            
             control.activate()
 			dragpan = new OpenLayers.Control.DragPan();
+			map.addControl(button);
 			map.addControl(dragpan);
 			//selectionControl.deactivate()
 			//dragpan.deactivate(); 
             //selectionControl.activate(); // attiva selectionControl
             //REGISTRO EVENTI PER SELEZIONARE CON CLICK IN E DESELEZIONARE CON CLICK OUT
             control.events.register("featureselected", this, function(e) {
-				console.log('selected')
-				select.addFeatures([e.feature]);
+				console.log('selected'+e.feature.fid)
+				var family = e.feature.fid.substring(0,3)
+				console.log(family)
+				console.log(e)
+				select.addFeatures([e.feature])
+				selected.utbs.push({classe:{'reg':'regione'}[family],nome:e.feature.attributes.NOME_REG,id:e.feature.attributes.COD_REG});
+				console.log(selected)
 				//addFeaturesToGrid(e.feature);			
+				Ext.data.StoreManager.lookup('metmiUtbStore').reload()
             });
 		//map.addControl(selectionControl);
 		//selectionControl.activate();
@@ -143,7 +175,7 @@ console.log('Province')
 		map.getProjectionObject()
 	    ), 7); // imposta il centro mappa e lo zomm
 	    
-		map.addControl(new OpenLayers.Control.LayerSwitcher());
+		//map.addControl(new OpenLayers.Control.LayerSwitcher());
 		map.events.register('zoomend', this, function (event) {
 				
 				var zLevel = map.getZoom();

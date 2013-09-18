@@ -20,8 +20,9 @@ function showCensus(user){
 	 * mostra la finestra per la scelta del censimento
 	 * @param User:  istanza del modello extjs di User che nell'applicazione è memorizzato in metmi.user */
 	var store = Ext.data.StoreManager.lookup('censusStore')
+	console.log(user)
 	var CensusGrid = Ext.create('Ext.grid.Panel',{
-		title: texts.txt5+user.data.nome,
+		title: texts.txt5+user.getName(),
 		viewConfig : {
 											style : { overflow: 'auto' }
 										},

@@ -16,3 +16,4 @@ regioni,
 comuni,
 province,
 cap;
+var layerBlank;
