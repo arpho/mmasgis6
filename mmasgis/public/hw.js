@@ -79,22 +79,21 @@ Ext.onReady(function() {
 	    },
 	    {opacity: opacity,isBaseLayer: false}
 	);
+	
 	control = new OpenLayers.Control.GetFeature({
                 protocol: OpenLayers.Protocol.WFS.fromWMSLayer(regioni),
-                box: true,
-                hover: true,
+                //box: ,
+                multiple:true,
+                hover: false,
                 multipleKey: "shiftKey",
                 toggleKey: "ctrlKey"
             });
-	function handleMapClickReg(evt)
-{
+	function handleMapClickReg(evt){
+		console.log('qwerty')
 var lonlat = map.getLonLatFromViewPortPx(evt.xy);
-//alert("latitude : " + lonlat.lat + ", longitude : " + lonlat.lon);
-console.log('regioni')
- 
+ console.log('Regioni')
 }
-function handleMapClickPro(evt)
-{
+function handleMapClickPro(evt){
 var lonlat = map.getLonLatFromViewPortPx(evt.xy);
 //alert("latitude : " + lonlat.lat + ", longitude : " + lonlat.lon);
 console.log('Province')
@@ -107,7 +106,7 @@ console.log('Province')
 		map.addLayers([ghyb,regioni,province,comuni	,cap,select])
 		//regioni		.events.register('click', map, handleMapClickReg);
 		selectionControl = new OpenLayers.Control.GetFeature({
-                protocol: OpenLayers.Protocol.WFS.fromWMSLayer(regioni),
+                protocol: OpenLayers.Protocol.WFS.fromWMSLayer(cap),
                 box: true,
                 toggle: true,
                 //multipleKey: "shiftKey",
@@ -122,6 +121,18 @@ console.log('Province')
             });
             //map.addControl(selectionControl);//CONTROLLO PER PAN E DRAG SULLA MAPPA
             map.addControl(control);
+	    var panel_type1 = new OpenLayers.Control.Panel({
+		
+    displayClass: 'Panel1'
+});
+    map.addControl(panel_type1);
+    var _aBtn1 = new OpenLayers.Control.Button({
+    displayClass: 'first',
+    trigger: function() {
+        alert('Button of OpenLayers.Control.TYPE_BUTTON type is pressed');
+    }
+});
+panel_type1.addControls([_aBtn1]);
             var button = new OpenLayers.Control.Button({
     displayClass: "MyButton",visible:true, trigger: function(){console.log('bottone')}
 });
@@ -130,11 +141,19 @@ cap.setVisibility(false)
 province.setVisibility(false)
 regioni.setVisibility(false)
 var layer = new OpenLayers.Layer.Vector();
-var panelControls = [
+var panelControls = [new OpenLayers.Control.Button({
+    displayClass: "CAPbutton",visible:true,  trigger: function(){showCAPs()}
+}),
+new OpenLayers.Control.Button({
+    displayClass: "TwonButton",visible:true, trigger: function(){showTowns()}
+}),
+new OpenLayers.Control.Button({
+    displayClass: "provinceButton",visible:true, trigger: function(){showProvinces()}
+}),
+  new OpenLayers.Control.Button({
+    displayClass: "RegionButton",visible:true,  trigger: function(){showRegions()}
+}),
  new OpenLayers.Control.Navigation(),
- new OpenLayers.Control.DrawFeature(layer,
-     OpenLayers.Handler.Path,
-     {'displayClass': 'olControlDrawFeaturePath'})
 ];
 var toolbar = new OpenLayers.Control.Panel({
    displayClass: 'olControlEditingToolbar',
@@ -154,13 +173,23 @@ map.addControl(toolbar);
             //selectionControl.activate(); // attiva selectionControl
             //REGISTRO EVENTI PER SELEZIONARE CON CLICK IN E DESELEZIONARE CON CLICK OUT
             control.events.register("featureselected", this, function(e) {
-				console.log('selected'+e.feature.fid)
+//				console.log('selected'+e.feature.fid)
 				var family = e.feature.fid.substring(0,3)
-				console.log(family)
-				console.log(e)
+		//		console.log(e)
+				var nome = {}
+				nome.reg = function(){return e.feature.attributes.NOME_REG}
+				nome.pro = function(){return e.feature.attributes.NOME_PRO}
+				nome.com = function(){return e.feature.attributes.NOME_COM}
+				nome.Cap = function(){return e.feature.attributes.nome1}
+				var id = {}
+				id.com = function(){return e.feature.attributes.PRO_COM}
+				id.reg = function(){return e.feature.attributes.COD_REG}
+				id.pro = function(){return e.feature.attributes.COD_PRO}
+				id.Cap = function(){return e.feature.attributes.nome}
 				select.addFeatures([e.feature])
-				selected.utbs.push({classe:{'reg':'regione'}[family],nome:e.feature.attributes.NOME_REG,id:e.feature.attributes.COD_REG});
-				console.log(selected)
+				console.log(e.feature.attributes)
+				selected.utbs.push({classe:{'reg':'regione','com':'comune','Cap':'cap','pro':'provincia'}[family],nome:nome[family](),id:id[family](),feature:e.feature});
+				//console.log(selected)
 				//addFeaturesToGrid(e.feature);			
 				Ext.data.StoreManager.lookup('metmiUtbStore').reload()
             });

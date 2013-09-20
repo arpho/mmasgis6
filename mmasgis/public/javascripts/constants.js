@@ -15,5 +15,9 @@ var map,
 regioni,
 comuni,
 province,
-cap;
-var layerBlank;
+cap,
+control,
+showRegions,
+showCAPs,
+showProvinces,
+showTowns;

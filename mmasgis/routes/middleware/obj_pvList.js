@@ -70,14 +70,14 @@ function getPv(req,data,next,K){
 	 * @return {Object} [Pv]
 	 * 
 	 * */
-function pvRetriever(req,data,next,K){
-	
+function pvRetriever(self,req,data,next,K){
+	console.log('pvRetriever')
 	 var switchDb = PvLObj.prototype.switchDb;
 	 var getPv = PvLObj.prototype.getPv;
 	//console.time('pvRetriever')
 	 async.series([
 			function(callback){/*switchDb(req.censimento);*/callback()},
-			function(callback){getPv(req,data,callback,K)},
+			function(callback){self.getPv(req,data,callback,K)},
 			function(callback){/*switchDb('mmasgis');*/callback()}
 	 ], function(err,results){
 		//console.timeEnd('pvRetriever')
@@ -162,7 +162,7 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 	 * @method {pcFetcher}
 	 * @param {req}
 	 * @param {Function} funzione di callback function(err,out)*/
-function pvFetcher(req,next){// 
+function pvFetcher(self,req,next){// 
 	
 	 //preparo la chiave  per la cache
 	 var par = {}
@@ -175,12 +175,12 @@ function pvFetcher(req,next){//
 		 console.log('no cache')
 		 var  selezione = req.selection 
 		 var getIstat = PvLObj.prototype.getIstat;
-		 var pvretriever = this.pvRetriever
-		 this.getUtb2(req,function(req,utb_u,utb_c,selezione){
+		 //var pvretriever = self.pvRetriever
+		 self.getUtb2(req,function(req,utb_u,utb_c,selezione){
 			//console.time('getIstat')
 			getIstat(req,utb_u,utb_c,selezione,function(a,b,c){
 				//console.timeEnd('getIstat')
-				pvRetriever(a,b,next,Key)
+				self.pvRetriever(a,b,next,Key)
 				 })
 		})
 	}

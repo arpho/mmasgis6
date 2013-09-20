@@ -120,7 +120,7 @@ app.post('/pv',function(req,res){
 		req.page = parseInt(req.body.limit)
 		req.start =  parseInt(req.body.start)
 		var results = {}
-		obj.pvFetcher(req,function(err,out){
+		obj.pvFetcher(obj,req,function(err,out){
 		results.data = out[1].data
 		results.success = true
 		results.total = out[1].count

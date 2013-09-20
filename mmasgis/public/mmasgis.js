@@ -114,13 +114,15 @@ Ext.application({
 	name: 'My',
 	controllers: ['Contact'],
 	launch: function () {
-		
+		showRegions = showRegioni
+		showCAPs = showCap
+		showProvinces = showProvince
+		showTowns = showComuni
 		//Ext.onReady(function(){
 	//creo l'oggetto utente
 	metmi.utente = new User(metmi.user)
 	if (!metmi.utente.isLogged()){
 			showLogin(function(u){
-				console.log(metmi.utente)
 				metmi.user = Ext.ModelManager.create(u,'user')
 				texts = locals[metmi.user.getLocals()]
 				//.setTooltip(texts.msg1)
@@ -142,34 +144,6 @@ Ext.application({
 //			console.log('onReady')
 		}
 //})
-/*
-		var map = {
-					xtype: 'gmappanel',
-					id: 'mymap',
-					zoomLevel: 6,
-					sphericalMercator:true,
-					gmapType: 'map',
-					mapConfOpts: ['enableScrollWheelZoom','enableDoubleClickZoom','enableDragging'],
-					mapControls: ['GSmallMapControl','GMapTypeControl'],
-					setCenter: {
-						lat:41.9,// 39.26940,
-						lng: 12.48//-76.64323
-					},
-					maplisteners: {
-						click: function(mevt){
-							Ext.Msg.alert('Lat/Lng of Click', mevt.latLng.lat() + ' / ' + mevt.latLng.lng());
-							var input = Ext.get('ac').dom,
-								sw = new google.maps.LatLng(36.68,12.04),
-								ne = new google.maps.LatLng(47,13)
-								bounds = new google.maps.LatLngBounds(sw,ne);
-							var options = {
-								location: mevt.latLng,
-								radius: '1000',
-								types: ['geocode']
-							};
-						}
-					}
-				}*/
 
 		Ext.QuickTips.init();
 		
@@ -213,24 +187,15 @@ Ext.application({
 					handler: function(grid, rowIndex, colindex) {
 				//console.log(rowIndex)
 				var classe_layer = selected_list.data.utbs[rowIndex].classe
-				var layer = selected_list.data.utbs[rowIndex].layer
+				var feature = selected_list.data.utbs[rowIndex].feature
+				//var layer = selected_list.data.utbs[rowIndex].layer
 				//console.log(selected_list.data.utbs[rowIndex])
-					//console.log()
+					console.log(classe_layer)
+					//console.log(layer)
+					console.log(select)
+					select.removeFeatures([feature])
 					selected.utbs.splice(rowIndex,1)
 					selected_list.getStore().reload()
-							//alert('click!'+rowIndex);
-					layer.setStyle({ // deseleziono la feature e ne ripristino il colore sulla mappa
-							weight: 5,
-							color: '#000',
-							dashArray: '',
-							fillOpacity: 0,
-							weight: 1,
-							opacity: 1,
-					});
-					L.geoJson(regioni, {
-
-			style:selectionStyle
-		})
 					}
 				}]
 			}
@@ -422,62 +387,9 @@ var selectionStyle= function(feature){
 					fillOpacity: 0.7
 			}
 	}
-/*L.geoJson(regioni, {
 
-			style:myStyle,/* function (feature) {
-				return feature.properties && feature.properties.style;
-			},
-
-			onEachFeature: onEachFeature,
-
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, {
-					radius: 8,
-					fillColor: "#ff7800",
-					color: "#000",
-					weight: 1,
-					opacity: 1,
-					fillOpacity:1
-				});
-			}
-		}).addTo(map);*/
-		
-/*L.geoJson(province, {
-
-			style: function (feature) {
-				return feature.properties && feature.properties.style;
-			},
-
-			//onEachFeature: onEachFeature_province,
-
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, {
-					radius: 8,
-					fillColor: "#ff7800",
-					color: "#000",
-					weight: 1,
-					opacity: 1,
-					fillOpacity: 0.8
-				});
-			}
-		}).addTo(map);*/
-/*
-var popup = L.popup();
-function onMapClick(e) {
-	console.log('click')
-	console.log(e.latlng)
-	console.log(e)
-	console.log(map)
-	//popup
-//		.setLatLng(e.latlng)
-		
-		//.setContent("You clicked the map at " + e.latlng.toString())
-//		.openOn(map);
-}
-map.on('click', onMapClick);*/
-var geojson;
  function showRegioni(){
-	 console.log(texts)
+	 control.protocol = OpenLayers.Protocol.WFS.fromWMSLayer(regioni)
 							Ext.getCmp('radioRegioni').toggle(true);
 							Ext.getCmp('radioComuni').toggle(false);
 							Ext.getCmp('radioCap').toggle(false);
@@ -490,6 +402,7 @@ var geojson;
 					//map.addLayer(regioni);
 							}
  function showCap (){
+	 control.protocol = OpenLayers.Protocol.WFS.fromWMSLayer(cap)
 							Ext.getCmp('radioRegioni').toggle(false);
 							Ext.getCmp('radioComuni').toggle(false);
 							Ext.getCmp('radioCap').toggle(true);
@@ -516,6 +429,7 @@ function refreshTexts(){
 	Ext.getCmp('radioCap').setTooltip(texts.txt73)
 }
  function showComuni(){
+	 control.protocol = OpenLayers.Protocol.WFS.fromWMSLayer(comuni)
 							Ext.getCmp('radioRegioni').toggle(false);
 							Ext.getCmp('radioComuni').toggle(true);
 							Ext.getCmp('radioCap').toggle(false);
@@ -527,6 +441,7 @@ function refreshTexts(){
 					//map.setBaseLayer(comuni)
 							}
 function showProvince(){
+	 control.protocol = OpenLayers.Protocol.WFS.fromWMSLayer(province)
 							Ext.getCmp('radioRegioni').toggle(false);
 							Ext.getCmp('radioComuni').toggle(false);
 							Ext.getCmp('radioCap').toggle(false);

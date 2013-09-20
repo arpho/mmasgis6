@@ -14,8 +14,11 @@ function getPv(query,censimento,next)
 	//mongoose.connect('localhost',censimento);// switch database to the census
 	var conn = mongoose.createConnection('mongodb://localhost/'+censimento);
 	var pv = conn.model('Pv', PvSchema);
+	console.log('getPv##')
+	console.log(query)
 	pv.find(query,null,{sort: {nome1: 1}},function(err,out){
-		console.log('risultato ss.getPv: '+out.length)
+		console.log(err)
+		console.log('risultato ss.getPv: '+out)
 		
 		next(err,out)
 						//*console.dir(out)
@@ -25,6 +28,7 @@ function getPv(query,censimento,next)
 function getPvFromId(selezione,censimento,next)
 {
 	var Pv = []
+	console.log('getPvFromId')
 	for (var i=0;i<selezione.pv.length;i++){Pv.push(selezione.pv[i].id)}
 	getPv({pv_id:{$in:Pv}},censimento,function(err,out)
 	{
