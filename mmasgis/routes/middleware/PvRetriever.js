@@ -110,20 +110,15 @@ function getPv(results,req,next){
 	/**@method getPv
 	 * @param dummy
 	 * */
-	 console.log('data in getPv')
-	 console.log(results)
 	async.parallel([//getPv in intersection
 							function(callback){
 								solver.getPv({tc_istat_id:{$in:results[0].intersection},owner:{$exists:false}},
 								req.censimento,
 								function(err,out){
 									
-									console.log('next in getPv')
 									if (err){console.log('errore');console.dir(err)}
-									console.log("prima parallel cerca i pv nell'intersezione")
 									console.dir(out.length)
 									callback(err,out)
-									console.log('end next getPv')
 								})
 							}, //eof prima funzione parallel 
 							// get Pv<- cliente in selection
@@ -131,20 +126,19 @@ function getPv(results,req,next){
 								solver.getPv({tc_istat_id:{$in:results[0].selection},owner:req.user.cliente_id},
 								req.censimento,
 								function(err,out){
-									console.log('seconda parallel cerca i pv di proprietà')
 									//console.log(out.length)
 									if (err){console.log(err)}
 									callback(err,out)})
 								} // eof seconda funzione parallel 
 						], // unifico i pv e li rimando in dietro
 						function(err,results){
-							console.log('parallel results  ho preso le due serie di  pv getPv')
-							console.log(results.length)
-							console.log('parallel0')
-							console.dir(results[0].length)//lista A pv originali
-							console.log('parallel1')//lista B pv prprietari
+							//console.log('parallel results  ho preso le due serie di  pv getPv')
+							//console.log(results.length)
+							//console.log('parallel0')
+							//console.dir(results[0].length)//lista A pv originali
+							//console.log('parallel1')//lista B pv prprietari
 							var C = includes.pvListMerger(results[0],results[1]) //paging va qui
-							console.dir(results[1].length)
+							//console.dir(results[1].length)
 							var out = C
 							next(err,out)
 							//devo creare una lista  unica degli _id dei pv da inviare al client

@@ -33,22 +33,17 @@ function getPvCap(req,data,next,K){
 	  //creo una funzioneda usare in async.parallel per maggiore leggibilità, after sarà la funzione di callback passata da async.parallel
 	 var a = function(after){
 		 //cerco i pv originali, non modificati dall'utente
-		 console.log('funzione a')
-		 console.log('req.censimento in obj_pvList.getPv: '+req.censimento)
 		 var query = {$or:[{tc_istat_id:{$in:data.intersection},owner:{$exists:false}},{cap:{$in:cap},owner:{$exists:false}}]};
 		 //db.pv.find({$or:[{tc_istat_id:{$in:[1772]},owner:{$exists:false}},{cap:{$in:['95014']},owner:{$exists:false}}]})
 		 solver.getPv(query,req.censimento,function(err,out){
 			 if(err){console.dir(err);console.log('errore a')}
-				console.log('callback funzione a')
 			 after(err,out)
 			}
 		)}
 		var b = function(after){
-			console.log('funzione b')
 			var query = {$or:[{tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},{cap:{$in:cap},owner:req.session.user._id.toString()}]}
 			solver.getPv(query,req.censimento,function(err,out){
 				if(err){console.dir(err);console.log('errore b')}
-				console.log('callback funzione b')
 				after(err,out)
 			})
 			}
@@ -57,16 +52,13 @@ function getPvCap(req,data,next,K){
 		//cerco i pv modificati dagli utenti
 		function(callback){b(callback)}
 	],function(err,results){
-		console.log('start: '+req.start)
-		console.log('page: '+req.page)
-		console.log(results)
 		var out = includes.pvListMerger(results[0],results[1],req.page,req.start)
 		var item = {}
 		item.data = out.fullData
 		item.count = out.count
 		cache.put(K.getKey(),item,10*60*1000) // conservo il dato in cache per 10 minuti
 		//console.log(out)
-		cache
+		//cache
 		next(err,out)
 	} //eof optional
 ) // eof parallel

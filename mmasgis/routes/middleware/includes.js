@@ -20,7 +20,6 @@ function pvListMerger(A,B,page,start){
 	* @param {int} dimensione della pagina, opzionale
 	* @param {int} item di partenza, opzionale
 	* @return {data:[Pv],count:int}*/
-	console.log('includes')
 	var results  = {}
 	var C = []
 	if (B.length==0){C = A

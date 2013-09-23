@@ -14,11 +14,8 @@ function getPv(query,censimento,next)
 	//mongoose.connect('localhost',censimento);// switch database to the census
 	var conn = mongoose.createConnection('mongodb://localhost/'+censimento);
 	var pv = conn.model('Pv', PvSchema);
-	console.log('getPv##')
-	console.log(query)
 	pv.find(query,null,{sort: {nome1: 1}},function(err,out){
 		console.log(err)
-		console.log('risultato ss.getPv: '+out)
 		
 		next(err,out)
 						//*console.dir(out)

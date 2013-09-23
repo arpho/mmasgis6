@@ -3,6 +3,7 @@ var Provincia = require('../../models/provincia');
 var Comune = require('../../models/comune');
 var async = require('async')
 var clc = require('./classCollector')
+var cache = require('memory-cache');
 
 var parallelRegione = function(selection, callback){
 		getIstatFromRegione(selection,function(err,istat){callback(null,istat)})
@@ -30,22 +31,30 @@ var parallelPv = function(selection,callback){
 
 function getIstat4Selection(selezione,next){
 	var selection = clc.classCollector(selezione)
-	async.parallel([
-		function(callback){parallelRegione(selection.regione,callback)},
-		function(callback){parallelProvincia(selection.provincia,callback)},
-		function(callback){parallelCap(selection.cap,callback)},
-		function(callback){parallelComune(selection.comune,callback)},
-		function(callback){parallelPv(selection.pv,callback)}
-	],
-	function(err,results){
-		//console.log('end parallel')
-		//console.log(results)
-		//console.log('end result optional function di getIstat4Selection 42')
-		var total = []
-		for (var i=0;i<results.length;i++){total = total.concat(results[i])}
-		next(null, total)
-		})
+	if (cache.get(selezione)==null){
+		console.log('selezione non in cache')
+		async.parallel([
+			function(callback){parallelRegione(selection.regione,callback)},
+			function(callback){parallelProvincia(selection.provincia,callback)},
+			function(callback){parallelCap(selection.cap,callback)},
+			function(callback){parallelComune(selection.comune,callback)},
+			function(callback){parallelPv(selection.pv,callback)}
+		],
+		function(err,results){
+			//console.log('end parallel')
+			//console.log(results)
+			//console.log('end result optional function di getIstat4Selection 42')
+			var total = []
+			for (var i=0;i<results.length;i++){total = total.concat(results[i])}
+			cache.put(selezione,total,5*60*1000)
+			next(null, total)
+			})
 	}
+	else{
+		console.log('selezione non in cache')
+		next(null,cache.get(selezione))
+	}
+}
 function getProvince(regioni,next)
 /*
  * ritorna la lista dei cod_pro appartenenti alla lista delle regioni passate

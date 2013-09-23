@@ -52,7 +52,6 @@ app.post('/attributs',function(req,res){
 	var AW = new aw(req,'localhost')
 	var family = req.body.family
 	var Id = ObjectId(req.body.pv__id)
-	console.log(req.body)
 	
 	AW.getLists(Id,AW,function(e,o){res.send(o,200)})
 	//AW.AWgetAllAttributs(AW,cl_id,function(e,o){res.send(o,200)})
@@ -66,7 +65,6 @@ app.post('/classes4Filter',function(req,res){
 	req.censimento = req.body.censimento
 	var AW = new aw(req,'localhost')
 	AW.getClasses4Filter(req,AW,function(e,o){
-		console.log('risposta 4filter')
 		res.send(o,200)})
 	})
 app.post('/filterAttributs',function(req,res){
@@ -75,7 +73,6 @@ app.post('/filterAttributs',function(req,res){
 //	var Id = ObjectId(req.body.cl_id)
 	req.censimento = req.body.censimento
 	Id = ObjectId(req.body.pv__id)
-	console.log('linea 74')
 	data.success = true
 	data.attributs = {}
 	data.attributs.params = {}
