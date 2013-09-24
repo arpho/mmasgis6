@@ -200,60 +200,7 @@ Ext.application({
 				}]
 			}
 		],
-		tbar: [
-					{
-						xtype: 'button',
-						icon: 'images/icon1616.png',
-						id: 'pvButton',
-						disabled: false,
-						handler: function(){
-							if (selected.utbs.length ==0){
-								alert(texts.txt21)
-							}
-							else{
-								console.log(metmi)
-								showCensus(metmi.user)
-							}
-					}
-					},					{
-						xtype: 'button',
-						icon: 'images/icon1616.png',
-						id: 'stubButton',
-						disabled: false,
-						handler: function(){
-								alert('test')
-								var s = [{utb:{classe:'regione',id:9}}]
-								var censimento = 'saloni'
-								var censimento_id = '520124179c8a82a68e7c7d6d'
-								metmi.censimento = {census:'saloni',id:censimento_id}
-								showPv(metmi.user,Ext.JSON.encode(s),censimento,censimento_id)
-					}
-					},{
-						xtype: 'button',
-						id: 'radioRegioni',
-						handler: showRegioni,
-						tooltip:texts.txt71,
-						text: texts.txt72
-					},{
-						xtype: 'button',
-						id: 'radioCap',
-						handler: showCap,
-						tooltip:texts.txt73,
-						text: texts.txt74
-					},{
-						xtype: 'button',
-						id: 'radioProvince',
-						handler: showProvince,
-						tooltip:texts.txt75,
-						text: texts.txt76
-					},{
-						xtype: 'button',
-						id: 'radioComuni',
-						handler: showComuni,
-						tooltip:texts.txt77,
-						text: texts.txt78
-					}
-				] //eo tbar
+		
 	})
 		My.app = this; //reference to app instance
 		Ext.create('Ext.container.Viewport', {
@@ -268,10 +215,71 @@ Ext.application({
 				width: 270,
 				//html: 'This is East',
 				collapsible: true,
+				//layout: 'fit',
 				items: selected_list
-			},  {
+			}, {
+				region: 'north',
+				tbar:{ 
+					xtype: 'toolbar',
+					height: 26,
+					items: [
+						{
+							xtype: 'button',
+							icon: 'images/icon1616.png',
+							id: 'pvButton',
+							disabled: false,
+							handler: function(){
+								if (selected.utbs.length ==0){
+									alert(texts.txt21)
+								}
+								else{
+									console.log(metmi)
+									showCensus(metmi.user)
+								}
+							}
+						},					{
+							xtype: 'button',
+							icon: 'images/icon1616.png',
+							id: 'stubButton',
+							disabled: false,
+							handler: function(){
+									alert('test')
+									var s = [{utb:{classe:'regione',id:9}}]
+									var censimento = 'saloni'
+									var censimento_id = '520124179c8a82a68e7c7d6d'
+									metmi.censimento = {census:'saloni',id:censimento_id}
+									showPv(metmi.user,Ext.JSON.encode(s),censimento,censimento_id)
+							}
+						},{
+							xtype: 'button',
+							id: 'radioRegioni',
+							handler: showRegioni,
+							tooltip:texts.txt71,
+							text: texts.txt72
+						},{
+							xtype: 'button',
+							id: 'radioCap',
+							handler: showCap,
+							tooltip:texts.txt73,
+							text: texts.txt74
+						},{
+							xtype: 'button',
+							id: 'radioProvince',
+							handler: showProvince,
+							tooltip:texts.txt75,
+							text: texts.txt76
+						},{
+							xtype: 'button',
+							id: 'radioComuni',
+							handler: showComuni,
+							tooltip:texts.txt77,
+							text: texts.txt78
+						}
+					]
+				}
+			} , {
 				id: 'gmap',
-				height: 771,
+				//height: 771,
 				//content injected by the controller
 				collapsible: false,
 				region: 'center',

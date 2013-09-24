@@ -89,7 +89,6 @@ Ext.onReady(function() {
                 toggleKey: "ctrlKey"
             });
 	function handleMapClickReg(evt){
-		console.log('qwerty')
 var lonlat = map.getLonLatFromViewPortPx(evt.xy);
  console.log('Regioni')
 }
@@ -114,8 +113,28 @@ console.log('Province')
             });
             control.events.register("featureunselected", this, function(e) {
 	            //removeFeaturesFromGrid(e.feature.fid);
+		    console.log('unselect')
 	            console.log(e)
+		    var id = {}
+			id.com = function(){return e.feature.attributes.PRO_COM}
+			id.reg = function(){return e.feature.attributes.COD_REG}
+			id.pro = function(){return e.feature.attributes.COD_PRO}
+			id.Cap = function(){return e.feature.attributes.nome}
+		    var family =  e.feature.fid.substring(0,3)
+		    //devo trovare l'elemento corrispondente alla feature deselezionata e rimuoverlo da selected_utbs
+		    var found = false
+		    var Id = id[family]()
+		    var j 
+		    for (var i=0;((i< selected.utbs.length)&& !found);i++){
+			    if((selected.utbs[i].classe== {'reg':'regione','com':'comune','Cap':'cap','pro':'provincia'}[family]) &&(selected.utbs[i].id == Id)){
+				found = true
+				j = i
+			    }
+		    }
+			selected.utbs.splice(j,1)
+		    //{classe:{'reg':'regione','com':'comune','Cap':'cap','pro':'provincia'}[family]
                 select.removeFeatures([e.feature]);
+		Ext.data.StoreManager.lookup('metmiUtbStore').reload()
                 //console.debug(e.feature);
                 
             });
@@ -125,14 +144,14 @@ console.log('Province')
 		
     displayClass: 'Panel1'
 });
-    map.addControl(panel_type1);
+    //map.addControl(panel_type1);
     var _aBtn1 = new OpenLayers.Control.Button({
     displayClass: 'first',
     trigger: function() {
         alert('Button of OpenLayers.Control.TYPE_BUTTON type is pressed');
     }
 });
-panel_type1.addControls([_aBtn1]);
+//panel_type1.addControls([_aBtn1]);
             var button = new OpenLayers.Control.Button({
     displayClass: "MyButton",visible:true, trigger: function(){console.log('bottone')}
 });
@@ -141,7 +160,7 @@ cap.setVisibility(false)
 province.setVisibility(false)
 regioni.setVisibility(false)
 var layer = new OpenLayers.Layer.Vector();
-var panelControls = [new OpenLayers.Control.Button({
+/*var panelControls = [new OpenLayers.Control.Button({
     displayClass: "CAPbutton",visible:true,  trigger: function(){showCAPs()}
 }),
 new OpenLayers.Control.Button({
@@ -159,15 +178,15 @@ var toolbar = new OpenLayers.Control.Panel({
    displayClass: 'olControlEditingToolbar',
    defaultControl: panelControls[0]
 });
-toolbar.addControls(panelControls);
-map.addControl(toolbar);
-            
+//toolbar.addControls(panelControls);
+//map.addControl(toolbar);
+            */
             
             
             control.activate()
 			dragpan = new OpenLayers.Control.DragPan();
-			map.addControl(button);
-			map.addControl(dragpan);
+			//map.addControl(button);
+			//map.addControl(dragpan);
 			//selectionControl.deactivate()
 			//dragpan.deactivate(); 
             //selectionControl.activate(); // attiva selectionControl
