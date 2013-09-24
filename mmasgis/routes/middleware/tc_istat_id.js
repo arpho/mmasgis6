@@ -31,7 +31,7 @@ var parallelPv = function(selection,callback){
 
 function getIstat4Selection(selezione,next){
 	var selection = clc.classCollector(selezione)
-	if (cache.get(selezione)==null){
+	if (cache.get(JSON.stringify(selection))==null){
 		console.log('selezione non in cache')
 		async.parallel([
 			function(callback){parallelRegione(selection.regione,callback)},
@@ -46,13 +46,13 @@ function getIstat4Selection(selezione,next){
 			//console.log('end result optional function di getIstat4Selection 42')
 			var total = []
 			for (var i=0;i<results.length;i++){total = total.concat(results[i])}
-			cache.put(selezione,total,5*60*1000)
+			cache.put(JSON.stringify(selection),total,5*60*1000)
 			next(null, total)
 			})
 	}
 	else{
-		console.log('selezione non in cache')
-		next(null,cache.get(selezione))
+		console.log('selezione in cache')
+		next(null,cache.get(JSON.stringify(selection)))
 	}
 }
 function getProvince(regioni,next)
