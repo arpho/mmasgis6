@@ -66,6 +66,7 @@ function getPv(req,data,next,K){
 	 * 
 	 * */
 function pvRetriever(self,req,data,next,K){
+	console.log('old pvretriever')
 	 var switchDb = PvLObj.prototype.switchDb;
 	 var getPv = PvLObj.prototype.getPv;
 	//console.time('pvRetriever')
@@ -100,7 +101,6 @@ function getUtb2(req,next){
 	 * @param {utb_utente}:{classe:String<regione,provincia,comune,Pv>
 	 * @param {utb_selection}:{classe:String<regione,provincia,comune,Pv>*/
 function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
-	
 	async.parallel([
 				function(callback){
 					tc_istat.getIstat4Selection(utb_cliente,function(err,out){
@@ -166,7 +166,7 @@ function pvFetcher(self,req,next){//
 		})
 	}
 	else{
-		console.log('cache found:')
+		console.log('pvList cache found:')
 		var d = cache.get(Key.getKey())
 		var out = {}
 		out.data = d.data.slice(req.start,req.start+req.limit)

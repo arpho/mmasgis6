@@ -124,6 +124,9 @@ var myTopToolbar = new Ext.Toolbar({items : [
 							//filters.parameter = filterParameters
 							//filters.potential = filterPotentials
 							console.log(filters)
+							store = Ext.data.StoreManager.lookup('PvStore')
+							store.loadPage(1)
+							store.getProxy().extraParams.filter = JSON.stringify(filters)
 						},
 					},{
 						xtype:'button',

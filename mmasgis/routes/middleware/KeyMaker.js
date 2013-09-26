@@ -20,3 +20,9 @@ KeyMaker.prototype.getKey = function(){
 	'utb_customer:'+this.utb_customer+'filter:'+this.filter
 }
 exports.KeyMaker = KeyMaker
+
+function FilteredKeyMaker(par){
+	//FilteredKeyMaker.prototype = new FilteredKeyMaker(par)
+}
+FilteredKeyMaker.prototype.constructor = FilteredKeyMaker
+exports.FilteredKeyMaker = FilteredKeyMaker

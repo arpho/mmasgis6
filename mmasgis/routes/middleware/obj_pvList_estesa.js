@@ -28,7 +28,6 @@ function getPvCap(req,data,next,K){
 	for(var i=0;i<n;i++){
 		if(selection[i]['utb']['classe']=='cap'){cap.push(selection[i]['utb']['id'])}
 		}
-		console.log(cap)
 	
 	  //creo una funzioneda usare in async.parallel per maggiore leggibilità, after sarà la funzione di callback passata da async.parallel
 	 var a = function(after){
@@ -72,8 +71,6 @@ function getPv(req,data,next,K){
 		 //cerco i pv originali, non modificati dall'utente
 		 console.log('req.censimento in obj_pvList.getPv: '+req.censimento)
 		 solver.getPv({tc_istat_id:{$in:data.intersection},owner:{$exists:false}},req.censimento,function(err,out){
-			 console.log('pv originali')
-			 console.log(out.length)
 			 after(err,out)
 			}
 		)}
@@ -87,8 +84,6 @@ function getPv(req,data,next,K){
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){callback(err,out)})}
 	],function(err,results){
-		console.log('start: '+req.start)
-		console.log('page: '+req.page)
 		var out = includes.pvListMerger(results[0],results[1],req.page,req.start)
 		var item = {}
 		item.data = out.fullData
@@ -104,7 +99,6 @@ function getPv(req,data,next,K){
 function pvFetcher(self,req,next){// 
 	
 	 //preparo la chiave  per la cache
-	 console.log('pvFetcher start')
 	 var par = {}
 	 par.user = req.session.user 
 	par.filter ={parametri:[{class_id:1,id:1}]}
@@ -121,25 +115,21 @@ function pvFetcher(self,req,next){//
 				//console.timeEnd('getIstat')
 				
 				self.pvRetriever(self,a,b,next,Key)
-	 console.log('pvFetcher stop')
 				 })
 		})
 	}
 	else{
-		console.log('cache found:')
+		console.log(' pvList_estesa cache found:')
 		var d = cache.get(Key.getKey())
 		var out = {}
-		console.log('start: '+req.start)
-		console.log('end: '+(req.start+req.limit))
 		out.data = d.data.slice(req.start,req.start+req.limit)
 		out.count = d.count
 		var results = [null,out] // uniforme al risultato di pvRetriever
-	 console.log('pvFetcher stop')
 		next(null,results)
 	}
 	 
 }
-obj2.prototype = new pvListObj.PvLObj()
+obj2.prototype = new pvListObj.PvLObj() // estendo PvLobj
 obj2.prototype.getPv = getPvCap// ancora non funziona riportare a getPv in produzione
 obj2.prototype.pvFetcher = pvFetcher
 exports.obj2 = obj2

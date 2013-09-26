@@ -67,10 +67,6 @@ function Parameter( req,conn){
 	 * @return [mongoose.model.attribut*/
 	 function getAttributs(obj,Id,next){
 		 field = 'tc_cl'+obj.family+'_id'
-		 console.log('@@Parameter.Tc.find')
-		 console.log(typeof(obj.Tc.find))
-		 console.log('next')
-		 console.log(next)
 		 var query = {}
 		 query[field] = Id
 		 obj.Tc.find(query,function(e,o){next(e,o)})
@@ -83,13 +79,12 @@ function Parameter( req,conn){
 	function getClasses(next){
 		//console.log('classes: '+this.family)
 		if(cache.get('classes'+this.census+this.family)==null){
-			console.log('classes'+this.census+this.family+' non in cache')
 			this.Tc_cl.find({},null,{sort: {ordine: 1}},function(err,out){
 					cache.put('classes'+this.census+this.family,out,5*60*1000)
 					next(err,out)
 			})//.sort({ordine:1})
 		}
-		else{ console.log('trovato: '+'classes'+this.census+this.family)
+		else{ //console.log('trovato: '+'classes'+this.census+this.family)
 			next(null,cache.get('classes'+this.census+this.family))}
 	}
 	/**
@@ -342,9 +337,6 @@ function getClasses4Filter(req,obj,next){
  * */
  function AWgetAttributs(obj,Id,family,next){
 	 tc = {}
-	 console.log('getattributs4 '+family)
-	 console.log('self')
-	 console.log(obj.Parameter)
 	 tc.par = function(Id,next){obj.Parameter.getAttributs(obj.Parameter,Id,next)}
 	 tc.pot = function(Id,next){obj.Potential.getAttributs(obj.Potential,Id,next)}
 	 tc.mar = function(Id,next){obj.Brand.getBrands(obj.Brand,Id,next)  }
@@ -362,12 +354,11 @@ function getClasses4Filter(req,obj,next){
 	 var getPotentials = function(id,cb){self.AWgetAttributs(self,id,'pot',cb)}
 	 var getbrands = function(id,cb){self.AWgetAttributs(self,id,'mar',cb)}
 	 async.parallel([
-				 function(callback){console.log('//par');getParameters(Id,callback)},
-				 function(callback){console.log('//po');getPotentials(Id,callback)},
-				 function(callback){console.log('//mar');getbrands(Id,callback)}
+				 function(callback){getParameters(Id,callback)},
+				 function(callback){getPotentials(Id,callback)},
+				 function(callback){getbrands(Id,callback)}
 			 ],function(err,results){
 				 var out = {}
-				 console.log(results)
 				 out.success = true
 				 out.attributs = {}
 				 out.attributs.params = {}
