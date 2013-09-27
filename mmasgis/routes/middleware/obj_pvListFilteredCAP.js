@@ -20,7 +20,7 @@ mongoose = require('mongoose')
 var intersect = require('./array_intersect.min').array_intersect;
 var includes = require('./includes')
 var ObjectId = mongoose.Types.ObjectId
-
+var Debug = require('../../public/javascripts/constants').Debug
 /**recupera le due liste  di pv dal database  e le passa a next
 	 * @method getPv
 	 * @param Object richiesta di express*
@@ -57,7 +57,7 @@ function getPv(req,data,next,K){
 		item.data = out.fullData
 		item.count = out.count
 		cache.put(K.getKey(),item,10*60*1000) // conservo il dato in cache per 10 minuti
-		//console.log(out)
+		//Debug(out)
 		cache
 		next(err,out)
 	} //eof optional
@@ -71,7 +71,7 @@ function getPv(req,data,next,K){
 	 * @param {utb_utente}:{classe:String<regione,provincia,comune,Pv>
 	 * @param {utb_selection}:{classe:String<regione,provincia,comune,Pv>*/
 function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
-	//console.log(self.db)
+	//Debug(self.db)
 	Filter = new filter(req,self.db)
 	async.parallel([
 				function(callback){
@@ -92,7 +92,7 @@ function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 					tc_istat.getIstat4Selection(utb_selection,function(err,out){
 					if (err) {
 						callback(err)
-						console.log('utb_selection error')
+						Debug('utb_selection error')
 					}
 					istat_selezione = out
 					callback(err,out)
@@ -100,7 +100,7 @@ function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 					
 					},//eof 3° funzione //
 				function(callback){
-					Filter.runFilter(Filter,req,function(e,o){console.log('callback filter');console.log(o.length);callback(e,o);})
+					Filter.runFilter(Filter,req,function(e,o){Debug('callback getIstat filter');Debug(o.length);callback(e,o);})
 				}
 	],function(err,results){
 		if (err){next(err,null)}
@@ -110,7 +110,8 @@ function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 		istat.selection = results[2]
 		console.time('map')
 		istat.filter = results[3].map(function(v){ return ObjectId(v)})
-		console.log(istat.filter.length)
+		debug('istat in selezione ')
+		Debug(istat.filter.length)
 		console.timeEnd('map')
 		next(req,istat,next) //chiama pvRetriever
 		}//eof optional function in parallel
@@ -127,7 +128,8 @@ function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 	 * @param mongodb-node-native.connection*/
 function PvFiltered(req,db){
 	this.db = db
-	PvFiltered.req = req
+	this.name = 'PvFiltered'
+	this.req = req
 
 	}
 	
@@ -138,7 +140,7 @@ function PvFiltered(req,db){
 	 * @param {req}
 	 * @param {Function} funzione di callback function(err,out)*/
 function pvFetcher(self,req,next){// 
-	console.log('pvfetcher filtri')
+	Debug('pvfetcher in '+self.name)
 	 //preparo la chiave  per la cache
 	 var par = {}
 	 par.user = req.session.user 
@@ -147,7 +149,7 @@ function pvFetcher(self,req,next){//
 	par.selection = req.selection
 	 var Key = new key(par)
 	 if( cache.get(Key.getKey())==null){
-		 console.log('no cache for '+Key.getKey())
+		 Debug('no cache for '+Key.getKey())
 		 var  selezione = req.selection 
 		 var getIstat = self.getIstat;
 		 var pvretriever = self.PvRetriever
@@ -160,7 +162,7 @@ function pvFetcher(self,req,next){//
 		})
 	}
 	else{
-		console.log('cache found for: '+Key.getKey())
+		Debug('cache found for: '+Key.getKey())
 		var d = cache.get(Key.getKey())
 		var out = {}
 		out.data = d.data.slice(req.start,req.start+req.limit)

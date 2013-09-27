@@ -241,7 +241,8 @@ Ext.application({
 							xtype: 'button',
 							icon: 'images/icon1616.png',
 							id: 'stubButton',
-							disabled: false,
+							visible: debug,
+							disabled: !debug,
 							handler: function(){
 									alert('test')
 									var s = [{utb:{classe:'regione',id:9}}]

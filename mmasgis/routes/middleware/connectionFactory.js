@@ -1,4 +1,5 @@
-MongoClient = require('mongodb').MongoClient;
+var MongoClient = require('mongodb').MongoClient;
+var Debug = require('../../public/javascripts/constants').Debug
 /**crea connessioni a mongoDb con il driver nativo
  * @class ConnectionFactory
  * @implementa un meccanismo di cache*/
@@ -15,13 +16,14 @@ function ConnectionFactory(){
  * */
  function getConnection(self,censimento,next){
          if (censimento in self.dbs){
-                 console.log('cache')
+                 console.log('cache di '+censimento)
                  next(self.dbs[censimento])
          }
          else{
                  var DB
-                 console.log('no cache')
+                 console.log('no cache 4 '+censimento)
                  MongoClient.connect("mongodb://localhost:27017/"+censimento, function(err, db){
+                    if(err){return console.dir(err);}
                                                                                                 Db = db
                                                                                                 self.dbs[censimento] = Db
                                                                                                 next(Db)

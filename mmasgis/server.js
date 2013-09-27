@@ -4,8 +4,9 @@
  * @param express.response
  * @param express.request*/
 function runPvList(obj,res,req){
-		console.log('setting filter')
-		console.log(req.filter)
+		Debug('runPvList')
+		Debug(obj.name)
+		Debug(req.filter)
 		var s = req.selection.replace('\\', '')
 		var d ={data:s}
 		var page = req.body.page
@@ -15,15 +16,18 @@ function runPvList(obj,res,req){
 		req.selection = JSON.parse(d.data)
 		req.censimento = req.body.censimento
 		req.censimento_id = req.body.censimento_id
-		console.log(req.censimento_id)
+		Debug(req.censimento_id)
 		req.page = parseInt(req.body.limit)
 		req.start =  parseInt(req.body.start)
 		var results = {}
+		Debug('launch pvdfetcher')
 		obj.pvFetcher(obj,req,function(err,out){
+			Debug('pvFetcher Done')
 			results.data = out[1].data
 			results.success = true
 			results.total = out[1].count
-			console.log('total ='+results.total)
+			Debug('total ='+results.total)
+			Debug(' e ora send')
 			res.send(results,200)
 		})
 }
@@ -31,6 +35,7 @@ function runPvList(obj,res,req){
  * Module dependencies.
  **/
 var express = require('express')
+  , Debug = require('./public/javascripts/constants').Debug
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
@@ -89,10 +94,10 @@ app.post('/attributs',function(req,res){
 	//AW.AWgetAllAttributs(AW,cl_id,function(e,o){res.send(o,200)})
 })/*
 app.get('/geoserver/wms',function(req,res){
-	console.log('geoserver/wms');
-	//console.log(req.query);
+	Debug('geoserver/wms');
+	//Debug(req.query);
 	res.redirect('/localhost:8080/'+req.query,200)})*/
-//app.get('/wms',function(req,res){console.log('wms')})
+//app.get('/wms',function(req,res){Debug('wms')})
 app.post('/classes4Filter',function(req,res){
 	req.censimento = req.body.censimento
 	var AW = new aw(req,'localhost')
@@ -138,37 +143,45 @@ app.post('/pv',function(req,res){
 	var db;
 		//console.time('total time')
 		var filtro = false
-		console.log(req.body.selection)
-		//console.log(req.body.filter)
+		Debug(req.body.selection)
+		//Debug(req.body.filter)
 		req.selection = JSON.parse(req.body.selection)//JSON.parse("[{\"utb\":{\"id\":11,\"classe\":\"regione\"}}]")
-		if ( typeof(req.body.filter)!=="undefined"){
-			console.log('filtro')
+		Debug('body.filter')
+		Debug(typeof(req.body.filter))
+		if ( typeof(req.body.filter)!==typeof({family:'pu',data:[]})){
+			Debug('pv diretti')
+				obj = new pvList.obj2(null)
+				runPvList(obj,res,req) 
+			Debug('richiesti pv filtrati: '+filtro)
+				
+				//console.timeEnd('total time')
+		}
+		else{
+			Debug('filtro')
 			//richiedo la connessione al censimento
 			ConnectionFactory.getConnection(ConnectionFactory,req.body.censimento,function(o){db = o
+			Debug('callback di getConnection')
 			obj = new pvListFiltered(req,db)
+			runPvList(obj,res,req)
 			})
 			//req.filter = JSON.parse(req.body.filter)
 			// i filtri non hanno bisogno di parsing sono formati meglio dal client
-			console.log('setting filtro')
-			console.log(req.body.filter)
-			req.filter = req.body.filter
+			Debug('setting filtro')
+			Debug(req.body.filter)
+			req.filter = JSON.parse(req.body.filter)
 			filtro = true
 			
 		}
-	console.log('richiesti pv filtro: '+filtro)
-			runPvList(obj,res,req)
-		
-		//console.timeEnd('total time')
 	})
 
 app.post('/login',function(req,res){ login.login(req,res,function(req){
 		//console.dir(req)
 	// adeguo i campi  di req per pvRetivier
 	
-	//console.log('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
+	//Debug('credenziali inserite:%j %j',req.param('loginUsername', null), req.param('loginPassword',null))
 	/*login.login(req,res,function(req,res){
-		console.log('login ended')
-		console.log(req.user)
+		Debug('login ended')
+		Debug(req.user)
 	})*/
 	
 })})

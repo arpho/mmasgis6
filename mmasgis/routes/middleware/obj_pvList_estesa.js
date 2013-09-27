@@ -17,6 +17,7 @@ var und = require("underscore");
 var includes = require('./includes')
 
 function obj2 (req){
+	this.name ='pvList_estesa'
 	this.req = req}
 
 

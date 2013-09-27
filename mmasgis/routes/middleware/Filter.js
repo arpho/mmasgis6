@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
  tc_clpot = require('../../schemas/tc_clpot'),
  tc_rel_clmar_mar = require('../../schemas/tc_rel_clmar_mar'),
 intersect = require('./array_intersect.min').array_intersect;
+var Debug = require('../../public/javascripts/constants').Debug
  async = require('async');
 /**esegue le query sui parametri
  * @class FilterParameter
@@ -57,6 +58,8 @@ function runFilter(self,req,next){
 	 * */
 	function generateFilter(item){
 		var family = item.family;
+		Debug('item in generateFilter')
+		Debug(item)
 		var filterAttribut = self.filterFunction[family];
 		var data = item.data
 		var query = filterAttribut.buildQuery(filterAttribut,data)
@@ -64,11 +67,14 @@ function runFilter(self,req,next){
 		return out
 	}
 	var functions = []
+	Debug('settings filter')
+	Debug(settings)
 	for (var i=0;i<settings.length;i++){
+		Debug(settings[i])
 		functions.push(generateFilter(settings[i]))
 	}console.time('parallel')
 	async.parallel(functions,function(err,results){
-		//console.log('results.length in poarallel: '+results.length)
+		//Debug('results.length in poarallel: '+results.length)
 		var out;
 		if (results.length>1){
 			out = intersect(results[0],results[1]) //inizializzo 
@@ -177,7 +183,7 @@ function pushPv(ar,item){
 function listPv(l){
 	pv = {}
 	for (var i=0;i<l.length;i++){
-		//console.log('counting'+i)
+		//Debug('counting'+i)
 		pushPv(pv,l[i])
 	}
 	return pv

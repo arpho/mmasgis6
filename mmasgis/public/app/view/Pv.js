@@ -5,7 +5,8 @@ function showPv(user,selection,censimento,censimento_id){
 	 * mostra la finestra per la scelta del censimento
 	 * @param User:  istanza del modello extjs di User che nell'applicazione è memorizzato in metmi.user */
 	store = Ext.data.StoreManager.lookup('PvStore')
-	
+	if (store.getProxy().extraParams.filter){store.getProxy().extraParams.filter = undefined} // rimuovo il parametro filter  altrimenti lancerebbe il filtro pure sulle altre selezioni
+	//console.log(store.getProxy().extraParams)
 	var myTopToolbar = new Ext.Toolbar({
 		items : [ 
 				{xtype: 'tbtext', text: totalCount}

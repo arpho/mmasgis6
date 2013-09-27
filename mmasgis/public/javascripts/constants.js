@@ -1,4 +1,4 @@
-Ext.namespace('metmi');
+//Ext.namespace('metmi');
 var texts = {}
 var selected = {}
 var metmi = {}
@@ -21,3 +21,7 @@ showRegions,
 showCAPs,
 showProvinces,
 showTowns;
+var debug = true
+function Debug(s){if (debug){console.log(s)}}
+exports.debug = debug
+exports.Debug = Debug
