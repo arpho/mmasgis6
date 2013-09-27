@@ -12,7 +12,7 @@ function showPv(user,selection,censimento,censimento_id){
 				{xtype: 'tbtext', text: totalCount}
 			]
 	})
-	var PvGrid = Ext.create('Ext.grid.Panel',{
+	 PvGrid = Ext.create('Ext.grid.Panel',{
 		//title: texts.txt5+user.data.nome,
 		viewConfig : {
 											style : { overflow: 'auto' }

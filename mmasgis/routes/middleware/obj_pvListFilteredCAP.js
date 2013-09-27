@@ -29,6 +29,8 @@ var Debug = require('../../public/javascripts/constants').Debug
 	 * @return {Object} :: [pv]
 	 * */
 function getPv(req,data,next,K){
+	
+	Debug('######################getPv######################')
 	var selection = req.selection
 	//cerco i cap 
 	cap = []
@@ -52,13 +54,17 @@ function getPv(req,data,next,K){
 		//cerco i pv modificati dagli utenti
 		function(callback){b(callback)}
 	],function(err,results){
-		var out = includes.pvListMerger(results[0],results[1],req.page,req.start)
+		console.time('merging')
+		var out = includes.pvListMerger(results[0],results[1],req.page,req.start) // combino le liste dei pv liberi con quelli modificati dai clienti
+		console.timeEnd('merging')
 		var item = {}
 		item.data = out.fullData
 		item.count = out.count
 		cache.put(K.getKey(),item,10*60*1000) // conservo il dato in cache per 10 minuti
 		//Debug(out)
-		cache
+		//cache
+		
+		Debug('######################callback di getPv, chiamo callback di async######################')
 		next(err,out)
 	} //eof optional
 ) // eof parallel
@@ -66,22 +72,24 @@ function getPv(req,data,next,K){
 
 /** ricava i codici istat per cliente, utente e selezione e ne calcola l'intersezione
 	 * @method {getIstat}
-	 * recupera i codici istat relativi alle utb di utente, cliente e selezione
+	 * recupera i codici istat relativi alle utb di utente, cliente e selezione;
+	 *  per concludere si occupa di trovare lecondizioni che devono rispettare i pv
 	 * @param {utb_cliente}:[{classe:String<regione,provincia,comune,Pv>
 	 * @param {utb_utente}:{classe:String<regione,provincia,comune,Pv>
 	 * @param {utb_selection}:{classe:String<regione,provincia,comune,Pv>*/
 function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 	//Debug(self.db)
+	Debug('getIstat start')
 	Filter = new filter(req,self.db)
 	async.parallel([
-				function(callback){
+				function(callback){Debug('funzione 0')
 					tc_istat.getIstat4Selection(utb_cliente,function(err,out){
 						if (err){callback(err)}
 						istat_cliente = out
 						callback(null,out)
 						})//eof getIstat4Selection
 				},//eof 1° funzione parallela
-				function(callback){
+				function(callback){Debug('funzione 1')
 					 tc_istat.getIstat4Selection(utb_utente,function(err,out){
 						 if (err){callback(err)}
 						 istat_utente = out
@@ -89,6 +97,7 @@ function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 						 }) //eof getIstat4Selection
 				}, // eof 2° funzione //
 				function(callback){
+					Debug('funzione 2')
 					tc_istat.getIstat4Selection(utb_selection,function(err,out){
 					if (err) {
 						callback(err)
@@ -99,20 +108,23 @@ function getIstat(self,req,utb_cliente,utb_utente,utb_selection,next){
 					})//eof getIstat4selection
 					
 					},//eof 3° funzione //
-				function(callback){
-					Filter.runFilter(Filter,req,function(e,o){Debug('callback getIstat filter');Debug(o.length);callback(e,o);})
+				function(callback){Debug('funzione3')
+					Filter.runFilter(Filter,req,function(e,o){if(e){console.dir(e)};Debug('callback getIstat filter lanciato da runFilter');Debug('risultato di runFilter');Debug(o.length);callback(e,o);})
 				}
 	],function(err,results){
 		if (err){next(err,null)}
+		Debug('callback di runFilter')
 		var out = intersect(results[0],results[1],results[2]) //calcolo l'intersezione dei codici istat
+		Debug('ok intersect')
 		var istat = {}
 		istat.intersection = out
 		istat.selection = results[2]
 		console.time('map')
-		istat.filter = results[3].map(function(v){ return ObjectId(v)})
-		debug('istat in selezione ')
-		Debug(istat.filter.length)
+		istat.filter = results[3].map(function(v){ return ObjectId(v)}) /*il risultato di runfilter è una lista elle stringe degli _id dei pv
+		 che corrispondono al filtro*/
 		console.timeEnd('map')
+		Debug('pv filtrati ')
+		Debug(istat.filter.length)
 		next(req,istat,next) //chiama pvRetriever
 		}//eof optional function in parallel
 		)//eof parallel
@@ -155,8 +167,10 @@ function pvFetcher(self,req,next){//
 		 var pvretriever = self.PvRetriever
 		 self.getUtb2(req,function(req,utb_u,utb_c,selezione){
 			//console.time('getIstat')
+			Debug('getUtb2 ha finito e  lancia getIstat')
 			self.getIstat(self,req,utb_u,utb_c,selezione,function(a,b,c){
 				//console.timeEnd('getIstat')
+				Debug('######################callback di Pvfetcher, chiamo pvretriever######################')
 				pvretriever(self,a,b,next,Key)
 				 })
 		})
@@ -184,7 +198,9 @@ function pvFetcher(self,req,next){//
 	 * 
 	 * */
 function pvRetriever(self,req,data,next,K){
-	 var switchDb = self.switchDb;
+	
+	Debug('######################pvretriever invoca getPv######################')
+	 //var switchDb = self.switchDb;
 	 var getPv = self.getPv;
 	console.time('pvRetriever')
 	 async.series([
@@ -193,6 +209,9 @@ function pvRetriever(self,req,data,next,K){
 			function(callback){/*switchDb('mmasgis');*/callback()}
 	 ], function(err,results){
 		console.timeEnd('pvRetriever')
+		Debug('callBack di async.series in pvRetriever di '+self.name)
+		
+		Debug('######################callback  pvretriever eseguo il next del server######################')
 		next(err,results)
 		 })
  }

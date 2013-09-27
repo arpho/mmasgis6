@@ -125,8 +125,13 @@ var myTopToolbar = new Ext.Toolbar({items : [
 							//filters.potential = filterPotentials
 							console.log(filters)
 							store = Ext.data.StoreManager.lookup('PvStore')
-							store.loadPage(1)
 							store.getProxy().extraParams.filter = JSON.stringify(filters)
+							store.loadPage(1,{
+		callback : function(records, options, success) {
+									var totalCount = store.totalCount
+									PvGrid.dockedItems.items[1].items.items[1].setText(texts.txt49 +store.totalCount)
+								}
+		})
 						},
 					},{
 						xtype:'button',

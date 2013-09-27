@@ -14,6 +14,7 @@ var istat = null
 var tc_istat = require('./tc_istat_id'),
 intersect = require('./array_intersect.min').array_intersect;
 var includes = require('./includes')
+var Debug = require('../../public/javascripts/constants').Debug
 function switchDb(censimento){
 	/*cambia il database a cui si connette mongoose*/
 	var mongoose = require('mongoose')
@@ -37,8 +38,8 @@ function getPv(req,data,next,K){
 		//cerco i pv modificati dagli utenti
 	/*var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){
-			 console.log('pv modificati')
-			 console.log(out.length);after(err,out)})}*/
+			 Debug('pv modificati')
+			 Debug(out.length);after(err,out)})}*/
 	 async.parallel([//getPv in intersection
 		function(callback){a(callback)}, // eof parallel1
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
@@ -49,7 +50,7 @@ function getPv(req,data,next,K){
 		item.data = out.fullData
 		item.count = out.count
 		cache.put(K.getKey(),item,10*60*1000) // conservo il dato in cache per 10 minuti
-		//console.log(out)
+		//Debug(out)
 		cache
 		next(err,out)
 	} //eof optional
@@ -66,7 +67,7 @@ function getPv(req,data,next,K){
 	 * 
 	 * */
 function pvRetriever(self,req,data,next,K){
-	console.log('old pvretriever')
+	Debug('old pvretriever')
 	 var switchDb = PvLObj.prototype.switchDb;
 	 var getPv = PvLObj.prototype.getPv;
 	//console.time('pvRetriever')
@@ -80,6 +81,7 @@ function pvRetriever(self,req,data,next,K){
 		 })
  }
 function getUtb2(req,next){
+	Debug('getUtb2 starts')
 	async.parallel([
 		function(callback){
 			var user = req.session.user
@@ -90,6 +92,7 @@ function getUtb2(req,next){
 							user_utbs.find({user_id:user._id.toString(),censimento_id:req.censimento_id},function(err, utbs){callback(err,utbs)})
 						} //eof fn1_parallel0
 	],function(err,results){
+		Debug('getUtb2 ha finito, lancia la sua next= getIstat')
 		next(req,results[0],results[1],req.selection) // next deve essere getIstat
 			}) // eof opt_parallel0
 	
@@ -120,7 +123,7 @@ function getIstat(req,utb_cliente,utb_utente,utb_selection,next){
 					tc_istat.getIstat4Selection(utb_selection,function(err,out){
 					if (err) {
 						callback(err)
-						console.log('utb_selection error')
+						Debug('utb_selection error')
 					}
 					istat_selezione = out
 					callback(err,out)
@@ -153,7 +156,7 @@ function pvFetcher(self,req,next){//
 	par.selection = req.selection
 	 var Key = new key(par)
 	 if( cache.get(Key.getKey())==null){
-		 console.log('no cache')
+		 Debug('no cache')
 		 var  selezione = req.selection 
 		 var getIstat = PvLObj.prototype.getIstat;
 		 //var pvretriever = self.pvRetriever
@@ -166,7 +169,7 @@ function pvFetcher(self,req,next){//
 		})
 	}
 	else{
-		console.log('pvList cache found:')
+		Debug('pvList cache found:')
 		var d = cache.get(Key.getKey())
 		var out = {}
 		out.data = d.data.slice(req.start,req.start+req.limit)

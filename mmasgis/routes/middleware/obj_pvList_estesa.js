@@ -15,7 +15,7 @@ var cache = require('memory-cache');
 var tc_istat = require('./tc_istat_id');
 var und = require("underscore");
 var includes = require('./includes')
-
+var Debug = require('../../public/javascripts/constants').Debug
 function obj2 (req){
 	this.name ='pvList_estesa'
 	this.req = req}
@@ -36,14 +36,14 @@ function getPvCap(req,data,next,K){
 		 var query = {$or:[{tc_istat_id:{$in:data.intersection},owner:{$exists:false}},{cap:{$in:cap},owner:{$exists:false}}]};
 		 //db.pv.find({$or:[{tc_istat_id:{$in:[1772]},owner:{$exists:false}},{cap:{$in:['95014']},owner:{$exists:false}}]})
 		 solver.getPv(query,req.censimento,function(err,out){
-			 if(err){console.dir(err);console.log('errore a')}
+			 if(err){console.dir(err);Debug('errore a')}
 			 after(err,out)
 			}
 		)}
 		var b = function(after){
 			var query = {$or:[{tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},{cap:{$in:cap},owner:req.session.user._id.toString()}]}
 			solver.getPv(query,req.censimento,function(err,out){
-				if(err){console.dir(err);console.log('errore b')}
+				if(err){console.dir(err);Debug('errore b')}
 				after(err,out)
 			})
 			}
@@ -57,7 +57,7 @@ function getPvCap(req,data,next,K){
 		item.data = out.fullData
 		item.count = out.count
 		cache.put(K.getKey(),item,10*60*1000) // conservo il dato in cache per 10 minuti
-		//console.log(out)
+		//Debug(out)
 		//cache
 		next(err,out)
 	} //eof optional
@@ -70,7 +70,7 @@ function getPv(req,data,next,K){
 	  //creo una funzioneda usare in async.parallel per maggiore leggibilità, after sarà la funzione di callback passata da async.parallel
 	 var a = function(after){
 		 //cerco i pv originali, non modificati dall'utente
-		 console.log('req.censimento in obj_pvList.getPv: '+req.censimento)
+		 Debug('req.censimento in obj_pvList.getPv: '+req.censimento)
 		 solver.getPv({tc_istat_id:{$in:data.intersection},owner:{$exists:false}},req.censimento,function(err,out){
 			 after(err,out)
 			}
@@ -78,8 +78,8 @@ function getPv(req,data,next,K){
 		//cerco i pv modificati dagli utenti
 	/*var b = function(after){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
 		req.censimento,function(err,out){
-			 console.log('pv modificati')
-			 console.log(out.length);after(err,out)})}*/
+			 Debug('pv modificati')
+			 Debug(out.length);after(err,out)})}*/
 	 async.parallel([//getPv in intersection
 		function(callback){a(callback)}, // eof parallel1
 		function(callback){solver.getPv({tc_istat_id:{$in:data.selection},owner:req.session.user._id.toString()},
@@ -90,7 +90,7 @@ function getPv(req,data,next,K){
 		item.data = out.fullData
 		item.count = out.count
 		cache.put(K.getKey(),item,10*60*1000) // conservo il dato in cache per 10 minuti
-		//console.log(out)
+		//Debug(out)
 		//cache
 		next(err,out)
 	} //eof optional
@@ -107,7 +107,7 @@ function pvFetcher(self,req,next){//
 	par.selection = req.selection
 	 var Key = new key(par)
 	 if( cache.get(Key.getKey())==null){
-		 console.log('no cache')
+		 Debug('no cache')
 		 var  selezione = req.selection 
 		 var getIstat = self.getIstat;
 		 self.getUtb2(req,function(req,utb_u,utb_c,selezione){
@@ -120,7 +120,7 @@ function pvFetcher(self,req,next){//
 		})
 	}
 	else{
-		console.log(' pvList_estesa cache found:')
+		Debug(' pvList_estesa cache found:')
 		var d = cache.get(Key.getKey())
 		var out = {}
 		out.data = d.data.slice(req.start,req.start+req.limit)

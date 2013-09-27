@@ -21,13 +21,16 @@ function runPvList(obj,res,req){
 		req.start =  parseInt(req.body.start)
 		var results = {}
 		Debug('launch pvdfetcher')
+	console.time('pvFetcher')
 		obj.pvFetcher(obj,req,function(err,out){
 			Debug('pvFetcher Done')
 			results.data = out[1].data
 			results.success = true
 			results.total = out[1].count
+			//Debug(results)
 			Debug('total ='+results.total)
 			Debug(' e ora send')
+			console.timeEnd('pvFetcher')
 			res.send(results,200)
 		})
 }
@@ -142,14 +145,17 @@ app.get('/census',function(req,res){
 app.post('/pv',function(req,res){
 	var db;
 		//console.time('total time')
-		var filtro = false
+		var filtro 
 		Debug(req.body.selection)
 		//Debug(req.body.filter)
 		req.selection = JSON.parse(req.body.selection)//JSON.parse("[{\"utb\":{\"id\":11,\"classe\":\"regione\"}}]")
 		Debug('body.filter')
 		Debug(typeof(req.body.filter))
-		if ( typeof(req.body.filter)!==typeof({family:'pu',data:[]})){
+		Debug('parsed')
+		Debug(req.body.filter)
+		if ( req.body.filter===undefined){
 			Debug('pv diretti')
+			filtro = false
 				obj = new pvList.obj2(null)
 				runPvList(obj,res,req) 
 			Debug('richiesti pv filtrati: '+filtro)
