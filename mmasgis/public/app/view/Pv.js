@@ -131,10 +131,21 @@ function showPv(user,selection,censimento,censimento_id){
 			items : [
 				{
 						xtype: 'button',
-						icon : 'images/filter.png',
+						icon : 'images/filter-add-icon.png',
 						handler : function(){//console.log(metmi)
 						
 							showFilter(metmi.censimento.census)
+							Ext.getCmp('removeFilterButton').enable()
+						},
+					},{
+						xtype: 'button',
+						icon : 'images/filter-delete-icon.png',
+						disabled:true,
+						id: 'removeFilterButton',
+						tooltip:'hghfvjhfv',
+						handler : function(){//console.log(metmi)
+						
+							alert('pohjgb')
 						},
 					}
 			]

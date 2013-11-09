@@ -113,7 +113,7 @@ app.post('/filterAttributs',function(req,res){
 //	var Id = ObjectId(req.body.cl_id)
 	req.censimento = req.body.censimento
 	Id = ObjectId(req.body.pv__id)
-	data.success = true
+	/*data.success = true
 	data.attributs = {}
 	data.attributs.params = {}
 	data.attributs.params.data = []
@@ -123,7 +123,7 @@ app.post('/filterAttributs',function(req,res){
 	data.attributs.brands.data.push({class:'stub',value:'brand dal server'})
 	data.attributs.potentials = {}
 	data.attributs.potentials.data = []
-	data.attributs.potentials.data.push({class:'stub',value:'pot dal server'})
+	data.attributs.potentials.data.push({class:'stub',value:'pot dal server'})*/
 	var AW = new aw(req,'localhost')
 	var family = req.body.family
 	var cl_id = req.body.cl_id

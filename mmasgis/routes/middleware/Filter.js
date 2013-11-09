@@ -224,6 +224,7 @@ function listPv(l){
 	self.executesQuery(self,query,function(e,o){
 		rawList = o
 		countedList = self.listPv(rawList)// conto le occorrenze dei pv
+		
 		//ottengo il numero di condizioni che devono essere soddisfatte
 		var n
 		if (query['$or']){n = query['$or'].length}
